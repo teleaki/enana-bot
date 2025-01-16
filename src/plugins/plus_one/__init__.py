@@ -61,4 +61,5 @@ async def plush_handler(bot: Bot, event: Event):
     text_list.append(msg)
 
     if len(text_list) > 2:
+        text_list.clear()
         await plus.finish(msg)
