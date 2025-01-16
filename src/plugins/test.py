@@ -12,7 +12,7 @@ __plugin_meta__ = PluginMetadata(
 
 Test =on_regex(
     pattern=r'^测试$',
-    priority=1,
+    priority=5,
     block=True
 )
 

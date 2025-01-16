@@ -20,7 +20,7 @@ import random
 
 choose = on_command(
     "选择",
-    priority=3,
+    priority=4,
     block=True)
 
 @choose.handle()

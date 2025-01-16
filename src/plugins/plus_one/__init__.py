@@ -21,7 +21,7 @@ from nonebot.adapters import Event, Message, Bot
 from nonebot_plugin_session import extract_session, SessionIdType
 
 plus = on_message(
-    priority=10,
+    priority=9,
     block=False)
 msg_dict = {}
 

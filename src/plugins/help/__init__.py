@@ -20,7 +20,7 @@ from nonebot.typing import T_State
 # 创建一个命令处理器，响应用户输入的"帮助"命令
 Help = on_command(
     "帮助",
-    priority=5,
+    priority=6,
     block=True,
 )
 
