@@ -10,7 +10,11 @@ __plugin_meta__ = PluginMetadata(
     usage="测试",
 )
 
-Test =on_regex(pattern=r'^测试$',priority=1)
+Test =on_regex(
+    pattern=r'^测试$',
+    priority=1,
+    block=True
+)
 
 @Test.handle()
 async def Test_send(bot:Bot,event:GroupMessageEvent,state:T_State):

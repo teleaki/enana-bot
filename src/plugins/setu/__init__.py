@@ -20,7 +20,7 @@ import httpx, json
 
 setu = on_command(
     "setu",
-    priority=1,
+    priority=5,
     block=True,
 )
 

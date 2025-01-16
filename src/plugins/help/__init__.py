@@ -18,7 +18,11 @@ from nonebot.adapters.onebot.v11 import GroupMessageEvent, Bot, Message
 from nonebot.typing import T_State
 
 # 创建一个命令处理器，响应用户输入的"帮助"命令
-Help = on_command("帮助")
+Help = on_command(
+    "帮助",
+    priority=5,
+    block=True,
+)
 
 
 # 定义命令的回调函数
