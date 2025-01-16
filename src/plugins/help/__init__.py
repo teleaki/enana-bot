@@ -6,7 +6,7 @@ from .config import Config
 __plugin_meta__ = PluginMetadata(
     name="帮助",
     description="列出所有功能",
-    usage="帮助",
+    usage="帮助 ？",
     config=Config,
 )
 
