@@ -31,7 +31,7 @@ def url_exists(url):
     检查给定的 URL 是否有效。
     """
     try:
-        response = requests.get(url, timeout=20)
+        response = requests.get(url, timeout=5)
         if response.status_code == 200:
             # 检查返回的内容是否包含 "NoSuchKey" 来判断是否存在该文件
             if "NoSuchKey" in response.text:
