@@ -13,26 +13,31 @@ class GettingManager:
             with open(self._eating_path, 'r', encoding='utf-8') as file:
                 data = json.load(file)
             return data
-        except (FileNotFoundError, json.JSONDecodeError) as e:
-            return e
+        except FileNotFoundError as e:
+            return FileNotFoundError(f"未找到food.json文件: {e}")
+        except json.JSONDecodeError as e:
+            return json.JSONDecodeError(f"food.json解析失败: {e}")
 
     def get_food(self):
         data = self._load_food_json()
-        if data:
-            if isinstance(data, FileNotFoundError):  # 检查是否为FileNotFoundError异常对象
-                return Message(MessageSegment.text("未能读取菜谱: 未找到food.json"))
-            elif isinstance(data, json.JSONDecodeError):  # 检查是否为JSONDecodeError异常对象
-                return Message(MessageSegment.text("未能读取菜谱: food.json解析失败"))
 
+        # 判断返回的是否为异常对象
+        if isinstance(data, FileNotFoundError):
+            return Message(MessageSegment.text(str(data)))  # 显示错误消息
+        elif isinstance(data, json.JSONDecodeError):
+            return Message(MessageSegment.text(str(data)))  # 显示错误消息
+
+        if data:
             # 随机选择一种食物
             choice = random.choice(data['food'])
             msg = Message([
                 MessageSegment.text("enana建议你吃：\n"),
                 MessageSegment.text(f"✨{choice['name']}✨\n"),
-                # MessageSegment.image(choice['url'])
+                # MessageSegment.image(choice['url'])  # 如果需要显示图片，取消注释
             ])
         else:
             msg = Message(MessageSegment.text("菜谱为空,只能饿肚子了😭"))
+
         return msg
 
     def _load_drink_json(self):
@@ -40,17 +45,21 @@ class GettingManager:
             with open(self._drinking_path, 'r', encoding='utf-8') as file:
                 data = json.load(file)
             return data
-        except (FileNotFoundError, json.JSONDecodeError) as e:
-            return e
+        except FileNotFoundError as e:
+            return FileNotFoundError(f"未找到drinks.json文件: {e}")
+        except json.JSONDecodeError as e:
+            return json.JSONDecodeError(f"drinks.json解析失败: {e}")
 
     def get_drink(self):
         data = self._load_drink_json()
-        if data:
-            if isinstance(data, FileNotFoundError):  # 检查是否为FileNotFoundError异常对象
-                return Message(MessageSegment.text("未能读取菜谱: 未找到drinks.json"))
-            elif isinstance(data, json.JSONDecodeError):  # 检查是否为JSONDecodeError异常对象
-                return Message(MessageSegment.text("未能读取菜谱: drinks.json解析失败"))
 
+        # 判断返回的是否为异常对象
+        if isinstance(data, FileNotFoundError):
+            return Message(MessageSegment.text(str(data)))  # 显示错误消息
+        elif isinstance(data, json.JSONDecodeError):
+            return Message(MessageSegment.text(str(data)))  # 显示错误消息
+
+        if data:
             # 随机选择一个店名
             brand_choice = random.choice(list(data['drinks'].keys()))  # 随机选择店名
             # 获取该店的饮品列表
@@ -60,10 +69,11 @@ class GettingManager:
             msg = Message([
                 MessageSegment.text("enana建议你喝：\n"),
                 MessageSegment.text(f"🎈{brand_choice}🎈的✨{item_choice['name']}✨\n"),
-                # MessageSegment.image(item_choice['url'])
+                # MessageSegment.image(item_choice['url'])  # 如果需要显示图片，取消注释
             ])
         else:
             msg = Message(MessageSegment.text("菜谱为空,只能渴着了😭"))
+
         return msg
 
 eord_manager = GettingManager()
