@@ -75,7 +75,7 @@ def get_url(oc_name):
         return msg
 
 
-def get_img(oc_name, max_retries=3, delay=1):
+def get_img(oc_name, max_retries=5, delay=0.5):
     """
     获取图片，最多重试 max_retries 次。
     """
