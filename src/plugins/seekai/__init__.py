@@ -31,6 +31,8 @@ seekai = on_regex(
 
 @seekai.handle()
 async def handle_seekai(event: Event):
-    oc_name = event.regex.group(1)
+    message = event.get_message()
+    plain_text = message.extract_plain_text()  # 获取纯文本
+    oc_name = plain_text[1:]  # 去掉 "看" 获取后面的部分
     msg = get_img(oc_name)
     await seekai.finish(msg)
