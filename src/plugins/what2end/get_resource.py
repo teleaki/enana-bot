@@ -5,8 +5,8 @@ import random, json
 
 class GettingManager:
     def __init__(self):
-        self._eating_path : Path = Path(__file__).parent / "resources" / "food.json"
-        self._drinking_path : Path = Path(__file__).parent / "resources" / "drinks.json"
+        self._eating_path : Path = Path(__file__).parent / "resource" / "food.json"
+        self._drinking_path : Path = Path(__file__).parent / "resource" / "drinks.json"
 
     def _load_food_json(self):
         try:
