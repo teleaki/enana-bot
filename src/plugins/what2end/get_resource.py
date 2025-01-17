@@ -33,7 +33,7 @@ class GettingManager:
             msg = Message([
                 MessageSegment.text("enana建议你吃：\n"),
                 MessageSegment.text(f"✨{choice['name']}✨\n"),
-                # MessageSegment.image(choice['url'])  # 如果需要显示图片，取消注释
+                MessageSegment.image(choice['url'])  # 如果需要显示图片，取消注释
             ])
         else:
             msg = Message(MessageSegment.text("菜谱为空,只能饿肚子了😭"))
@@ -69,7 +69,7 @@ class GettingManager:
             msg = Message([
                 MessageSegment.text("enana建议你喝：\n"),
                 MessageSegment.text(f"🎈{brand_choice}🎈的✨{item_choice['name']}✨\n"),
-                # MessageSegment.image(item_choice['url'])  # 如果需要显示图片，取消注释
+                MessageSegment.image(item_choice['url'])  # 如果需要显示图片，取消注释
             ])
         else:
             msg = Message(MessageSegment.text("菜谱为空,只能渴着了😭"))
