@@ -18,10 +18,10 @@ class GettingManager:
     def get_food(self):
         data = self._load_food_json()
         if data:
-            if data == FileNotFoundError:
-                return Message(MessageSegment.text("未能读取菜谱:未找到food.json"))
-            if data == json.JSONDecodeError:
-                return Message(MessageSegment.text("未能读取菜谱:food.json解析失败"))
+            if isinstance(data, FileNotFoundError):  # 检查是否为FileNotFoundError异常对象
+                return Message(MessageSegment.text("未能读取菜谱: 未找到food.json"))
+            elif isinstance(data, json.JSONDecodeError):  # 检查是否为JSONDecodeError异常对象
+                return Message(MessageSegment.text("未能读取菜谱: food.json解析失败"))
 
             # 随机选择一种食物
             choice = random.choice(data['food'])
@@ -45,10 +45,10 @@ class GettingManager:
     def get_drink(self):
         data = self._load_drink_json()
         if data:
-            if data == FileNotFoundError:
-                return Message(MessageSegment.text("未能读取菜谱:未找到food.json"))
-            if data == json.JSONDecodeError:
-                return Message(MessageSegment.text("未能读取菜谱:food.json解析失败"))
+            if isinstance(data, FileNotFoundError):  # 检查是否为FileNotFoundError异常对象
+                return Message(MessageSegment.text("未能读取菜谱: 未找到drinks.json"))
+            elif isinstance(data, json.JSONDecodeError):  # 检查是否为JSONDecodeError异常对象
+                return Message(MessageSegment.text("未能读取菜谱: drinks.json解析失败"))
 
             # 随机选择一个店名
             brand_choice = random.choice(list(data['drinks'].keys()))  # 随机选择店名
