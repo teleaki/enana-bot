@@ -46,7 +46,7 @@ def url_exists(url):
         return False  # 请求失败，图片不存在
 
 
-def get_url(oc_name):
+def get_img(oc_name):
     """
     根据 oc_name 生成一个图片的 URL。
     """
@@ -68,28 +68,7 @@ def get_url(oc_name):
 
         # 生成最终的 URL
         url = base_url.format(oc_id=oc_id, oc_num=oc_num, card_type=card_choice)
-        return url
+        return MessageSegment.image(url)
 
     except Exception as e:
-        msg = MessageSegment.text(f"获取图片失败: {e}")
-        return msg
-
-
-def get_img(oc_name, max_retries=5, delay=0.5):
-    """
-    获取图片，最多重试 max_retries 次。
-    """
-    retries = 0
-    while retries < max_retries:
-        url = get_url(oc_name)
-        if isinstance(url, MessageSegment):  # 如果返回的是错误消息
-            return url
-
-        if url_exists(url):  # 如果 URL 有效
-            return MessageSegment.image(url)
-
-        retries += 1  # 重试次数
-        time.sleep(delay)  # 延迟一下再重试
-
-    # 如果所有尝试失败，返回失败信息
-    return MessageSegment.text("图片获取失败，超过最大重试次数。")
+        return MessageSegment.text(f"获取图片失败: {e}")
