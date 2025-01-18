@@ -25,4 +25,4 @@ def menu_show():
             drinks_msg.append(f"  ● {drink_item['name']}\n")
 
     # 合并菜品和饮品的消息
-    return food_msg + drinks_msg
+    return [food_msg, drinks_msg]
