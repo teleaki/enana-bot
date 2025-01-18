@@ -82,5 +82,11 @@ async def handle_w2d():
 @menu.handle()
 async def handle_menu(bot: Bot, event: MessageEvent):
     menu_msgs = menu_show()
-    bot_id, bot_name = bot.get_login_info()
-    await send_forward_msg(bot=bot, event=event, name=bot_name, uin=bot_id, msgs=menu_msgs)
+    bot_identity = await bot.get_login_info()
+    await send_forward_msg(
+        bot=bot,
+        event=event,
+        name=bot_identity.get('nickname'),
+        uin=bot_identity.get('user_id'),
+        msgs=menu_msgs
+    )
