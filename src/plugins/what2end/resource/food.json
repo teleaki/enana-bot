@@ -1,12 +1,16 @@
 {
   "food": [
     {
+      "name": "谷",
+      "url": "https://wsrv.nl/?url=https://cdn.jsdelivr.net/gh/teleaki/picx-images-hosting@master/foodndrink/gu.2veu80y6x5.png"
+    },
+    {
       "name": "韭菜盒子",
-      "url": "https://cdn.jsdelivr.net/gh/teleaki/picx-images-hosting@master/foodndrink/jchz.3uuxjjvo7h.png"
+      "url": "https://wsrv.nl/?url=https://cdn.jsdelivr.net/gh/teleaki/picx-images-hosting@master/foodndrink/jchz.3uuxjjvo7h.png"
     },
     {
       "name": "草莓",
-      "url": "https://cdn.jsdelivr.net/gh/teleaki/picx-images-hosting@master/foodndrink/cm.4ub0wpyhg2.jpg"
+      "url": "https://wsrv.nl/?url=https://cdn.jsdelivr.net/gh/teleaki/picx-images-hosting@master/foodndrink/cm.4ub0wpyhg2.jpg"
     }
   ]
 }
