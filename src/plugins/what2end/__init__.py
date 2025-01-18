@@ -18,13 +18,13 @@ from nonebot import on_regex, on_command
 from .get_resource import eord_manager
 
 what2eat = on_regex(
-    r"(早上|中午|晚上|夜宵|)吃什么",
+    r"^(早上|中午|晚上|夜宵|)吃什么$",
     priority=5,
     block=True
 )
 
 what2drink = on_regex(
-    r"(早上|中午|晚上|半夜|)喝什么",
+    r"^(早上|中午|晚上|半夜|)喝什么$",
     priority=5,
     block=True
 )
