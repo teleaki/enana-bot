@@ -41,13 +41,15 @@ async def send_forward_msg(
     messages = [to_node(msg) for msg in msgs]
     is_private = isinstance(event, PrivateMessageEvent)
     if is_private:
-        await bot.call_api(
-            "send_private_forward_msg", user_id=event.user_id, messages=messages
-        )
+        # await bot.call_api(
+        #     "send_private_forward_msg", user_id=event.user_id, messages=messages
+        # )
+        await bot.send_private_forward_msg(user_id=event.user_id, messages=messages)
     else:
-        await bot.call_api(
-            "send_group_forward_msg", group_id=event.group_id, messages=messages
-        )
+        # await bot.call_api(
+        #     "send_group_forward_msg", group_id=event.group_id, messages=messages
+        # )
+        await bot.send_group_forward_msg(group_id=event.group_id, messages=messages)
 
 what2eat = on_regex(
     r"^(早上|中午|晚上|夜宵|)吃什么$",
@@ -80,5 +82,5 @@ async def handle_w2d():
 @menu.handle()
 async def handle_menu(bot: Bot, event: MessageEvent):
     menu_msgs = menu_show()
-    bot_id, bot_name = bot.call_api('get_login_info')
+    bot_id, bot_name = bot.get_login_info()
     await send_forward_msg(bot=bot, event=event, name=bot_name, uin=bot_id, msgs=menu_msgs)
