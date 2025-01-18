@@ -63,12 +63,10 @@ def get_img(oc_name):
         ran = random.randint(0, max_num - 1)
         oc_num = f"{ran:03d}"  # 格式化成三位数字
 
-        # 随机选择 card_type
-        card_choice = random.choice(card_type)
-
         # 生成最终的 URL
-        url = base_url.format(oc_id=oc_id, oc_num=oc_num, card_type=card_choice)
-        return MessageSegment.image(url)
+        url_normal = base_url.format(oc_id=oc_id, oc_num=oc_num, card_type=card_type[0])
+        url_after_training = base_url.format(oc_id = oc_id, oc_num=oc_num, card_type=card_type[1])
+        return MessageSegment.image(url_normal) + MessageSegment.image(url_after_training)
 
     except Exception as e:
         return MessageSegment.text(f"获取图片失败: {e}")
