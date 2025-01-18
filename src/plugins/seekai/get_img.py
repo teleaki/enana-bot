@@ -1,7 +1,6 @@
 from nonebot.adapters.onebot.v11 import Event, Bot, Message, MessageSegment
 import requests
 import random
-import time  # 用于延迟重试
 
 base_url = "https://storage.sekai.best/sekai-jp-assets/character/member/res{oc_id}_no{oc_num}_rip/{card_type}.png"
 
@@ -26,47 +25,54 @@ oc_num_dict = {
 
 card_type = ["card_normal", "card_after_training"]
 
-def url_exists(url):
-    """
-    检查给定的 URL 是否有效。
-    """
+
+def is_url_valid(url):
+    """检查 URL 是否有效"""
     try:
-        response = requests.get(url, timeout=5)
-        if response.status_code == 200:
-            # 检查返回的内容是否包含 "NoSuchKey" 来判断是否存在该文件
-            if "NoSuchKey" in response.text:
-                return False  # 文件不存在
-            return True  # 图片存在
-        elif response.status_code == 403:
-            return False  # 可能是权限问题，返回无效
-        return False  # 其他状态码认为资源不可用
-    except requests.Timeout:
-        return False  # 请求超时，无法调用
-    except requests.RequestException as e:
-        return False  # 请求失败，图片不存在
+        # 发送请求验证 URL 是否有效
+        response = requests.head(url, timeout=5)  # 使用 head 请求更快速
+        return response.status_code == 200
+    except requests.RequestException:
+        return False
 
 
-def get_img(oc_name):
+def get_img(oc_name, max_retries=3):
     """
-    根据 oc_name 生成一个图片的 URL。
+    根据 oc_name 生成一个图片的 URL，若生成的 URL 无效则重新尝试。
     """
-    try:
-        # 从配置字典中获取 oc_id 和 oc_num
-        oc_id = oc_dict.get(oc_name)
-        if not oc_id:
-            raise ValueError(f"未找到 {oc_name} 对应的 oc_id")
+    attempt = 0  # 当前尝试次数
+    while attempt < max_retries:
+        try:
+            # 从配置字典中获取 oc_id 和 oc_num
+            oc_id = oc_dict.get(oc_name)
+            if not oc_id:
+                raise ValueError(f"未找到 {oc_name} 对应的 oc_id")
 
-        # 获取 oc_num 的最大值，生成一个随机的 oc_num
-        max_num = oc_num_dict.get(oc_name)
-        if max_num is None:
-            raise ValueError(f"未找到 {oc_name} 对应的 oc_num")
-        ran = random.randint(0, max_num - 1)
-        oc_num = f"{ran:03d}"  # 格式化成三位数字
+            # 获取 oc_num 的最大值，生成一个随机的 oc_num
+            max_num = oc_num_dict.get(oc_name)
+            if max_num is None:
+                raise ValueError(f"未找到 {oc_name} 对应的 oc_num")
+            ran = random.randint(0, max_num - 1)
+            oc_num = f"{ran:03d}"  # 格式化成三位数字
 
-        # 生成最终的 URL
-        url_normal = base_url.format(oc_id=oc_id, oc_num=oc_num, card_type=card_type[0])
-        url_after_training = base_url.format(oc_id = oc_id, oc_num=oc_num, card_type=card_type[1])
-        return MessageSegment.image(url_normal) + MessageSegment.image(url_after_training)
+            # 随机选择 card_type
+            card_choice = random.choice(card_type)
 
-    except Exception as e:
-        return MessageSegment.text(f"获取图片失败: {e}")
+            # 生成最终的 URL
+            url = base_url.format(oc_id=oc_id, oc_num=oc_num, card_type=card_choice)
+
+            # 验证生成的 URL 是否有效
+            if is_url_valid(url):
+                return MessageSegment.image(url)
+            else:
+                attempt += 1
+                # print(f"第 {attempt} 次尝试失败，重新生成 URL。")
+        except ValueError as e:
+            # 处理值错误异常
+            return MessageSegment.text(f"错误: {e}")
+        except Exception as e:
+            # 捕获其他异常
+            return MessageSegment.text(f"获取图片失败: {e}")
+
+    # 如果超过最大重试次数仍然失败，返回错误消息
+    return MessageSegment.text("无法生成有效的图片 URL，请稍后重试。")

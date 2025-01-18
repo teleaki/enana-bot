@@ -19,12 +19,7 @@ from nonebot.adapters.onebot.v11 import Event, Bot, Message, MessageSegment
 from .get_img import get_img
 
 seekai = on_regex(
-    r"看(ick|saki|hnm|shiho|"
-    r"mnr|hrk|airi|szk|"
-    r"khn|an|akt|toya|"
-    r"tks|emu|nene|rui|"
-    r"knd|mfy|ena|mzk|"
-    r"miku|rin|len|luka|meiko|kaito)",
+    r"^看(ick|saki|hnm|shiho|mnr|hrk|airi|szk|khn|an|akt|toya|tks|emu|nene|rui|knd|mfy|ena|mzk|miku|rin|len|luka|meiko|kaito)$",
     priority=5,
     block=True
 )
