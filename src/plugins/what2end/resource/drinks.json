@@ -3,21 +3,65 @@
     "蜜雪冰城": [
       {
         "name": "柠檬水",
-        "url": "https://cdn.jsdelivr.net/gh/teleaki/picx-images-hosting@master/foodndrink/nms.231yoneu8s.png"
+        "url": "https://wsrv.nl/?url=https://cdn.jsdelivr.net/gh/teleaki/picx-images-hosting@master/foodndrink/柠檬水.231yoneu8s.png"
       },
       {
         "name": "蜜桃四季春",
-        "url": "https://cdn.jsdelivr.net/gh/teleaki/picx-images-hosting@master/foodndrink/mtsjc.4jo73klq5a.jpg"
+        "url": "https://wsrv.nl/?url=https://cdn.jsdelivr.net/gh/teleaki/picx-images-hosting@master/foodndrink/蜜桃四季春.4jo73klq5a.jpg"
+      },
+      {
+        "name": "珍珠奶茶",
+        "url": "https://wsrv.nl/?url=https://cdn.jsdelivr.net/gh/teleaki/picx-images-hosting@master/foodndrink/珍珠奶茶.86tqsy4j26.jpg"
+      },
+      {
+        "name": "棒打鲜橙",
+        "url": "https://wsrv.nl/?url=https://cdn.jsdelivr.net/gh/teleaki/picx-images-hosting@master/foodndrink/棒打鲜橙.32i23o4lts.jpg"
+      },
+      {
+        "name": "杨枝甘露",
+        "url": "https://wsrv.nl/?url=https://cdn.jsdelivr.net/gh/teleaki/picx-images-hosting@master/foodndrink/杨枝甘露.7lk36na2rl.png"
+      },
+      {
+        "name": "茉莉奶绿",
+        "url": "https://wsrv.nl/?url=https://cdn.jsdelivr.net/gh/teleaki/picx-images-hosting@master/foodndrink/茉莉奶绿.1zicss8rya.jpg"
+      },
+      {
+        "name": "草莓啵啵",
+        "url": "https://wsrv.nl/?url=https://cdn.jsdelivr.net/gh/teleaki/picx-images-hosting@master/foodndrink/草莓啵啵.8z6maol4sk.png"
+      },
+      {
+        "name": "满杯百香果",
+        "url": "https://wsrv.nl/?url=https://cdn.jsdelivr.net/gh/teleaki/picx-images-hosting@master/foodndrink/满杯百香果.70afkcfmh4.jpg"
+      },
+      {
+        "name": "芋圆葡萄",
+        "url": "https://wsrv.nl/?url=https://cdn.jsdelivr.net/gh/teleaki/picx-images-hosting@master/foodndrink/芋圆葡萄.1sf4xcmmiw.jpg"
+      },
+      {
+        "name": "山楂梅梅",
+        "url": "https://wsrv.nl/?url=https://cdn.jsdelivr.net/gh/teleaki/picx-images-hosting@master/foodndrink/山楂梅梅.58hgpfw9l5.jpg"
+      },
+      {
+        "name": "糯香柠檬茶",
+        "url": "https://wsrv.nl/?url=https://cdn.jsdelivr.net/gh/teleaki/picx-images-hosting@master/foodndrink/糯香柠檬茶.6m3zth7bm2.jpg"
       }
     ],
     "瑞幸咖啡": [
       {
         "name": "标准美式",
-        "url": "https://cdn.jsdelivr.net/gh/teleaki/picx-images-hosting@master/foodndrink/bzms.3gohsopw9r.jpg"
+        "url": "https://wsrv.nl/?url=https://cdn.jsdelivr.net/gh/teleaki/picx-images-hosting@master/foodndrink/标准美式.3gohsopw9r.jpg"
       },
       {
         "name": "生椰拿铁",
-        "url": "https://cdn.jsdelivr.net/gh/teleaki/picx-images-hosting@master/foodndrink/synt.45hrcpdfa8.jpg"
+        "url": "https://wsrv.nl/?url=https://cdn.jsdelivr.net/gh/teleaki/picx-images-hosting@master/foodndrink/生椰拿铁.45hrcpdfa8.jpg"
+      },
+      {
+        "name": "焦糖玛奇朵",
+        "url": "https://wsrv.nl/?url=https://cdn.jsdelivr.net/gh/teleaki/picx-images-hosting@master/foodndrink/焦糖玛奇朵.1hsb47ip3s.jpg"
+      },
+      {
+        "name": "卡布奇诺",
+        "url": "https://wsrv.nl/?url=https://cdn.jsdelivr.net/gh/teleaki/picx-images-hosting@master/foodndrink/卡布奇诺.2dosjnsdju.jpg"
       }
     ]
   }
