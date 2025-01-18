@@ -8,7 +8,7 @@ class GettingManager:
         self._eating_path : Path = Path(__file__).parent / "resource" / "food.json"
         self._drinking_path : Path = Path(__file__).parent / "resource" / "drinks.json"
 
-    def _load_food_json(self):
+    def load_food_json(self):
         try:
             with open(self._eating_path, 'r', encoding='utf-8') as file:
                 data = json.load(file)
@@ -19,7 +19,7 @@ class GettingManager:
             return json.JSONDecodeError(f"food.json解析失败: {e}")
 
     def get_food(self):
-        data = self._load_food_json()
+        data = self.load_food_json()
 
         # 判断返回的是否为异常对象
         if isinstance(data, FileNotFoundError):
@@ -40,7 +40,7 @@ class GettingManager:
 
         return msg
 
-    def _load_drink_json(self):
+    def load_drinks_json(self):
         try:
             with open(self._drinking_path, 'r', encoding='utf-8') as file:
                 data = json.load(file)
@@ -51,7 +51,7 @@ class GettingManager:
             return json.JSONDecodeError(f"drinks.json解析失败: {e}")
 
     def get_drink(self):
-        data = self._load_drink_json()
+        data = self.load_drinks_json()
 
         # 判断返回的是否为异常对象
         if isinstance(data, FileNotFoundError):

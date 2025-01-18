@@ -16,6 +16,7 @@ config = get_plugin_config(Config)
 from nonebot import on_regex, on_command
 
 from .get_resource import eord_manager
+from .menu_manage import menu_show
 
 what2eat = on_regex(
     r"^(早上|中午|晚上|夜宵|)吃什么$",
@@ -29,6 +30,12 @@ what2drink = on_regex(
     block=True
 )
 
+menu = on_command(
+    ("菜单", "查看"),
+    priority=5,
+    block=True
+)
+
 @what2eat.handle()
 async def handle_w2e():
     food_msg = eord_manager.get_food()
@@ -38,3 +45,8 @@ async def handle_w2e():
 async def handle_w2d():
     drink_msg = eord_manager.get_drink()
     await what2drink.finish(drink_msg)
+
+@menu.handle()
+async def handle_menu():
+    menu_msg = menu_show()
+    await menu.finish(menu_msg)
