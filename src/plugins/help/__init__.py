@@ -53,7 +53,7 @@ async def handle_help(bot: Bot, event: GroupMessageEvent, state: T_State):
 
     # bot信息
     enana_info = "欢迎使用enana-bot v0.1 \n"
-    haruki_info = "haruki-cli: pjsk相关功能\nusage: 详情见 https://docs.haruki.seiunx.com \n"
+    haruki_info = "haruki-cli: pjsk相关功能\nusage: 详情见 https://docs.haruki.seiunx.com \n\n"
     # 如果没有注册的命令，提示没有功能
     help_message = "目前支持的功能有：\n\n" + haruki_info + "\n".join(function_list)
 
