@@ -38,24 +38,23 @@ async def handle_help(bot: Bot, event: GroupMessageEvent, state: T_State):
             # 插件的元数据（包括插件名称和描述）
             plugin_name = plugin.metadata.name or "未知插件"
             plugin_desc = plugin.metadata.description or "无描述"
+            plugin_usage = plugin.metadata.usage or "无使用方法"
         else:
             plugin_name = plugin.name or "未知插件"
             plugin_desc = "无描述"
+            plugin_usage = "无使用方法"
 
         # # 获取该插件注册的所有命令
         # for command in plugin.matcher:
         #     command_name = command.__name__
 
         # TODO: command name获取失败，暂时先不打印command name，默认插件名与command name一致
-        function_list.append(f"{plugin_name}: {plugin_desc}")
+        function_list.append(f"{plugin_name}: {plugin_desc}\nusage: {plugin_usage}\n")
 
     # bot信息
     enana_info = "欢迎使用enana-bot v0.1 \n"
-    haruki_info = "haruki-cli: pjsk相关功能\n"
+    haruki_info = "haruki-cli: pjsk相关功能\nusage: 详情见 https://docs.haruki.seiunx.com \n"
     # 如果没有注册的命令，提示没有功能
-    if not function_list:
-        help_message = "目前支持的功能有：\n" + haruki_info
-    else:
-        help_message = "目前支持的功能有：\n" + haruki_info + "\n".join(function_list)
+    help_message = "目前支持的功能有：\n\n" + haruki_info + "\n".join(function_list)
 
     await bot.send(event, enana_info + help_message)
