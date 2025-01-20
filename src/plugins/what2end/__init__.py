@@ -6,7 +6,7 @@ from .config import Config
 __plugin_meta__ = PluginMetadata(
     name="吃/喝什么",
     description="帮你决定吃/喝什么",
-    usage="(早上|中午|晚上|夜宵|) (吃|喝)什么，",
+    usage="(早上|中午|晚上|夜宵|) 吃什么 (早上|中午|晚上|半夜|) 喝什么",
     config=Config,
 )
 
