@@ -1,7 +1,55 @@
-from pydantic import BaseModel
-from typing import Optional, Dict, List, Tuple
+from pydantic import BaseModel, Field
+from collections import namedtuple
+from typing import List, Optional, Union
+
+from pygments.lexer import default
 
 
+### Music
+class Stats(BaseModel):
+    cnt: Optional[float] = None
+    diff: Optional[str] = None
+    fit_diff: Optional[float] = None
+    avg: Optional[float] = None
+    avg_dx: Optional[float] = None
+    std_dev: Optional[float] = None
+    dist: Optional[List[int]] = None
+    fc_dist: Optional[List[float]] = None
+
+
+Notes1 = namedtuple('Notes', ['tap', 'hold', 'slide', 'brk'])
+Notes2 = namedtuple('Notes', ['tap', 'hold', 'slide', 'touch', 'brk'])
+
+
+class Chart(BaseModel):
+    notes: Union[Notes1, Notes2]
+    charter: str = None
+
+
+class BasicInfo(BaseModel):
+    title: str
+    artist: str
+    genre: str
+    bpm: int
+    release_date: Optional[str] = ''
+    version: str = Field(alias='from')
+    is_new: bool
+
+
+class Music(BaseModel):
+    id: str
+    title: str
+    type: str
+    ds: List[float]
+    level: List[str]
+    cids: List[int]
+    charts: List[Chart]
+    basic_info: BasicInfo
+    stats: Optional[List[Optional[Stats]]]
+    diff: Optional[List[int]]
+
+
+### B50
 class ChartInfo(BaseModel):
     achievements: float
     ds: float

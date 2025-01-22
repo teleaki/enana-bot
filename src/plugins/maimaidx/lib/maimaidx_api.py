@@ -29,6 +29,14 @@ class MaiAPI:
         await session.aclose()
         return data
 
+    async def music_data(self):
+        """获取曲目数据"""
+        return await self._request('GET', self.Diving_fish + '/music_data')
+
+    async def chart_stats(self):
+        """获取单曲数据"""
+        return await self._request('GET', self.Diving_fish + '/chart_stats')
+
     async def query_user(self, project: str, *, qqid: Optional[int] = None, username: Optional[str] = None,
                          version: Optional[List[str]] = None):
         """
