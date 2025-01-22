@@ -1,4 +1,5 @@
 from nonebot.adapters.onebot.v11 import MessageSegment, Bot, Message
+from pathlib import Path
 from typing import Optional, Dict, List, Tuple, Union
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
@@ -22,7 +23,8 @@ class DrawBest:
     def draw(self) -> Image.Image:
         img = Image.new('RGB', (1760, 2000), color='white')
         draw = ImageDraw.Draw(img)
-        font = ImageFont.truetype("msyh.ttf", size=15)
+        font_path : Path = Path(__file__).parent.parent / 'msyh.ttf'
+        font = ImageFont.truetype(font_path, size=15)
 
         # 用户信息
         head_texts = [
