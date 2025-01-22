@@ -45,8 +45,8 @@ class Music(BaseModel):
     cids: List[int]
     charts: List[Chart]
     basic_info: BasicInfo
-    stats: Optional[List[Optional[Stats]]]
-    diff: Optional[List[int]]
+    stats: Optional[List[Optional[Stats]]] = None
+    diff: Optional[List[int]] = None
 
 
 ### B50
