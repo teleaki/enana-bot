@@ -73,9 +73,12 @@ class DrawBest:
                 x += 416
 
             cover_path = cover_dir / f'{info.song_id}.png'
+            cover_path_sd = cover_dir / f'{info.song_id - 10000}.png'
             # 检查文件是否存在，若不存在则使用默认的 0.png
             if cover_path.exists():
                 cover = Image.open(cover_path).resize((135, 135))
+            elif cover_path_sd.exists():
+                cover = Image.open(cover_path_sd).resize((135, 135))
             else:
                 cover = Image.open(cover_dir / '0.png').resize((135, 135))  # 使用默认的 0.png
             version = Image.open(maimai_dir / f'{info.type.upper()}.png').resize((55, 19))
@@ -140,7 +143,7 @@ class DrawBest:
                       (255, 255, 255, 255))
 
         self.whiledraw(self.sdBest, yh_font, 430)
-        self.whiledraw(self.dxBest, yh_font, 1620)
+        self.whiledraw(self.dxBest, yh_font, 1750)
 
         return self._im.resize((1760, 2000))
 
