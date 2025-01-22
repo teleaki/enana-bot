@@ -72,7 +72,12 @@ class DrawBest:
             else:
                 x += 416
 
-            cover = Image.open(cover_dir / f'{info.song_id}.png').resize((135, 135))
+            cover_path = cover_dir / f'{info.song_id}.png'
+            # 检查文件是否存在，若不存在则使用默认的 0.png
+            if cover_path.exists():
+                cover = Image.open(cover_path).resize((135, 135))
+            else:
+                cover = Image.open(cover_dir / '0.png').resize((135, 135))  # 使用默认的 0.png
             version = Image.open(maimai_dir / f'{info.type.upper()}.png').resize((55, 19))
             if info.rate.islower():
                 rate = Image.open(maimai_dir / f'UI_TTR_Rank_{score_Rank_l[info.rate]}.png').resize((95, 44))
