@@ -5,8 +5,8 @@ from .config import Config
 
 __plugin_meta__ = PluginMetadata(
     name="maimaidx",
-    description="",
-    usage="",
+    description="舞萌dx相关工具",
+    usage="b50",
     config=Config,
 )
 
