@@ -105,8 +105,7 @@ class DrawBest:
 
     def draw(self) -> Image.Image:
         draw = ImageDraw.Draw(self._im)
-        font_path : Path = Path(__file__).parent.parent / 'msyh.ttf'
-        yh_font = DrawText(draw, font_path)
+        yh_font = DrawText(draw, YAHEI)
 
         dx_rating = Image.open(maimai_dir / self._findRaPic()).resize((300, 59))
         Name = Image.open(maimai_dir / 'Name.png')
@@ -188,13 +187,6 @@ def compute_ra(ds: float, achievement: float) -> int:
         base_ra = 21.6
 
     return math.floor(ds * (min(100.5, achievement) / 100) * base_ra)
-
-def image_to_base64(img: Image.Image, format='PNG') -> str:
-    output_buffer = BytesIO()
-    img.save(output_buffer, format)
-    byte_data = output_buffer.getvalue()
-    base64_str = base64.b64encode(byte_data).decode()
-    return 'base64://' + base64_str
 
 async def generate_b50(qqid: Optional[int] = None, username: Optional[str] = None) -> MessageSegment:
     try:
