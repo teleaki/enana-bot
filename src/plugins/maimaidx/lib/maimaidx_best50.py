@@ -211,8 +211,6 @@ async def generate_b50(qqid: Optional[int] = None, username: Optional[str] = Non
         msg = MessageSegment.text(str(e))
     except UserDisabledQueryError as e:
         msg = MessageSegment.text(str(e))
-    except OSError as e:
-        msg = MessageSegment.text(f"Error occurred: {e}")
     except ValueError as e:
         msg = MessageSegment.text(f"Error occurred: {e}")
     except Exception as e:
