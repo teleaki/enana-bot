@@ -60,9 +60,9 @@ class DrawBest:
             num = f'{self.addRating + 1:02d}'
         return f'UI_DNM_DaniPlate_{num}.png'
 
-    def whiledraw(self, data: List[ChartInfo], font: DrawText) -> None:
+    def whiledraw(self, data: List[ChartInfo], font: DrawText, y: int) -> None:
         # y为第一排纵向坐标，dy为各排间距
-        x = 70; y = 430; dy = 170
+        x = 70;  dy = 170
         TEXT_COLOR = [(255, 255, 255, 255), (255, 255, 255, 255), (255, 255, 255, 255), (255, 255, 255, 255), (138, 0, 226, 255)]
 
         for num, info in enumerate(data):
@@ -139,8 +139,8 @@ class DrawBest:
         yh_font.draw(847, 295, 28, f'B35: {sdrating} + B15: {dxrating} = {self.Rating}', (0, 0, 0, 255), 'mm', 3,
                       (255, 255, 255, 255))
 
-        self.whiledraw(self.sdBest, yh_font)
-        self.whiledraw(self.dxBest, yh_font)
+        self.whiledraw(self.sdBest, yh_font, 430)
+        self.whiledraw(self.dxBest, yh_font, 1620)
 
         return self._im.resize((1760, 2000))
 
