@@ -90,7 +90,7 @@ class DrawBest:
                 fs = Image.open(maimai_dir / f'UI_MSS_MBase_Icon_{fsl[info.fs]}.png').resize((45, 45))
                 self._im.alpha_composite(fs, (x + 291, y + 99))
 
-            dxscore = sum(mai.total_list.by_id(str(info.song_id)).charts[info.level_index].notes) * 3
+            dxscore = sum(mai.total_list.search_by_id(str(info.song_id)).charts[info.level_index].notes) * 3
             dxnum = dxScore(info.dxScore / dxscore * 100)
             if dxnum:
                 self._im.alpha_composite(Image.open(maimai_dir / f'UI_GAM_Gauge_DXScoreIcon_0{dxnum}.png'), (x + 335, y + 102))
