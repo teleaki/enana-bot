@@ -1,16 +1,22 @@
 from nonebot.adapters.onebot.v11 import MessageSegment, Bot, Message
-from pathlib import Path
-from typing import Optional, Dict, List, Tuple, Union
-from io import BytesIO
-from PIL import Image, ImageDraw, ImageFont
 import math, base64
 
 from .maimaidx_api import maiapi
+from .maimaidx_res import *
+from .maimaidx_image import *
 from .maimaidx_error import *
 from .maimaidx_model import *
+from .maimaidx_music import mai
 
 
 class DrawBest:
+    basic = Image.open(maimai_dir / 'b50_score_basic.png')
+    advanced = Image.open(maimai_dir / 'b50_score_advanced.png')
+    expert = Image.open(maimai_dir / 'b50_score_expert.png')
+    master = Image.open(maimai_dir / 'b50_score_master.png')
+    remaster = Image.open(maimai_dir / 'b50_score_remaster.png')
+    _diff = [basic, advanced, expert, master, remaster]
+
     def __init__(self, user_info: UserInfo, qqid: Optional[Union[int, str]] = None):
         self.nickname = user_info.nickname
         self.plate = user_info.plate
@@ -20,63 +26,137 @@ class DrawBest:
         self.dxBest = user_info.charts.dx
         self.qqid = qqid
 
+        self._im = Image.new('RGB', (2200, 2500), color='white')
+
+    def _findRaPic(self) -> str:
+        if self.Rating < 1000:
+            num = '01'
+        elif self.Rating < 2000:
+            num = '02'
+        elif self.Rating < 4000:
+            num = '03'
+        elif self.Rating < 7000:
+            num = '04'
+        elif self.Rating < 10000:
+            num = '05'
+        elif self.Rating < 12000:
+            num = '06'
+        elif self.Rating < 13000:
+            num = '07'
+        elif self.Rating < 14000:
+            num = '08'
+        elif self.Rating < 14500:
+            num = '09'
+        elif self.Rating < 15000:
+            num = '10'
+        else:
+            num = '11'
+        return f'UI_CMN_DXRating_{num}.png'
+
+    def _findMatchLevel(self) -> str:
+        if self.addRating <= 10:
+            num = f'{self.addRating:02d}'
+        else:
+            num = f'{self.addRating + 1:02d}'
+        return f'UI_DNM_DaniPlate_{num}.png'
+
+    def whiledraw(self, data: List[ChartInfo], font: DrawText) -> None:
+        # y为第一排纵向坐标，dy为各排间距
+        x = 70; y = 430; dy = 170
+        TEXT_COLOR = [(255, 255, 255, 255), (255, 255, 255, 255), (255, 255, 255, 255), (255, 255, 255, 255), (138, 0, 226, 255)]
+
+        for num, info in enumerate(data):
+            if num % 5 == 0:
+                x = 70
+                y += dy if num != 0 else 0
+            else:
+                x += 416
+
+            cover = Image.open(cover_dir / f'{info.song_id}.png').resize((135, 135))
+            version = Image.open(maimai_dir / f'{info.type.upper()}.png').resize((55, 19))
+            if info.rate.islower():
+                rate = Image.open(maimai_dir / f'UI_TTR_Rank_{score_Rank_l[info.rate]}.png').resize((95, 44))
+            else:
+                rate = Image.open(maimai_dir / f'UI_TTR_Rank_{info.rate}.png').resize((95, 44))
+
+            self._im.alpha_composite(self._diff[info.level_index], (x, y))
+            self._im.alpha_composite(cover, (x + 5, y + 5))
+            self._im.alpha_composite(version, (x + 80, y + 141))
+            self._im.alpha_composite(rate, (x + 150, y + 98))
+            if info.fc:
+                fc = Image.open(maimai_dir / f'UI_MSS_MBase_Icon_{fcl[info.fc]}.png').resize((45, 45))
+                self._im.alpha_composite(fc, (x + 246, y + 99))
+            if info.fs:
+                fs = Image.open(maimai_dir / f'UI_MSS_MBase_Icon_{fsl[info.fs]}.png').resize((45, 45))
+                self._im.alpha_composite(fs, (x + 291, y + 99))
+
+            dxscore = sum(mai.total_list.by_id(str(info.song_id)).charts[info.level_index].notes) * 3
+            dxnum = dxScore(info.dxScore / dxscore * 100)
+            if dxnum:
+                self._im.alpha_composite(Image.open(maimai_dir / f'UI_GAM_Gauge_DXScoreIcon_0{dxnum}.png'), (x + 335, y + 102))
+
+            font.draw(x + 40, y + 148, 20, info.song_id, TEXT_COLOR[info.level_index], anchor='mm')
+            title = info.title
+            font.draw(x + 155, y + 20, 20, title, TEXT_COLOR[info.level_index], anchor='lm')
+            font.draw(x + 155, y + 50, 32, f'{info.achievements:.4f}%', TEXT_COLOR[info.level_index], anchor='lm')
+            font.draw(x + 338, y + 82, 20, f'{info.dxScore}/{dxscore}', TEXT_COLOR[info.level_index], anchor='mm')
+            font.draw(x + 155, y + 82, 22, f'{info.ds} -> {info.ra}', TEXT_COLOR[info.level_index], anchor='lm')
+
+
     def draw(self) -> Image.Image:
-        img = Image.new('RGB', (1000, 3000), color='white')
-        draw = ImageDraw.Draw(img)
+        draw = ImageDraw.Draw(self._im)
         font_path : Path = Path(__file__).parent.parent / 'msyh.ttf'
-        font = ImageFont.truetype(font_path, size=15)
+        yh_font = DrawText(draw, font_path)
 
-        # 用户信息
-        head_texts = [
-            f'nickname: {self.nickname}',
-            f'plate: {self.plate}',
-            f'Rating: {self.Rating}',
-        ]
-        y = 30
-        for head_text in head_texts:
-            bbox = draw.textbbox((0, 0), head_text, font=font)
-            text_width = bbox[2] - bbox[0]  # 右边界 - 左边界
-            text_height = bbox[3] - bbox[1]  # 下边界 - 上边界
+        dx_rating = Image.open(maimai_dir / self._findRaPic()).resize((300, 59))
+        Name = Image.open(maimai_dir / 'Name.png')
+        MatchLevel = Image.open(maimai_dir / self._findMatchLevel()).resize((134, 55))
+        # ClassLevel = Image.open(maimai_dir / 'UI_FBR_Class_00.png').resize((144, 87))
+        rating = Image.open(maimai_dir / 'UI_CMN_Shougou_Rainbow.png').resize((454, 50))
+        icon = Image.open(maimai_dir / 'UI_Icon_309503.png').resize((214, 214))
+        if self.plate:
+            plate = Image.open(plate_dir / f'{self.plate}.png').resize((1420, 230))
+        else:
+            plate = Image.open(maimai_dir / 'UI_Plate_300501.png').resize((1420, 230))
 
-            draw.text((10, y), head_text, font=font, fill="black")
+        self._im.alpha_composite(plate, (390, 100))
+        self._im.alpha_composite(icon, (398, 108))
+        self._im.alpha_composite(dx_rating, (620, 122))
+        Rating = f'{self.Rating:05d}'
+        for n, i in enumerate(Rating):
+            self._im.alpha_composite(Image.open(maimai_dir / f'UI_NUM_Drating_{i}.png').resize((28, 34)), (760 + 23 * n, 137))
+        self._im.alpha_composite(Name, (620, 200))
+        self._im.alpha_composite(MatchLevel, (935, 205))
+        # self._im.alpha_composite(ClassLevel, (926, 105))
+        self._im.alpha_composite(rating, (620, 275))
 
-            y += text_height + 10
+        yh_font.draw(635, 235, 40, self.nickname, (0, 0, 0, 255), 'lm')
+        sdrating, dxrating = sum([_.ra for _ in self.sdBest]), sum([_.ra for _ in self.dxBest])
+        yh_font.draw(847, 295, 28, f'B35: {sdrating} + B15: {dxrating} = {self.Rating}', (0, 0, 0, 255), 'mm', 3,
+                      (255, 255, 255, 255))
 
-        # b35信息
-        b35_texts = []
-        for _m in self.sdBest:
-            b35_texts.append(f'id{_m.song_id}: {_m.title}({_m.type}) [{_m.level_label}]{_m.ds}\n'
-                             f'{_m.achievements:.4f}')
-        y = 150
-        draw.text((10, y), 'b35:', font=font, fill="black")
-        y = 180
-        for b35_text in b35_texts:
-            bbox = draw.textbbox((0, 0), b35_text, font=font)
-            text_width = bbox[2] - bbox[0]  # 右边界 - 左边界
-            text_height = bbox[3] - bbox[1]  # 下边界 - 上边界
+        self.whiledraw(self.sdBest, yh_font)
+        self.whiledraw(self.dxBest, yh_font)
 
-            draw.text((10, y), b35_text, font=font, fill="black")
+        return self._im.resize((1760, 2000))
 
-            y += text_height + 10
-
-        # b15信息
-        b15_texts = []
-        for _m in self.dxBest:
-            b15_texts.append(f'id{_m.song_id}: {_m.title}({_m.type}) [{_m.level_label}]{_m.ds}\n'
-                             f'{_m.achievements:.4f}')
-        y = 1800
-        draw.text((10, y), 'b15:', font=font, fill="black")
-        y = 1830
-        for b15_text in b15_texts:
-            bbox = draw.textbbox((0, 0), b15_text, font=font)
-            text_width = bbox[2] - bbox[0]
-            text_height = bbox[3] - bbox[1]
-
-            draw.text((10, y), b15_text, font=font, fill="black")
-
-            y += text_height + 10
-
-        return img
+def dxScore(dx: int) -> int:
+    """
+    返回值为 `Tuple`： `(星星种类，数量)`
+    """
+    if dx <= 85:
+        result = 0
+    elif dx <= 90:
+        result = 1
+    elif dx <= 93:
+        result = 2
+    elif dx <= 95:
+        result = 3
+    elif dx <= 97:
+        result = 4
+    else:
+        result = 5
+    return result
 
 def compute_ra(ds: float, achievement: float) -> int:
     base_ra = 22.4
