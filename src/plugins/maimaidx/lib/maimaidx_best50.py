@@ -26,7 +26,7 @@ class DrawBest:
         self.dxBest = user_info.charts.dx
         self.qqid = qqid
 
-        self._im = Image.new('RGB', (2200, 2500), color='white')
+        self._im = Image.new('RGBA', (2200, 2500), color='white')
 
     def _findRaPic(self) -> str:
         if self.Rating < 1000:
