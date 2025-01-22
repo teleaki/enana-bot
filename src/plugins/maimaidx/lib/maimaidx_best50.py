@@ -21,7 +21,7 @@ class DrawBest:
         self.qqid = qqid
 
     def draw(self) -> Image.Image:
-        img = Image.new('RGB', (1760, 2000), color='white')
+        img = Image.new('RGB', (1000, 3000), color='white')
         draw = ImageDraw.Draw(img)
         font_path : Path = Path(__file__).parent.parent / 'msyh.ttf'
         font = ImageFont.truetype(font_path, size=15)
@@ -64,9 +64,9 @@ class DrawBest:
         for _m in self.dxBest:
             b15_texts.append(f'id{_m.song_id}: {_m.title}({_m.type}) [{_m.level_label}]{_m.ds}\n'
                              f'{_m.achievements:.4f}')
-        y = 1300
+        y = 1800
         draw.text((10, y), 'b15:', font=font, fill="black")
-        y = 1330
+        y = 1830
         for b15_text in b15_texts:
             bbox = draw.textbbox((0, 0), b15_text, font=font)
             text_width = bbox[2] - bbox[0]
