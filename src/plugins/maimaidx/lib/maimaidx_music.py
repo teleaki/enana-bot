@@ -2,6 +2,8 @@ import json, aiofiles
 from pathlib import Path
 from typing import Any, Union
 
+from PIL import Image
+
 from .maimaidx_res import *
 from .maimaidx_error import *
 from .maimaidx_model import *
@@ -9,7 +11,6 @@ from .maimaidx_api import maiapi
 
 
 class MusicList(List[Music]):
-
     def search_by_id(self, music_id: Union[str, int]) -> Optional[Music]:
         for music in self:
             if music.id == str(music_id):
@@ -21,6 +22,27 @@ class MusicList(List[Music]):
             if music.title == music_title:
                 return music
         return None
+
+class AliasList(List[Alias]):
+    def alias2id_title(self, music_alias: str) -> (str, str):
+        for alias in self:
+            if music_alias in alias.aliases:
+                return alias.id, alias.title
+        return None, None
+
+    def id_title2alias(self, music_id: Union[str, int] = None, music_title: str = None) -> List[str]:
+        if music_id:
+            for alias in self:
+                if alias.id == str(music_id):
+                    return alias.aliases
+            return []
+        elif music_title:
+            for alias in self:
+                if alias.title == music_title:
+                    return alias.aliases
+            return []
+        else:
+            return []
 
 
 async def openfile(file: Path) -> Union[dict, list]:
@@ -35,10 +57,23 @@ async def writefile(file: Path, data: Any) -> bool:
     return True
 
 
+def get_music_cover(music_id: Union[str, int]) -> Image.Image:
+    cover_path = cover_dir / f'{int(music_id)}.png'
+    cover_path_sd = cover_dir / f'{int(music_id) - 10000}.png'
+    # 检查文件是否存在，若不存在则使用默认的 0.png
+    if cover_path.exists():
+        cover = Image.open(cover_path).resize((135, 135))
+    elif cover_path_sd.exists():
+        cover = Image.open(cover_path_sd).resize((135, 135))
+    else:
+        cover = Image.open(cover_dir / '0.png').resize((135, 135))  # 使用默认的 0.png
+    return cover
+
+
 class MaiMusic:
 
     total_list: MusicList
-    # total_alias_list: AliasList
+    total_alias_list: AliasList
 
     def __init__(self) -> None:
         """封装所有曲目信息以及猜歌数据，便于更新"""
@@ -80,6 +115,23 @@ class MaiMusic:
 
     async def get_music_alias(self) -> None:
         """获取所有曲目别名"""
-        # self.total_alias_list = await get_music_alias_list()
+        try:
+            try:
+                alias_data = await maiapi.music_alias()
+                await writefile(alias_file, alias_data)
+            except Exception:
+                # 从diving-fish获取maimaiDX曲目数据失败,切换至本地暂存文件
+                alias_data = await openfile(alias_file)
+        except FileNotFoundError:
+            # 未找到文件，请自行使用浏览器访问 "https://download.fanyu.site/maimai/alias.json" 将内容保存为 "alias_data.json" 存放在 "static" 目录下并重启bot
+            raise
+
+        # 将字典重构为Alias
+        alias_rebuild: List[Alias] = []
+        for key, values in alias_data.items():
+            title = self.total_list.search_by_id(key).title
+            alias_rebuild.append(Alias(id=key, title=title, aliases=values))
+
+        self.total_alias_list = AliasList(alias_rebuild)
 
 mai = MaiMusic()

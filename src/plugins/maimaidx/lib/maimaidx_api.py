@@ -9,6 +9,7 @@ import httpx
 class MaiAPI:
     def __init__(self):
         self.Diving_fish = 'https://www.diving-fish.com/api/maimaidxprober'
+        self.Xray_alias = 'https://download.fanyu.site/maimai/alias.json'
 
     async def _request(self, method: str, url: str, **kwargs) -> Any:
         session = httpx.AsyncClient(timeout=30)
@@ -37,11 +38,14 @@ class MaiAPI:
         """获取单曲数据"""
         return await self._request('GET', self.Diving_fish + '/chart_stats')
 
+    async def music_alias(self):
+        """获取别名数据"""
+        return await self._request('GET', self.Xray_alias)
+
     async def query_user(self, project: str, *, qqid: Optional[int] = None, username: Optional[str] = None,
                          version: Optional[List[str]] = None):
         """
         请求用户数据
-
         - `project`: 查询的功能
             - `player`: 查询用户b50
             - `plate`: 按版本查询用户游玩成绩

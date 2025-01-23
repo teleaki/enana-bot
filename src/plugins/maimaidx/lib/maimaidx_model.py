@@ -49,6 +49,12 @@ class Music(BaseModel):
     diff: Optional[List[int]] = None
 
 
+class Alias(BaseModel):
+    id: str
+    title: str
+    aliases: List[str]
+
+
 ### B50
 class ChartInfo(BaseModel):
     achievements: float

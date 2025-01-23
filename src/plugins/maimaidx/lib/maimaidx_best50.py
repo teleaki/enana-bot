@@ -6,7 +6,7 @@ from .maimaidx_res import *
 from .maimaidx_image import *
 from .maimaidx_error import *
 from .maimaidx_model import *
-from .maimaidx_music import mai
+from .maimaidx_music import mai, get_music_cover
 
 
 class DrawBest:
@@ -72,15 +72,7 @@ class DrawBest:
             else:
                 x += 416
 
-            cover_path = cover_dir / f'{info.song_id}.png'
-            cover_path_sd = cover_dir / f'{info.song_id - 10000}.png'
-            # 检查文件是否存在，若不存在则使用默认的 0.png
-            if cover_path.exists():
-                cover = Image.open(cover_path).resize((135, 135))
-            elif cover_path_sd.exists():
-                cover = Image.open(cover_path_sd).resize((135, 135))
-            else:
-                cover = Image.open(cover_dir / '0.png').resize((135, 135))  # 使用默认的 0.png
+            cover = get_music_cover(info.song_id)
             version = Image.open(maimai_dir / f'{info.type.upper()}.png').resize((55, 19))
             if info.rate.islower():
                 rate = Image.open(maimai_dir / f'UI_TTR_Rank_{score_Rank_l[info.rate]}.png').resize((95, 44))

@@ -24,7 +24,7 @@ driver = get_driver()
 @driver.on_startup
 async def get_data():
     await mai.get_music_list()
-    # await mai.get_music_alias()
+    await mai.get_music_alias()
 
 
 b50 = on_command(
