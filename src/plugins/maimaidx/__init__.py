@@ -1,5 +1,3 @@
-import asyncio
-
 from nonebot import get_plugin_config, get_driver
 from nonebot.plugin import PluginMetadata
 
@@ -19,7 +17,7 @@ from nonebot.adapters.onebot.v11 import Bot, Message, Event
 from nonebot.params import CommandArg
 
 from .lib.maimaidx_best50 import *
-from .lib.maimaidx_info import search_song
+from .lib.maimaidx_info import *
 
 
 driver = get_driver()
