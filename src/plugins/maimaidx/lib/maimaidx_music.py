@@ -24,25 +24,20 @@ class MusicList(List[Music]):
         return None
 
 class AliasList(List[Alias]):
-    def alias2id_title(self, music_alias: str) -> (str, str):
+    def alias2id(self, music_alias: str) -> Optional[str]:
         for alias in self:
             if music_alias in alias.aliases:
-                return alias.id, alias.title
-        return None, None
+                return alias.id
+        return None
 
-    def id_title2alias(self, music_id: Union[str, int] = None, music_title: str = None) -> List[str]:
+    def id2alias(self, music_id: Union[str, int] = None, music_title: str = None) -> Optional[List[str]]:
         if music_id:
             for alias in self:
                 if alias.id == str(music_id):
                     return alias.aliases
-            return []
-        elif music_title:
-            for alias in self:
-                if alias.title == music_title:
-                    return alias.aliases
-            return []
+            return None
         else:
-            return []
+            return None
 
 
 async def openfile(file: Path) -> Union[dict, list]:
@@ -129,8 +124,7 @@ class MaiMusic:
         # 将字典重构为Alias
         alias_rebuild: List[Alias] = []
         for key, values in alias_data.items():
-            title = self.total_list.search_by_id(key).title
-            alias_rebuild.append(Alias(id=key, title=title, aliases=values))
+            alias_rebuild.append(Alias(id=key, aliases=values))
 
         self.total_alias_list = AliasList(alias_rebuild)
 

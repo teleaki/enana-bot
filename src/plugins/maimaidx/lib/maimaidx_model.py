@@ -51,7 +51,6 @@ class Music(BaseModel):
 
 class Alias(BaseModel):
     id: str
-    title: str
     aliases: List[str]
 
 
