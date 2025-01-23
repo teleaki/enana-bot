@@ -1,3 +1,5 @@
+import asyncio
+
 from nonebot import get_plugin_config, get_driver
 from nonebot.plugin import PluginMetadata
 
@@ -23,8 +25,8 @@ driver = get_driver()
 
 @driver.on_startup
 async def get_data():
-    await mai.get_music_list()
-    await mai.get_music_alias()
+    asyncio.run(mai.get_music_list())
+    asyncio.run(mai.get_music_alias())
 
 
 b50 = on_command(
