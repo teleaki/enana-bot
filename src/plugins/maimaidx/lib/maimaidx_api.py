@@ -27,6 +27,16 @@ class MaiAPI:
             else:
                 raise UnknownError
 
+        if self.Xray_alias in url:
+            if res.status_code == 200:
+                data = res.json()
+            elif res.status_code == 400:
+                raise UserNotFoundError
+            elif res.status_code == 403:
+                raise UserDisabledQueryError
+            else:
+                raise UnknownError
+
         await session.aclose()
         return data
 
