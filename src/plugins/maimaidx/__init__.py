@@ -46,7 +46,7 @@ async def handle_b50(bot: Bot, event: Event, args: Message = CommandArg()):
 
 minfo = on_command(
     "查歌",
-    aliases={'id'},
+    aliases={'id', 'm查歌'},
     priority=3,
     block=True
 )
