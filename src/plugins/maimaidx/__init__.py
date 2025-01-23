@@ -19,6 +19,7 @@ from nonebot.adapters.onebot.v11 import Bot, Message, Event
 from nonebot.params import CommandArg
 
 from .lib.maimaidx_best50 import *
+from .lib.maimaidx_info import search_song
 
 
 driver = get_driver()
@@ -44,3 +45,18 @@ async def handle_b50(bot: Bot, event: Event, args: Message = CommandArg()):
         b50_msg = await generate_b50(qqid=qqid)
 
     await b50.finish(Message(b50_msg))
+
+minfo = on_command(
+    "查歌",
+    priority=3,
+    block=True
+)
+
+@minfo.handle()
+async def handle_minfo(bot: Bot, event: Event, args: Message = CommandArg()):
+    if tar := args.extract_plain_text():
+        minfo_msg = search_song(tar)
+    else:
+        minfo_msg = Message('请输入内容')
+
+    await minfo.finish(minfo_msg)
