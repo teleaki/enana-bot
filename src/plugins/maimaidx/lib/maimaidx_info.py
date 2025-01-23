@@ -10,14 +10,13 @@ from .maimaidx_res import *
 
 def song_info_tamp(music: Music) -> Message:
     cover = get_music_cover(music.id)
-    from_value = getattr(music.basic_info, 'from', '未知版本')
     ds_info = '/'.join(map(str, music.ds))
     msg = Message([
         f'{music.id}. {music.title} ({music.type})\n',
         MessageSegment.image(image_to_base64(cover)),
         f'艺术家：{music.basic_info.artist}\n',
         f'分类：{music.basic_info.genre}\n',
-        f'版本：{from_value}\n',
+        f'版本：{music.basic_info.version}\n',
         f'BPM：{music.basic_info.bpm}\n',
         f'定数：{ds_info}\n',
     ])
