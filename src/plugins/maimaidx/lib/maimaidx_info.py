@@ -11,7 +11,7 @@ from .maimaidx_res import *
 
 
 # 比较相似度
-def is_similar(input_string, string_list, threshold=0.3):
+def is_similar(input_string, string_list, threshold=0.6):
     for string in string_list:
         similarity = SequenceMatcher(None, input_string, string).ratio()
         if similarity > threshold:
