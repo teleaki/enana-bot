@@ -102,7 +102,7 @@ def song_info_draw(music: Music) -> Image.Image:
     yh_font.draw(280, 1350, 30, f'Re:Master', (255, 255, 255, 255), 'mm')
     if len(music.level) > 4:
         yh_font.draw(280, 1380, 30, f'{music.level[4]}({music.ds[4]})', (255, 255, 255, 255), 'mm')
-        yh_font.draw(280, 1410, 30, f'{music.charts[4].charter}', (255, 255, 255, 255), 'mm')
+        yh_font.draw(280, 1410, 15, f'{music.charts[4].charter}', (255, 255, 255, 255), 'mm')
         draw_stats_info(yh_font, music, 135 * 4, 4)
 
     return img
