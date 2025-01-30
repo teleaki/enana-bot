@@ -18,12 +18,22 @@ def is_similar(input_string, string_list, threshold=0.6):
             return True
     return False
 
+
+def extract_fit_diff_from_music(music: Music) -> str:
+    # 如果 stats 为空，则返回空字符串
+    if not music.stats:
+        return ""
+    # 提取所有非空的 fit_diff 值
+    fit_diff_values = [
+        f"{stats.fit_diff:.3f}" for stats in music.stats if stats and stats.fit_diff is not None
+    ]
+    # 返回格式化后的字符串，值之间用 "/" 隔开
+    return "/".join(fit_diff_values)
+
 def song_info_tamp(music: Music) -> Message:
     cover = get_music_cover(music.id)
     ds_info = '/'.join(map(str, music.ds))
-    fit_ds_info = "/".join([
-        f"{item['fit_diff']:.3f}" for item in music.stats if "fit_diff" in item
-    ])
+    fit_ds_info = extract_fit_diff_from_music(music)
     msg = Message([
         f'{music.id}. {music.title} ({music.type})\n',
         MessageSegment.image(image_to_base64(cover)),
