@@ -28,11 +28,11 @@ def extract_fit_diff_from_music(music: Music) -> str:
         f"{stats.fit_diff:.3f}" for stats in music.stats if stats and stats.fit_diff is not None
     ]
     # 返回格式化后的字符串，值之间用 "/" 隔开
-    return "/".join(fit_diff_values)
+    return " / ".join(fit_diff_values)
 
 def song_info_tamp(music: Music) -> Message:
     cover = get_music_cover(music.id)
-    ds_info = '/'.join(map(str, music.ds))
+    ds_info = ' / '.join(map(str, music.ds))
     fit_ds_info = extract_fit_diff_from_music(music)
     msg = Message([
         f'{music.id}. {music.title} ({music.type})\n',
