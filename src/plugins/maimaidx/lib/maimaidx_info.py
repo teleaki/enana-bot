@@ -1,3 +1,5 @@
+from difflib import SequenceMatcher
+
 from nonebot.adapters.onebot.v11 import Event, Message, MessageSegment
 
 from .maimaidx_music import mai, get_music_cover
@@ -7,6 +9,14 @@ from .maimaidx_image import *
 from .maimaidx_error import *
 from .maimaidx_res import *
 
+
+# 比较相似度
+def is_similar(input_string, string_list, threshold=0.3):
+    for string in string_list:
+        similarity = SequenceMatcher(None, input_string, string).ratio()
+        if similarity > threshold:
+            return True
+    return False
 
 def song_info_tamp(music: Music) -> Message:
     cover = get_music_cover(music.id)
@@ -53,7 +63,7 @@ def search_song(arg: Union[int, str]) -> Message:
 
     # 再找别名
     for music in mai.total_alias_list:
-        if str(arg) in music.aliases:
+        if is_similar(str(arg), music.aliases):
             targets.append(mai.total_list.search_by_id(music.id))
     if targets:
         msg = send_song(targets)

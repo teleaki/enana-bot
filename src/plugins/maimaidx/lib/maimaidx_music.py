@@ -30,7 +30,7 @@ class AliasList(List[Alias]):
                 return alias.id
         return None
 
-    def id2alias(self, music_id: Union[str, int] = None, music_title: str = None) -> Optional[List[str]]:
+    def id2alias(self, music_id: Union[str, int] = None) -> Optional[List[str]]:
         if music_id:
             for alias in self:
                 if alias.id == str(music_id):
