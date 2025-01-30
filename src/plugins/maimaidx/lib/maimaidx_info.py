@@ -21,6 +21,9 @@ def is_similar(input_string, string_list, threshold=0.6):
 def song_info_tamp(music: Music) -> Message:
     cover = get_music_cover(music.id)
     ds_info = '/'.join(map(str, music.ds))
+    fit_ds_info = "/".join([
+        f"{item['fit_diff']:.3f}" for item in music.stats if "fit_diff" in item
+    ])
     msg = Message([
         f'{music.id}. {music.title} ({music.type})\n',
         MessageSegment.image(image_to_base64(cover)),
@@ -29,6 +32,7 @@ def song_info_tamp(music: Music) -> Message:
         f'版本：{music.basic_info.version}\n',
         f'BPM：{music.basic_info.bpm}\n',
         f'定数：{ds_info}\n',
+        f'拟合定数：{fit_ds_info}\n'
     ])
     return msg
 
@@ -65,6 +69,7 @@ def search_song(arg: Union[int, str]) -> Message:
     for music in mai.total_alias_list:
         if is_similar(str(arg), music.aliases):
             targets.append(mai.total_list.search_by_id(music.id))
+
     if targets:
         msg = send_song(targets)
         return msg
