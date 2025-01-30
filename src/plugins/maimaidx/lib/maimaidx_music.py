@@ -58,13 +58,13 @@ def get_music_cover(music_id: Union[str, int]) -> Image.Image:
     cover_path_dx = cover_dir / f'{int(music_id) + 10000}.png'
     # 检查文件是否存在，若不存在则使用默认的 0.png
     if cover_path.exists():
-        cover = Image.open(cover_path).resize((135, 135))
+        cover = Image.open(cover_path)
     elif cover_path_sd.exists():
-        cover = Image.open(cover_path_sd).resize((135, 135))
+        cover = Image.open(cover_path_sd)
     elif cover_path_dx.exists():
-        cover = Image.open(cover_path_dx).resize((135, 135))
+        cover = Image.open(cover_path_dx)
     else:
-        cover = Image.open(cover_dir / '0.png').resize((135, 135))  # 使用默认的 0.png
+        cover = Image.open(cover_dir / '0.png')  # 使用默认的 0.png
     return cover
 
 
