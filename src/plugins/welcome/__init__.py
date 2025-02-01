@@ -21,7 +21,7 @@ welcome = on_notice(
 )
 
 @welcome.handle()
-async def welcome(bot: Bot, event: GroupIncreaseNoticeEvent):
+async def welcome_handle(bot: Bot, event: GroupIncreaseNoticeEvent):
     user = event.get_user_id()
     at_ = f"欢迎[CQ:at,qq={user}]!\n"
     msg = at_ + "又有新大佬进群了，群地位-1"
