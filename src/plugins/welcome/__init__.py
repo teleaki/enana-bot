@@ -24,5 +24,5 @@ welcome = on_notice(
 async def welcome_handle(bot: Bot, event: GroupIncreaseNoticeEvent):
     user = event.get_user_id()
     at_ = MessageSegment.at(user_id=user)
-    msg = "欢迎" + at_ + "!" + "又有新大佬进群了，群地位-1"
+    msg = "欢迎" + at_ + "!\n" + "又有新大佬进群了，群地位-1"
     await welcome.finish(msg)
