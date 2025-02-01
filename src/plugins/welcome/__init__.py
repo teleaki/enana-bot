@@ -13,7 +13,7 @@ __plugin_meta__ = PluginMetadata(
 config = get_plugin_config(Config)
 
 from nonebot import on_notice
-from nonebot.adapters.onebot.v11 import Bot, Message, GroupIncreaseNoticeEvent
+from nonebot.adapters.onebot.v11 import Bot, MessageSegment, GroupIncreaseNoticeEvent
 
 welcome = on_notice(
     priority=10,
@@ -23,6 +23,6 @@ welcome = on_notice(
 @welcome.handle()
 async def welcome_handle(bot: Bot, event: GroupIncreaseNoticeEvent):
     user = event.get_user_id()
-    at_ = f"欢迎[CQ:at,qq={user}]!\n"
-    msg = at_ + "又有新大佬进群了，群地位-1"
+    at_ = MessageSegment.at(user_id=user)
+    msg = "欢迎" + at_ + "!" + "又有新大佬进群了，群地位-1"
     await welcome.finish(msg)
