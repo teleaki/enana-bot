@@ -18,7 +18,7 @@ class DrawCplt:
     _diff = [basic, advanced, expert, master, remaster]
 
     def __init__(self):
-        self._im = Image.new('RGBA', (6120, 9000), color='white')
+        self._im = Image.new('RGBA', (6120, 11000), color='white')
 
     def whiledraw(self, data: List[CpltInfo], font: DrawText, y:int) -> None:
         dy = 410
@@ -84,6 +84,8 @@ async def generate_level_cplt(level: str, qqid: Optional[int] = None, username: 
         for info in verlist:
             if info.level == level:
                 targets.append(info)
+
+        targets.sort(key=lambda x: x.achievements, reverse=True)
 
         arg = f'{level}分数列表'
 
