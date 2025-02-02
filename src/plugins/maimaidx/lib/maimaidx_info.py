@@ -45,22 +45,22 @@ def song_info_tamp(music: Music) -> Message:
     ])
     return msg
 
-def draw_level_info(yh_font, dy, music, level_idx):
-    yh_font.draw(280, dy + 30, 30, f'{music.level[level_idx]}({music.ds[level_idx]})', (255, 255, 255, 255), 'mm')
-    yh_font.draw(280, dy + 60, 20, f'{music.charts[level_idx].charter}', (255, 255, 255, 255), 'mm')
+def draw_level_info(font, dy, music, level_idx):
+    font.draw(280, dy + 30, 30, f'{music.level[level_idx]}({music.ds[level_idx]})', (255, 255, 255, 255), 'mm')
+    font.draw(280, dy + 60, 20, f'{music.charts[level_idx].charter}', (255, 255, 255, 255), 'mm')
 
-def draw_stats_info(yh_font, music, dy, level_idx):
-    yh_font.draw(480, 835 + dy, 40, f'{music.stats[level_idx].fit_diff:.4f}', (0, 0, 0, 255), 'mm')
-    yh_font.draw(665, 835 + dy, 40, f'{sum(music.charts[level_idx].notes)}', (0, 0, 0, 255), 'mm')
-    yh_font.draw(835, 835 + dy, 40, f'{music.charts[level_idx].notes[0]}', (0, 0, 0, 255), 'mm')
-    yh_font.draw(1015, 835 + dy, 40, f'{music.charts[level_idx].notes[1]}', (0, 0, 0, 255), 'mm')
-    yh_font.draw(1185, 835 + dy, 40, f'{music.charts[level_idx].notes[2]}', (0, 0, 0, 255), 'mm')
+def draw_stats_info(font, music, dy, level_idx):
+    font.draw(480, 835 + dy, 40, f'{music.stats[level_idx].fit_diff:.4f}', (0, 0, 0, 255), 'mm')
+    font.draw(665, 835 + dy, 40, f'{sum(music.charts[level_idx].notes)}', (0, 0, 0, 255), 'mm')
+    font.draw(835, 835 + dy, 40, f'{music.charts[level_idx].notes[0]}', (0, 0, 0, 255), 'mm')
+    font.draw(1015, 835 + dy, 40, f'{music.charts[level_idx].notes[1]}', (0, 0, 0, 255), 'mm')
+    font.draw(1185, 835 + dy, 40, f'{music.charts[level_idx].notes[2]}', (0, 0, 0, 255), 'mm')
     if music.type.upper() == 'DX':
-        yh_font.draw(1360, 835 + dy, 40, f'{music.charts[level_idx].notes[3]}', (0, 0, 0, 255), 'mm')
-        yh_font.draw(1535, 835 + dy, 40, f'{music.charts[level_idx].notes[4]}', (0, 0, 0, 255), 'mm')
+        font.draw(1360, 835 + dy, 40, f'{music.charts[level_idx].notes[3]}', (0, 0, 0, 255), 'mm')
+        font.draw(1535, 835 + dy, 40, f'{music.charts[level_idx].notes[4]}', (0, 0, 0, 255), 'mm')
     else:
-        yh_font.draw(1360, 835 + dy, 40, f'-', (0, 0, 0, 255), 'mm')
-        yh_font.draw(1535, 835 + dy, 40, f'{music.charts[level_idx].notes[3]}', (0, 0, 0, 255), 'mm')
+        font.draw(1360, 835 + dy, 40, f'-', (0, 0, 0, 255), 'mm')
+        font.draw(1535, 835 + dy, 40, f'{music.charts[level_idx].notes[3]}', (0, 0, 0, 255), 'mm')
 
 def song_info_draw(music: Music) -> Image.Image:
     img = Image.open(maimai_dir / 'song_bg.png').convert('RGBA')
