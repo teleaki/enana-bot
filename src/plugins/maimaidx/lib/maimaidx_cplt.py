@@ -88,7 +88,7 @@ async def generate_level_cplt(level: str, qqid: Optional[int] = None, username: 
         arg = f'{level}分数列表'
 
         draw_cplt = DrawCplt()
-        pic = draw_cplt.draw_cplt(targets, arg)
+        pic = draw_cplt.draw_cplt(targets[:50], arg)
 
         msg = MessageSegment.image(image_to_base64(pic))
     except UserNotFoundError as e:
