@@ -77,6 +77,16 @@ def get_page(data, page: int, size: int = 75):
     end_index = page * size
     return data[start_index:end_index]
 
+def remove_duplicates(data: List[CpltInfo]) -> List[CpltInfo]:
+    # 使用字典以 (id, title) 为键去重
+    seen = {}  # 用来存储去重后的元素
+    for info in data:
+        key = (info.id, info.title)  # 根据 id 和 title 去重
+        if key not in seen:
+            seen[key] = info  # 如果 (id, title) 组合没有出现过，添加到字典中
+    # 返回字典中的所有值，即去重后的元素列表
+    return list(seen.values())
+
 async def generate_level_cplt(level: str, page: int = 1, qqid: Optional[int] = None, username: Optional[str] = None) -> MessageSegment:
     try:
         if username:
@@ -90,6 +100,7 @@ async def generate_level_cplt(level: str, page: int = 1, qqid: Optional[int] = N
             if info.level == level:
                 data.append(info)
 
+        data = remove_duplicates(data)
         data.sort(key=lambda x: x.achievements, reverse=True)
         max_page = len(data) // 75 + 1
         if page > max_page:

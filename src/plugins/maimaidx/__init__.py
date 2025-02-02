@@ -78,7 +78,7 @@ async def handle_level(bot: Bot, event: Event, args: Tuple[Optional[str], Option
     qqid = event.user_id
 
     # 这里确保 level 和 page 的值合法，避免错误
-    if level not in levelList:
+    if level not in levelList or page == 0:
         await level_cplt.finish("蓝的盆")
 
     if not page:
