@@ -69,7 +69,7 @@ class DrawCplt:
 
         self.whiledraw(data, yh_font, 200)
 
-        return self._im.resize((3060,4500))
+        return self._im.resize((3060,5500))
 
 
 async def generate_level_cplt(level: str, qqid: Optional[int] = None, username: Optional[str] = None) -> MessageSegment:
