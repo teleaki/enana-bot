@@ -16,7 +16,7 @@ rating_dir: Path = _resource_dir / 'mai' / 'rating'
 plate_dir: Path = _resource_dir / 'mai' / 'plate'
 
 # 字体路径
-YAHEI: Path = _resource_dir / 'msyh.ttf'
+YAHEI: Path = _resource_dir / 'msyh_b.ttf'
 MEIRYO: Path =  _resource_dir / 'meiryo.ttc'
 SIYUAN: Path = _resource_dir / 'SourceHanSansSC-Bold.otf'
 HANYI: Path = _resource_dir / 'HanYi.ttf'
