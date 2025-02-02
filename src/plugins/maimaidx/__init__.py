@@ -63,7 +63,7 @@ async def handle_minfo(bot: Bot, event: Event, args: Message = CommandArg()):
     await minfo.finish(minfo_msg)
 
 level_cplt = on_regex(
-    r'^(?P<level>\d+[\+]*)(?P<page>\d*)分数列表\d*$',
+    r'^(?P<level>\d+[\+]*)分数列表(?P<page>\d*)$',
     priority=3,
     block=True
 )
