@@ -97,6 +97,8 @@ class DrawBest:
 
             font.draw(x + 40, y + 148, 20, info.song_id, TEXT_COLOR[info.level_index], anchor='mm')
             title = info.title
+            if len(title) > 12:
+                title = title[:12]
             font.draw(x + 155, y + 20, 20, title, TEXT_COLOR[info.level_index], anchor='lm')
             font.draw(x + 155, y + 50, 32, f'{info.achievements:.4f}%', TEXT_COLOR[info.level_index], anchor='lm')
             font.draw(x + 338, y + 82, 15, f'{info.dxScore}/{dxscore}', TEXT_COLOR[info.level_index], anchor='mm')
