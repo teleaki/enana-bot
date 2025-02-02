@@ -14,7 +14,7 @@ config = get_plugin_config(Config)
 
 from nonebot import on_command, on_regex
 from nonebot.adapters.onebot.v11 import Bot, Message, Event
-from nonebot.params import CommandArg, RegexGroup
+from nonebot.params import CommandArg, RegexStr
 
 from .lib.maimaidx_best50 import *
 from .lib.maimaidx_info import *
@@ -69,7 +69,7 @@ level_cplt = on_regex(
 )
 
 @level_cplt.handle()
-async def handle_level(bot: Bot, event: Event, args: Tuple[Optional[str]] = RegexGroup()):
+async def handle_level(bot: Bot, event: Event, args: Tuple[Optional[str]] = RegexStr(1, 2)):
     try:
         level = args[0]
         page = args[1]
