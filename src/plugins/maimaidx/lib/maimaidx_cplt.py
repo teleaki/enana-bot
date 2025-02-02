@@ -78,12 +78,12 @@ def get_page(data, page: int, size: int = 75):
     return data[start_index:end_index]
 
 def remove_duplicates(data: List[CpltInfo]) -> List[CpltInfo]:
-    # 使用字典以 (id, title) 为键去重
+    # 使用字典以 (id, level_index) 为键去重
     seen = {}  # 用来存储去重后的元素
     for info in data:
-        key = (info.id, info.title)  # 根据 id 和 title 去重
+        key = (info.id, info.level_index)  # 根据 id 和 level_index 去重
         if key not in seen:
-            seen[key] = info  # 如果 (id, title) 组合没有出现过，添加到字典中
+            seen[key] = info  # 如果 (id, level_index) 组合没有出现过，添加到字典中
     # 返回字典中的所有值，即去重后的元素列表
     return list(seen.values())
 
