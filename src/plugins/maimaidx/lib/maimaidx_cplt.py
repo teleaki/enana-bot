@@ -72,7 +72,12 @@ class DrawCplt:
         return self._im.resize((3060,5500))
 
 
-async def generate_level_cplt(level: str, qqid: Optional[int] = None, username: Optional[str] = None) -> MessageSegment:
+def get_page(data, page: int, size: int = 75):
+    start_index = (page - 1) * size
+    end_index = page * size
+    return data[start_index:end_index]
+
+async def generate_level_cplt(level: str, page: int = 1, qqid: Optional[int] = None, username: Optional[str] = None) -> MessageSegment:
     try:
         if username:
             qqid = None
@@ -80,17 +85,20 @@ async def generate_level_cplt(level: str, qqid: Optional[int] = None, username: 
         obj = await maiapi.query_user('plate', qqid=qqid, username=username, version=version_list)
 
         verlist = [CpltInfo(**item) for item in obj['verlist']]
-        targets = []
+        data = []
         for info in verlist:
             if info.level == level:
-                targets.append(info)
+                data.append(info)
 
-        targets.sort(key=lambda x: x.achievements, reverse=True)
+        data.sort(key=lambda x: x.achievements, reverse=True)
+        if page > len(data) // 75 + 1:
+            page = len(data) // 75 + 1
+        targets = get_page(data, page, size=75)
 
         arg = f'{level}分数列表'
 
         draw_cplt = DrawCplt()
-        pic = draw_cplt.draw_cplt(targets[:75], arg)
+        pic = draw_cplt.draw_cplt(targets, arg)
 
         msg = MessageSegment.image(image_to_base64(pic))
     except UserNotFoundError as e:

@@ -14,7 +14,7 @@ config = get_plugin_config(Config)
 
 from nonebot import on_command, on_regex
 from nonebot.adapters.onebot.v11 import Bot, Message, Event
-from nonebot.params import CommandArg, RegexStr
+from nonebot.params import CommandArg, RegexGroup
 
 from .lib.maimaidx_best50 import *
 from .lib.maimaidx_info import *
@@ -63,15 +63,25 @@ async def handle_minfo(bot: Bot, event: Event, args: Message = CommandArg()):
     await minfo.finish(minfo_msg)
 
 level_cplt = on_regex(
-    r'^(' + '|'.join(map(re.escape, levelList)) + r')分数列表$',
+    r'^\d+[\+]*分数列表\d*$',
     priority=3,
     block=True
 )
 
 @level_cplt.handle()
-async def handle_level(bot: Bot, event: Event, args: str = RegexStr(1)):
-    level = args
-    qqid = event.user_id
-    level_msg = await generate_level_cplt(level=level, qqid=qqid)
+async def handle_level(bot: Bot, event: Event, args: Tuple[Optional[str]] = RegexGroup()):
+    try:
+        level = args[0]
+        page = args[1]
+        qqid = event.user_id
 
-    await level_cplt.finish(level_msg)
+        # 这里确保 level 和 page 的值合法，避免错误
+        if level not in levelList:
+            await level_cplt.finish("蓝的盆")
+
+        page = int(page)  # 确保 page 是整数类型
+        level_msg = await generate_level_cplt(level=level, qqid=qqid, page=page)
+
+        await level_cplt.finish(level_msg)
+    except Exception as e:
+        await level_cplt.finish(f"发生错误: {str(e)}")
