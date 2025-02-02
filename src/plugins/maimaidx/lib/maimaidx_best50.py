@@ -99,7 +99,7 @@ class DrawBest:
             title = info.title
             font.draw(x + 155, y + 20, 20, title, TEXT_COLOR[info.level_index], anchor='lm')
             font.draw(x + 155, y + 50, 32, f'{info.achievements:.4f}%', TEXT_COLOR[info.level_index], anchor='lm')
-            font.draw(x + 338, y + 82, 20, f'{info.dxScore}/{dxscore}', TEXT_COLOR[info.level_index], anchor='mm')
+            font.draw(x + 338, y + 82, 15, f'{info.dxScore}/{dxscore}', TEXT_COLOR[info.level_index], anchor='mm')
             font.draw(x + 155, y + 82, 22, f'{info.ds} -> {info.ra}', TEXT_COLOR[info.level_index], anchor='lm')
 
 
