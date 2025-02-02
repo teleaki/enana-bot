@@ -1,10 +1,10 @@
-from nonebot.adapters.onebot.v11 import MessageSegment, Bot, Message
-import math, base64
+import math
+
+from nonebot.adapters.onebot.v11 import MessageSegment
 
 from .maimaidx_api import maiapi
-from .maimaidx_res import *
-from .maimaidx_image import *
 from .maimaidx_error import *
+from .maimaidx_image import *
 from .maimaidx_model import *
 from .maimaidx_music import mai, get_music_cover
 
@@ -105,7 +105,7 @@ class DrawBest:
             font.draw(x + 155, y + 82, 20, f'{info.ds} -> {info.ra}', TEXT_COLOR[info.level_index], anchor='lm')
 
 
-    def draw(self) -> Image.Image:
+    def draw_b50(self) -> Image.Image:
         draw = ImageDraw.Draw(self._im)
         yh_font = DrawText(draw, YAHEI)
 
@@ -199,7 +199,7 @@ async def generate_b50(qqid: Optional[int] = None, username: Optional[str] = Non
         user_info = UserInfo(**obj)
         draw_best = DrawBest(user_info = user_info, qqid = qqid)
 
-        pic = draw_best.draw()
+        pic = draw_best.draw_b50()
         msg = MessageSegment.image(image_to_base64(pic))
     except UserNotFoundError as e:
         msg = MessageSegment.text(str(e))

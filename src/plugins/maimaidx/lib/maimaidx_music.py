@@ -1,13 +1,12 @@
-import json, aiofiles
-from pathlib import Path
-from typing import Any, Union
+import aiofiles
+import json
+from typing import Any
 
 from PIL import Image
 
-from .maimaidx_res import *
-from .maimaidx_error import *
-from .maimaidx_model import *
 from .maimaidx_api import maiapi
+from .maimaidx_model import *
+from .maimaidx_res import *
 
 
 class MusicList(List[Music]):

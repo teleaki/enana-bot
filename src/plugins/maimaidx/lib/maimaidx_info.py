@@ -1,11 +1,10 @@
 from difflib import SequenceMatcher
 
-from nonebot.adapters.onebot.v11 import Event, Message, MessageSegment
+from nonebot.adapters.onebot.v11 import Message, MessageSegment
 
-from .maimaidx_music import mai, get_music_cover
-from .maimaidx_model import *
 from .maimaidx_image import *
-from .maimaidx_error import *
+from .maimaidx_model import *
+from .maimaidx_music import mai, get_music_cover
 from .maimaidx_res import *
 
 

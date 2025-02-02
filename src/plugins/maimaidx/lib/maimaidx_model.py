@@ -1,8 +1,7 @@
-from pydantic import BaseModel, Field
 from collections import namedtuple
 from typing import List, Optional, Union
 
-from pygments.lexer import default
+from pydantic import BaseModel, Field
 
 
 ### Music
@@ -83,3 +82,15 @@ class UserInfo(BaseModel):
     plate: Optional[str] = None
     rating: Optional[int]
     username: Optional[str]
+
+
+# Cplt
+class CpltInfo(BaseModel):
+    achievements: float
+    fc: Optional[str] = ''
+    fs: Optional[str] = ''
+    id: int
+    level: str
+    level_index: int
+    title: str
+    type: str

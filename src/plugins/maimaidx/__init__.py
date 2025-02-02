@@ -14,11 +14,13 @@ config = get_plugin_config(Config)
 
 from nonebot import on_command, on_regex
 from nonebot.adapters.onebot.v11 import Bot, Message, Event
-from nonebot.params import CommandArg
+from nonebot.params import CommandArg, RegexStr
 
 from .lib.maimaidx_best50 import *
 from .lib.maimaidx_info import *
+from .lib.maimaidx_cplt import *
 
+import re
 
 driver = get_driver()
 
@@ -59,3 +61,17 @@ async def handle_minfo(bot: Bot, event: Event, args: Message = CommandArg()):
         minfo_msg = Message('请输入内容')
 
     await minfo.finish(minfo_msg)
+
+level_cplt = on_regex(
+    r'^(' + '|'.join(map(re.escape, levelList)) + r')分数列表$',
+    priority=3,
+    block=True
+)
+
+@level_cplt.handle()
+async def handle_level(bot: Bot, event: Event, args: Message = RegexStr(1)):
+    level = args.extract_plain_text()
+    qqid = event.user_id
+    level_msg = await generate_level_cplt(level=level, qqid=qqid)
+
+    await level_cplt.finish(level_msg)

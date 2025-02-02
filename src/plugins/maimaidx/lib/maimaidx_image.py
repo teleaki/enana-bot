@@ -1,6 +1,5 @@
 import base64
 from io import BytesIO
-from pathlib import Path
 from typing import Tuple, Union
 
 from PIL import Image, ImageDraw, ImageFont

@@ -1,10 +1,9 @@
-from io import BytesIO
-from pathlib import Path
-from typing import Any, List, Optional, Union
+from typing import Any, List, Optional
+
+import httpx
 
 from .maimaidx_error import *
 
-import httpx
 
 class MaiAPI:
     def __init__(self):
