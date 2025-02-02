@@ -70,25 +70,22 @@ level_cplt = on_regex(
 
 @level_cplt.handle()
 async def handle_level(bot: Bot, event: Event, args: Tuple[Optional[str], Optional[str]] = RegexStr('level', 'page')):
-    print(f"Received message: {event.message}")  # 打印消息内容，查看是否匹配
-    print(f"Extracted level: {args[0]}, page: {args[1]}")  # 打印捕获的 level 和 page
+    # print(f"Received message: {event.message}")  # 打印消息内容，查看是否匹配
+    # print(f"Extracted level: {args[0]}, page: {args[1]}")  # 打印捕获的 level 和 page
 
-    try:
-        level = args[0]
-        page = args[1]
-        qqid = event.user_id
+    level = args[0]
+    page = args[1]
+    qqid = event.user_id
 
-        # 这里确保 level 和 page 的值合法，避免错误
-        if level not in levelList:
-            await level_cplt.finish("蓝的盆")
+    # 这里确保 level 和 page 的值合法，避免错误
+    if level not in levelList:
+        await level_cplt.finish("蓝的盆")
 
-        if not page:
-            page = 1  # 默认第一页，如果没有传入 page 参数
+    if not page:
+        page = 1  # 默认第一页，如果没有传入 page 参数
 
-        page = int(page)  # 确保 page 是整数类型
+    page = int(page)  # 确保 page 是整数类型
 
-        level_msg = await generate_level_cplt(level=level, qqid=qqid, page=page)
+    level_msg = await generate_level_cplt(level=level, qqid=qqid, page=page)
 
-        await level_cplt.finish(level_msg)
-    except Exception as e:
-        await level_cplt.finish(f"发生错误: {str(e)}")
+    await level_cplt.finish(level_msg)

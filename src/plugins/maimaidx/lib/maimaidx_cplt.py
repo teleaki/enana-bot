@@ -20,7 +20,7 @@ class DrawCplt:
     def __init__(self):
         self._im = Image.new('RGBA', (6120, 11000), color='white')
 
-    def whiledraw(self, data: List[CpltInfo], font: DrawText, y:int) -> None:
+    def whiledraw(self, data: List[CpltInfo], font: DrawText, y: int, page: int) -> None:
         dy = 410
         TEXT_COLOR = [(255, 255, 255, 255), (255, 255, 255, 255), (255, 255, 255, 255), (255, 255, 255, 255),
                       (138, 0, 226, 255)]
@@ -54,11 +54,11 @@ class DrawCplt:
             title = f'{info.id}: {info.title}'
             if coloumWidth(title) > 17:
                 title = changeColumnWidth(title, 16) + '...'
-            font.draw(x + 1580, y + 160, 50, f'No.{num + 1}', TEXT_COLOR[info.level_index], anchor='rm')
+            font.draw(x + 1580, y + 160, 50, f'No.{num + 1 + (page - 1) * 75}', TEXT_COLOR[info.level_index], anchor='rm')
             font.draw(x + 460, y + 150, 80, title, TEXT_COLOR[info.level_index], anchor='lm')
             font.draw(x + 450, y + 300, 120, f'{info.achievements:.4f}%', TEXT_COLOR[info.level_index], anchor='lm')
 
-    def draw_cplt(self, data: List[CpltInfo], arg: str) -> Image.Image:
+    def draw_cplt(self, data: List[CpltInfo], arg: str, page: int) -> Image.Image:
         draw = ImageDraw.Draw(self._im)
         yh_font = DrawText(draw, YAHEI)
 
@@ -67,7 +67,7 @@ class DrawCplt:
 
         yh_font.draw(3060, 300, 100, arg, (0, 0, 0, 255), anchor='mm')
 
-        self.whiledraw(data, yh_font, 200)
+        self.whiledraw(data, yh_font, 200, page)
 
         return self._im.resize((3060,5500))
 
@@ -91,14 +91,15 @@ async def generate_level_cplt(level: str, page: int = 1, qqid: Optional[int] = N
                 data.append(info)
 
         data.sort(key=lambda x: x.achievements, reverse=True)
-        if page > len(data) // 75 + 1:
-            page = len(data) // 75 + 1
+        max_page = len(data) // 75 + 1
+        if page > max_page:
+            page = max_page
         targets = get_page(data, page, size=75)
 
-        arg = f'{level}分数列表'
+        arg = f'{level}分数列表 ({page}/{max_page})'
 
         draw_cplt = DrawCplt()
-        pic = draw_cplt.draw_cplt(targets, arg)
+        pic = draw_cplt.draw_cplt(targets, arg, page)
 
         msg = MessageSegment.image(image_to_base64(pic))
     except UserNotFoundError as e:
