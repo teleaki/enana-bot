@@ -63,13 +63,13 @@ async def handle_minfo(bot: Bot, event: Event, args: Message = CommandArg()):
     await minfo.finish(minfo_msg)
 
 level_cplt = on_regex(
-    r'^\d+[\+]*分数列表\d*$',
+    r'^(?P<level>\d+[\+]*)(?P<page>\d*)分数列表\d*$',
     priority=3,
     block=True
 )
 
 @level_cplt.handle()
-async def handle_level(bot: Bot, event: Event, args: Tuple[Optional[str]] = RegexStr(1, 2)):
+async def handle_level(bot: Bot, event: Event, args: Tuple[Optional[str]] = RegexStr('level', 'page')):
     try:
         level = args[0]
         page = args[1]
