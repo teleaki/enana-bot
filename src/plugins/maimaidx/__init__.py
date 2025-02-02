@@ -69,8 +69,8 @@ level_cplt = on_regex(
 )
 
 @level_cplt.handle()
-async def handle_level(bot: Bot, event: Event, args: Message = RegexStr(1)):
-    level = args.extract_plain_text()
+async def handle_level(bot: Bot, event: Event, args: str = RegexStr(1)):
+    level = args
     qqid = event.user_id
     level_msg = await generate_level_cplt(level=level, qqid=qqid)
 
