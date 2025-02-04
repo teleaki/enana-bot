@@ -11,19 +11,6 @@ from .config import oc_dict, card_type, oc_name
 import random, httpx, base64
 
 
-async def start_timer(groupid: str, timeout: int = 60):
-    """启动一个定时器，超时后自动结束游戏"""
-    await asyncio.sleep(timeout)
-
-    # 超时后结束游戏
-    if groupid in games:
-        game = games[groupid]
-        msg = game.guess_card_timeout()
-        game.guess_card_end()
-        end_game(groupid)
-        return msg
-
-
 class GuessCard:
     def __init__(self):
         self.answer = None

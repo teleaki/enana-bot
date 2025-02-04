@@ -13,16 +13,29 @@ __plugin_meta__ = PluginMetadata(
 config = get_plugin_config(Config)
 
 from nonebot import on_command, on_regex
+from nonebot.matcher import Matcher
 from nonebot.adapters.onebot.v11 import Bot, Message, Event, MessageSegment
 
-from .guess import add_game, end_game, games, start_timer
+from .guess import add_game, end_game, games
 
+import asyncio
 
 def is_started(groupid: str) -> bool:
     if groupid in games:
         return True
     return False
 
+async def start_timer(matcher: Matcher, groupid: str, timeout: int = 60):
+    """启动一个定时器，超时后自动结束游戏"""
+    await asyncio.sleep(timeout)
+
+    # 超时后结束游戏
+    if groupid in games:
+        game = games[groupid]
+        msg = game.guess_card_timeout()
+        game.guess_card_end()
+        end_game(groupid)
+        await matcher.finish(msg)
 
 guess_card = on_command(
     "pjsk猜卡面",
@@ -31,7 +44,7 @@ guess_card = on_command(
 )
 
 @guess_card.handle()
-async def gc_handle(bot: Bot, event: Event):
+async def gc_handle(matcher: Matcher, bot: Bot, event: Event):
     groupid = event.get_session_id()
     game = add_game(groupid)
 
@@ -41,7 +54,7 @@ async def gc_handle(bot: Bot, event: Event):
     msg = game.guess_card_start()
     if msg:  # 检查消息是否成功生成
         await guess_card.send(msg)
-        await start_timer(groupid)
+        await start_timer(matcher, groupid)
     else:
         await guess_card.finish("游戏启动失败，请稍后再试。")
 
