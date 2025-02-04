@@ -27,7 +27,11 @@ def is_started(groupid: str) -> bool:
 
 async def start_timer(matcher: Matcher, groupid: str, timeout: int = 60):
     """启动一个定时器，超时后自动结束游戏"""
-    await asyncio.sleep(timeout)
+    await asyncio.sleep(timeout - 10)
+
+    await matcher.send('还剩10s')
+
+    await asyncio.sleep(10)
 
     # 超时后结束游戏
     if groupid in games:
