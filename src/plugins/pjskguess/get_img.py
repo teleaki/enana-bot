@@ -1,29 +1,19 @@
-from nonebot.adapters.onebot.v11 import Event, Bot, Message, MessageSegment
+from config import oc_dict, card_type
 import requests
 import random
 
 base_url = "https://storage.sekai.best/sekai-jp-assets/character/member/res{oc_id}_no{oc_num}_rip/{card_type}.png"
 
-oc_dict = {
-    'ick': '001', 'saki': '002', 'hnm': '003', 'shiho': '004',
-    'mnr': '005', 'hrk': '006', 'airi': '007', 'szk': '008',
-    'khn': '009', 'an': '010', 'akt': '011', 'toya': '012',
-    'tks': '013', 'emu': '014', 'nene': '015', 'rui': '016',
-    'knd': '017', 'mfy': '018', 'ena': '019', 'mzk': '020',
-    'miku': '021', 'rin': '022', 'len': '023', 'luka': '024',
-    'meiko': '025', 'kaito': '026'
-}
-
-# oc_num_dict = {
-#     'ick': 39, 'saki': 43, 'hnm': 42, 'shiho': 44,
-#     'mnr': 40, 'hrk': 42, 'airi': 41, 'szk': 41,
-#     'khn': 41, 'an': 41, 'akt': 44, 'toya': 42,
-#     'tks': 41, 'emu': 42, 'nene': 40, 'rui': 41,
-#     'knd': 41, 'mfy': 41, 'ena': 42, 'mzk': 40,
-#     'miku': 52, 'rin': 42, 'len': 44, 'luka': 43, 'meiko': 43, 'kaito': 45
+# oc_dict = {
+#     'ick': '001', 'saki': '002', 'hnm': '003', 'shiho': '004',
+#     'mnr': '005', 'hrk': '006', 'airi': '007', 'szk': '008',
+#     'khn': '009', 'an': '010', 'akt': '011', 'toya': '012',
+#     'tks': '013', 'emu': '014', 'nene': '015', 'rui': '016',
+#     'knd': '017', 'mfy': '018', 'ena': '019', 'mzk': '020',
+#     'miku': '021', 'rin': '022', 'len': '023', 'luka': '024',
+#     'meiko': '025', 'kaito': '026'
 # }
-
-card_type = ["card_normal", "card_after_training"]
+# card_type = ["card_normal", "card_after_training"]
 
 
 def is_url_valid(url):
@@ -36,7 +26,7 @@ def is_url_valid(url):
         return False
 
 
-def get_img(oc_name, max_retries=5):
+def get_img_url(oc_name, max_retries=5):
     """
     根据 oc_name 生成一个图片的 URL，若生成的 URL 无效则重新尝试。
     """
@@ -64,16 +54,16 @@ def get_img(oc_name, max_retries=5):
 
             # 验证生成的 URL 是否有效
             if is_url_valid(url):
-                return MessageSegment.image(url)
+                return 0, url
             else:
                 attempt += 1
                 print(f"第 {attempt} 次尝试失败，重新生成 URL。")
         except ValueError as e:
             # 处理值错误异常
-            return MessageSegment.text(f"错误: {e}")
+            return 1, f"ValueError: {e}"
         except Exception as e:
             # 捕获其他异常
-            return MessageSegment.text(f"获取图片失败: {e}")
+            return 1, f"获取图片失败: {e}"
 
     # 如果超过最大重试次数仍然失败，返回错误消息
-    return MessageSegment.text("超时")
+    return 2, "获取图片超时"
