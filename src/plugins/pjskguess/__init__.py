@@ -49,11 +49,12 @@ guess_card = on_command(
 
 @guess_card.handle()
 async def gc_handle(matcher: Matcher, bot: Bot, event: Event):
-    groupid = event.get_session_id()
+    sessionid = event.get_session_id()
+    groupid = sessionid.split('_')[1]
     print(groupid)
     game = add_game(groupid)
 
-    if isinstance(game, str):  # 如果返回的是提示信息（游戏已存在）
+    if isinstance(game, Message):  # 如果返回的是提示信息（游戏已存在）
         await guess_card.finish(game)
 
     msg = game.guess_card_start()

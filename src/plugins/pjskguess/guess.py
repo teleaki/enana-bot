@@ -87,10 +87,15 @@ class GuessCard:
 games: Dict[str, GuessCard] = {}
 
 
-def add_game(groupid: str) -> GuessCard:
-    if groupid not in games:
-        # 创建一个新的 GuessCard 实例并添加到 games 字典
-        games[groupid] = GuessCard()
+def add_game(groupid: str) -> Union[Message, GuessCard]:
+    if groupid in games:
+        msg = Message([
+            MessageSegment.text('已有猜卡面游戏进行中')
+        ])
+        return msg
+
+    # 创建一个新的 GuessCard 实例并添加到 games 字典
+    games[groupid] = GuessCard()
     return games[groupid]
 
 
