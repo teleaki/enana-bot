@@ -18,7 +18,7 @@ from nonebot import on_command
 from nonebot.adapters.onebot.v11 import Bot, Message, Event, MessageSegment
 from nonebot.params import ArgPlainText
 
-from guess import guessCard
+from .guess import guessCard
 
 guess_card = on_command(
     "pjsk猜卡面",
