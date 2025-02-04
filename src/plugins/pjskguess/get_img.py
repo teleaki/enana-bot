@@ -1,4 +1,4 @@
-from config import oc_dict, card_type
+from .config import oc_dict, card_type
 import requests
 import random
 
