@@ -31,7 +31,7 @@ class GuessCard:
                     # 构造消息
                     msg = Message([
                         MessageSegment.text('开启pjsk猜卡面\n总共有60s的时间来猜出下面图片为谁的卡面，发送“猜xxx”即可，发送“不玩了”停止游戏'),
-                        MessageSegment.image(image2base64(self.image))
+                        MessageSegment.image(image2base64(sample))
                     ])
                     return msg
                 else:
@@ -61,7 +61,7 @@ class GuessCard:
                     return True, msg
                 else:
                     msg = Message([
-                        MessageSegment.text(f'回答错误，不是 {oc_name[self.answer]} 哦')
+                        MessageSegment.text(f'回答错误，不是 {oc_name[key]} 哦')
                     ])
                     return False, msg
             else:
