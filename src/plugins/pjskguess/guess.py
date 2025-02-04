@@ -47,9 +47,6 @@ class GuessCard:
 
     def guess_card_judge(self, key: Optional[str], qqid: Union[int, str]):
         if key:
-            if key == '不玩了':
-                msg = self.guess_card_timeout()
-                return True, msg
             if key in list(oc_dict.keys()):
                 if key == self.answer:
                     msg = Message([

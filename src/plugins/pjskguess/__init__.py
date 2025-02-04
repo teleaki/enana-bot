@@ -47,5 +47,9 @@ async def gc_key(
             await guess_card.finish(msg)
         else:
             await guess_card.reject(msg)
+    elif key == '不玩了':
+        msg = guessCard.guess_card_timeout()
+        guessCard.guess_card_end()
+        await guess_card.finish(msg)
     else:
         await guess_card.reject()
