@@ -4,6 +4,7 @@ from typing import Optional, Union, List, Dict
 
 from PIL import Image
 from nonebot.adapters.onebot.v11 import Message, MessageSegment
+from nonebot.matcher import Matcher
 
 from .get_img import get_img_url
 from .config import oc_dict, card_type, oc_name
@@ -11,10 +12,32 @@ from .config import oc_dict, card_type, oc_name
 import random, httpx, base64
 
 
+async def start_timer(matcher: Matcher, groupid: str, timeout: int = 60):
+    """启动一个定时器，超时后自动结束游戏"""
+    try:
+        await asyncio.sleep(timeout - 10)
+
+        await matcher.send('还剩10s')
+
+        await asyncio.sleep(10)
+
+        # 超时后结束游戏
+        if groupid in games:
+            game = games[groupid]
+            msg = game.guess_card_timeout()
+            game.guess_card_end()
+            end_game(groupid)
+            await matcher.finish(msg)
+    except asyncio.CancelledError:
+        # 任务被取消时的处理
+        print(f"计时器已取消")
+
+
 class GuessCard:
     def __init__(self):
         self.answer = None
         self.image = None
+        self.timer_task = None
 
     def guess_card_start(self):
         try:
@@ -81,6 +104,11 @@ class GuessCard:
         return msg
 
     def guess_card_end(self):
+        """结束游戏并取消计时器"""
+        if self.timer_task:
+            self.timer_task.cancel()  # 取消计时器任务
+            self.timer_task = None  # 重置计时器任务引用
+
         self.answer = None
         self.image = None
 

@@ -16,7 +16,7 @@ from nonebot import on_command, on_regex
 from nonebot.matcher import Matcher
 from nonebot.adapters.onebot.v11 import Bot, Message, Event, MessageSegment
 
-from .guess import add_game, end_game, games
+from .guess import add_game, end_game, games, start_timer
 
 import asyncio
 
@@ -30,21 +30,6 @@ def is_started(groupid: str) -> bool:
         return True
     return False
 
-async def start_timer(matcher: Matcher, groupid: str, timeout: int = 60):
-    """启动一个定时器，超时后自动结束游戏"""
-    await asyncio.sleep(timeout - 10)
-
-    await matcher.send('还剩10s')
-
-    await asyncio.sleep(10)
-
-    # 超时后结束游戏
-    if groupid in games:
-        game = games[groupid]
-        msg = game.guess_card_timeout()
-        game.guess_card_end()
-        end_game(groupid)
-        await matcher.finish(msg)
 
 guess_card = on_command(
     "pjsk猜卡面",
@@ -65,7 +50,7 @@ async def gc_handle(matcher: Matcher, bot: Bot, event: Event):
     msg = game.guess_card_start()
     if msg:  # 检查消息是否成功生成
         await guess_card.send(msg)
-        await start_timer(matcher, groupid)
+        game.timer_task = asyncio.create_task(start_timer(matcher, groupid))
     else:
         await guess_card.finish("游戏启动失败，请稍后再试。")
 
