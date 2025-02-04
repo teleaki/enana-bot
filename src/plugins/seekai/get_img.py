@@ -36,7 +36,7 @@ def is_url_valid(url):
         return False
 
 
-def get_img(oc_name, max_retries=3):
+def get_img(oc_name, max_retries=5):
     """
     根据 oc_name 生成一个图片的 URL，若生成的 URL 无效则重新尝试。
     """
@@ -50,6 +50,7 @@ def get_img(oc_name, max_retries=3):
 
             # 获取 oc_num 的最大值，生成一个随机的 oc_num
             max_num = oc_num_dict.get(oc_name)
+            max_num = 60
             if max_num is None:
                 raise ValueError(f"未找到 {oc_name} 对应的 oc_num")
             ran = random.randint(0, max_num - 1)
@@ -66,7 +67,7 @@ def get_img(oc_name, max_retries=3):
                 return MessageSegment.image(url)
             else:
                 attempt += 1
-                # print(f"第 {attempt} 次尝试失败，重新生成 URL。")
+                print(f"第 {attempt} 次尝试失败，重新生成 URL。")
         except ValueError as e:
             # 处理值错误异常
             return MessageSegment.text(f"错误: {e}")
@@ -75,4 +76,4 @@ def get_img(oc_name, max_retries=3):
             return MessageSegment.text(f"获取图片失败: {e}")
 
     # 如果超过最大重试次数仍然失败，返回错误消息
-    return MessageSegment.text("无法生成有效的图片 URL，请稍后重试。")
+    return MessageSegment.text("超时")
