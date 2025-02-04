@@ -1,13 +1,27 @@
+import asyncio
 from io import BytesIO
-from typing import Optional, Union
+from typing import Optional, Union, List, Dict
 
 from PIL import Image
 from nonebot.adapters.onebot.v11 import Message, MessageSegment
 
 from .get_img import get_img_url
-from .config import oc_dict, card_type, oc_name
+from .config import oc_dict, card_type, oc_name, games
 
 import random, httpx, base64
+
+
+async def start_timer(groupid: str, timeout: int = 60):
+    """启动一个定时器，超时后自动结束游戏"""
+    await asyncio.sleep(timeout)
+
+    # 超时后结束游戏
+    if groupid in games:
+        game = games[groupid]
+        msg = game.guess_card_timeout()
+        game.guess_card_end()
+        end_game(groupid)
+        return msg
 
 
 class GuessCard:
@@ -68,7 +82,7 @@ class GuessCard:
                 return False, msg
         else:
             msg = Message([
-                MessageSegment.text('请输入答案')
+                MessageSegment.text('请输入文字')
             ])
             return False, msg
 
@@ -83,7 +97,18 @@ class GuessCard:
         self.answer = None
         self.image = None
 
-guessCard = GuessCard()
+
+def add_game(groupid: str) -> GuessCard:
+    if groupid not in games:
+        # 创建一个新的 GuessCard 实例并添加到 games 字典
+        games[groupid] = GuessCard()
+    return games[groupid]
+
+
+def end_game(groupid: str):
+    """结束并清理指定群组的游戏实例"""
+    if groupid in games:
+        del games[groupid]  # 从 config.py 中的 games 字典中删除实例
 
 
 def url2img(url):

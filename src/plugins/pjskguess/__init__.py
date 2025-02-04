@@ -1,5 +1,3 @@
-from threading import Event
-
 from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
 
@@ -14,11 +12,18 @@ __plugin_meta__ = PluginMetadata(
 
 config = get_plugin_config(Config)
 
-from nonebot import on_command
+from nonebot import on_command, on_regex
 from nonebot.adapters.onebot.v11 import Bot, Message, Event, MessageSegment
 from nonebot.params import ArgPlainText
 
-from .guess import guessCard
+from .guess import add_game, end_game, GuessCard, start_timer
+
+
+def is_started(groupid: str) -> bool:
+    if groupid in config.games:
+        return True
+    return False
+
 
 guess_card = on_command(
     "pjsk猜卡面",
@@ -27,29 +32,44 @@ guess_card = on_command(
 )
 
 @guess_card.handle()
-async def gc_handle():
-    if guessCard.answer:
-        await guess_card.finish('猜卡面正在进行中哦')
-    else:
-        start = guessCard.guess_card_start()
-        await guess_card.send(start)
+async def gc_handle(bot: Bot, event: Event):
+    groupid = event.get_session_id()
+    game = add_game(groupid)
 
-@guess_card.got("key", prompt="请回答，你有60秒时间！")
-async def gc_key(
-    event: Event,
-    key: str = ArgPlainText()
-):
-    # 用户正常输入时的处理逻辑
-    if key.startswith('猜'):
-        flag, msg = guessCard.guess_card_judge(key[1:], qqid=event.get_user_id())
-        if flag:
-            guessCard.guess_card_end()
-            await guess_card.finish(msg)
-        else:
-            await guess_card.reject(msg)
-    elif key == '不玩了':
-        msg = guessCard.guess_card_timeout()
-        guessCard.guess_card_end()
-        await guess_card.finish(msg)
+    if isinstance(game, str):  # 如果返回的是提示信息（游戏已存在）
+        await guess_card.finish(game)
+
+    msg = game.guess_card_start()
+    if msg:  # 检查消息是否成功生成
+        await guess_card.send(msg)
+        await start_timer(groupid)
     else:
-        await guess_card.reject()
+        await guess_card.finish("游戏启动失败，请稍后再试。")
+
+guess_card_answer = on_regex(
+    r'^(猜(\w+)|不玩了)$',
+    priority=3,
+    block=True
+)
+
+@guess_card_answer.handle()
+async def gc_answer(bot: Bot, event: Event):
+    groupid = event.get_session_id()
+    if is_started(groupid):
+        game = config.games[groupid]
+        cmd = event.get_message().extract_plain_text().strip()
+        if cmd == '不玩了':
+            msg = game.guess_card_timeout()
+            game.guess_card_end()
+            end_game(groupid)
+            await guess_card.finish(msg)
+        elif cmd.startswith('猜'):
+            key = cmd[1:].strip().lower()
+            flag, msg = game.guess_card_judge(key)
+            if flag:
+                game.guess_card_end()
+                end_game(groupid)
+                await guess_card.finish(msg)
+            else:
+                await guess_card.send(msg)
+

@@ -1,6 +1,8 @@
 from pydantic import BaseModel
 from typing import Optional, Dict, List
 
+from .guess import GuessCard, GuessCardManager
+
 class Config(BaseModel):
     """Plugin Config Here"""
 
@@ -23,3 +25,5 @@ oc_name: Dict[str, str] = {
     'meiko': 'MEIKO', 'kaito': 'KAITO'
 }
 card_type: List[str] = ["card_normal", "card_after_training"]
+
+games: Dict[str, GuessCard] = {}
