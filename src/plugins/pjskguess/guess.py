@@ -4,8 +4,8 @@ from typing import Optional, Union
 from PIL import Image
 from nonebot.adapters.onebot.v11 import Message, MessageSegment
 
-from get_img import get_img_url
-from config import oc_dict, card_type, oc_name
+from .get_img import get_img_url
+from .config import oc_dict, card_type, oc_name
 
 import random, httpx, base64
 
