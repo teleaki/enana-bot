@@ -20,6 +20,11 @@ from .guess import add_game, end_game, games
 
 import asyncio
 
+def get_group_id(event: Event) -> str:
+    sessionid = event.get_session_id()
+    groupid = sessionid.split('_')[1]
+    return groupid
+
 def is_started(groupid: str) -> bool:
     if groupid in games:
         return True
@@ -49,13 +54,13 @@ guess_card = on_command(
 
 @guess_card.handle()
 async def gc_handle(matcher: Matcher, bot: Bot, event: Event):
-    sessionid = event.get_session_id()
-    groupid = sessionid.split('_')[1]
+    groupid = get_group_id(event)
     print(groupid)
-    game = add_game(groupid)
 
-    if isinstance(game, Message):  # 如果返回的是提示信息（游戏已存在）
-        await guess_card.finish(game)
+    if groupid in games:
+        await guess_card.finish('已有猜卡面游戏正在进行中')
+
+    game = add_game(groupid)
 
     msg = game.guess_card_start()
     if msg:  # 检查消息是否成功生成
@@ -72,7 +77,7 @@ guess_card_answer = on_regex(
 
 @guess_card_answer.handle()
 async def gc_answer(bot: Bot, event: Event):
-    groupid = event.get_session_id()
+    groupid = get_group_id(event)
     if is_started(groupid):
         game = games[groupid]
         cmd = event.get_message().extract_plain_text().strip()
