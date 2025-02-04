@@ -14,13 +14,12 @@ config = get_plugin_config(Config)
 
 from nonebot import on_command, on_regex
 from nonebot.adapters.onebot.v11 import Bot, Message, Event, MessageSegment
-from nonebot.params import ArgPlainText
 
-from .guess import add_game, end_game, GuessCard, start_timer
+from .guess import add_game, end_game, games, start_timer
 
 
 def is_started(groupid: str) -> bool:
-    if groupid in config.games:
+    if groupid in games:
         return True
     return False
 
@@ -56,7 +55,7 @@ guess_card_answer = on_regex(
 async def gc_answer(bot: Bot, event: Event):
     groupid = event.get_session_id()
     if is_started(groupid):
-        game = config.games[groupid]
+        game = games[groupid]
         cmd = event.get_message().extract_plain_text().strip()
         if cmd == '不玩了':
             msg = game.guess_card_timeout()
@@ -65,7 +64,8 @@ async def gc_answer(bot: Bot, event: Event):
             await guess_card.finish(msg)
         elif cmd.startswith('猜'):
             key = cmd[1:].strip().lower()
-            flag, msg = game.guess_card_judge(key)
+            qqid = event.get_session_id()
+            flag, msg = game.guess_card_judge(key, qqid=qqid)
             if flag:
                 game.guess_card_end()
                 end_game(groupid)
