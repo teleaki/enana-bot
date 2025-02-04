@@ -88,7 +88,7 @@ async def gc_answer(bot: Bot, event: Event):
             await guess_card.finish(msg)
         elif cmd.startswith('猜'):
             key = cmd[1:].strip().lower()
-            qqid = event.get_session_id()
+            qqid = event.get_user_id()
             flag, msg = game.guess_card_judge(key, qqid=qqid)
             if flag:
                 game.guess_card_end()
