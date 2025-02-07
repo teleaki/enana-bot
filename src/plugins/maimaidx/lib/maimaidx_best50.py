@@ -105,7 +105,7 @@ class DrawBest:
             font.draw(x + 155, y + 82, 20, f'{info.ds} -> {info.ra}', TEXT_COLOR[info.level_index], anchor='lm')
 
 
-    def draw_b50(self) -> Image.Image:
+    async def draw_b50(self) -> Image.Image:
         draw = ImageDraw.Draw(self._im)
         yh_font = DrawText(draw, YAHEI)
 
@@ -115,7 +115,7 @@ class DrawBest:
         # ClassLevel = Image.open(maimai_dir / 'UI_FBR_Class_00.png').resize((144, 87))
         rating = Image.open(maimai_dir / 'UI_CMN_Shougou_Rainbow.png').resize((454, 50))
         if self.qqid :
-            icon = get_QQlogo(int(self.qqid))
+            icon = await get_QQlogo(int(self.qqid))
         else:
             icon = Image.open(maimai_dir / 'UI_Icon_309503.png').resize((214, 214))
         if self.plate:
