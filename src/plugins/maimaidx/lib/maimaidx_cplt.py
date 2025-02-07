@@ -58,14 +58,16 @@ class DrawCplt:
             font.draw(x + 460, y + 150, 80, title, TEXT_COLOR[info.level_index], anchor='lm')
             font.draw(x + 450, y + 300, 120, f'{info.achievements:.4f}%', TEXT_COLOR[info.level_index], anchor='lm')
 
-    async def draw_cplt(self, data: List[CpltInfo], arg: str, page: int, qqid: int) -> Image.Image:
+    async def draw_cplt(self, data: List[CpltInfo], arg: str, page: int, qqid: Optional[int]) -> Image.Image:
         draw = ImageDraw.Draw(self._im)
         yh_font = DrawText(draw, YAHEI)
 
         head = Image.open(maimai_dir / 'title2.png').resize((4000,600))
         self._im.alpha_composite(head, (1030, 50))
 
-        icon = (await get_QQlogo(qqid)).resize((400,400))
+        icon = Image.open(maimai_dir / 'UI_Icon_309503.png').resize((400,400))
+        if qqid:
+            icon = (await get_QQlogo(qqid)).resize((400,400))
         self._im.alpha_composite(icon, (1250, 700))
 
         yh_font.draw(3200, 350, 120, arg, (0, 0, 0, 255), anchor='mm')
@@ -113,7 +115,7 @@ async def generate_level_cplt(level: str, page: int = 1, qqid: Optional[int] = N
         arg = f'{level}分数列表 ({page}/{max_page})'
 
         draw_cplt = DrawCplt()
-        pic = draw_cplt.draw_cplt(targets, arg, page)
+        pic = await draw_cplt.draw_cplt(targets, arg, page, qqid)
 
         msg = MessageSegment.image(image_to_base64(pic))
     except UserNotFoundError as e:
