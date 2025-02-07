@@ -115,7 +115,7 @@ class DrawBest:
         # ClassLevel = Image.open(maimai_dir / 'UI_FBR_Class_00.png').resize((144, 87))
         rating = Image.open(maimai_dir / 'UI_CMN_Shougou_Rainbow.png').resize((454, 50))
         if self.qqid :
-            icon = await get_QQlogo(int(self.qqid)).resize((214, 214))
+            icon = (await get_QQlogo(int(self.qqid))).resize((214, 214))
         else:
             icon = Image.open(maimai_dir / 'UI_Icon_309503.png').resize((214, 214))
         if self.plate:
