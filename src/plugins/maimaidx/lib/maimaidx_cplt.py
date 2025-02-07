@@ -63,9 +63,9 @@ class DrawCplt:
         yh_font = DrawText(draw, YAHEI)
 
         head = Image.open(maimai_dir / 'title2.png').resize((3000,600))
-        self._im.alpha_composite(head, (1030, 50))
+        self._im.alpha_composite(head, (1570, 50))
 
-        icon = Image.open(maimai_dir / 'UI_Icon_309503.png').resize((200,200))
+        icon = Image.open(maimai_dir / 'UI_Icon_309503.png').resize((100,100))
         if qqid:
             icon = (await get_QQlogo(qqid)).resize((400,400))
         self._im.alpha_composite(icon, (1600, 200))
