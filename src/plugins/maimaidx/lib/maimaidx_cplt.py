@@ -58,14 +58,17 @@ class DrawCplt:
             font.draw(x + 460, y + 150, 80, title, TEXT_COLOR[info.level_index], anchor='lm')
             font.draw(x + 450, y + 300, 120, f'{info.achievements:.4f}%', TEXT_COLOR[info.level_index], anchor='lm')
 
-    def draw_cplt(self, data: List[CpltInfo], arg: str, page: int) -> Image.Image:
+    async def draw_cplt(self, data: List[CpltInfo], arg: str, page: int, qqid: int) -> Image.Image:
         draw = ImageDraw.Draw(self._im)
         yh_font = DrawText(draw, YAHEI)
 
-        head = Image.open(maimai_dir / 'title2.png').resize((2000,400))
-        self._im.alpha_composite(head, (2060, 100))
+        head = Image.open(maimai_dir / 'title2.png').resize((4000,600))
+        self._im.alpha_composite(head, (1030, 50))
 
-        yh_font.draw(3060, 300, 100, arg, (0, 0, 0, 255), anchor='mm')
+        icon = (await get_QQlogo(qqid)).resize((400,400))
+        self._im.alpha_composite(icon, (1250, 700))
+
+        yh_font.draw(3200, 350, 120, arg, (0, 0, 0, 255), anchor='mm')
 
         self.whiledraw(data, yh_font, 200, page)
 
