@@ -214,6 +214,8 @@ async def generate_b50(qqid: Optional[int] = None, username: Optional[str] = Non
         msg = MessageSegment.text(f"Error occurred: {e}")
     except ValueError as e:
         msg = MessageSegment.text(f"Error occurred: {e}")
+    except TypeError as e:
+        msg = MessageSegment.text(f"Error occurred: {e}")
     except Exception as e:
         msg = MessageSegment.text(f'未知错误：{type(e)}\n请联系Bot管理员')
     return msg
