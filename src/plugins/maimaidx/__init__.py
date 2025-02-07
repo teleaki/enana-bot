@@ -41,8 +41,8 @@ async def handle_b50(bot: Bot, event: Event, args: Message = CommandArg()):
     if username := args.extract_plain_text():
         b50_msg = await generate_b50(username=username)
     else:
-        qqid = event.user_id
-        b50_msg = await generate_b50(qqid=qqid)
+        qqid = event.get_user_id()
+        b50_msg = await generate_b50(qqid=int(qqid))
 
     await b50.finish(Message(b50_msg))
 
