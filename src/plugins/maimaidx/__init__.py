@@ -43,6 +43,7 @@ async def handle_b50(bot: Bot, event: Event, args: Message = CommandArg()):
     else:
         qqid = event.get_user_id()
         b50_msg = await generate_b50(qqid=int(qqid))
+        print(qqid)
 
     await b50.finish(Message(b50_msg))
 
