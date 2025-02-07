@@ -115,7 +115,7 @@ class DrawBest:
         # ClassLevel = Image.open(maimai_dir / 'UI_FBR_Class_00.png').resize((144, 87))
         rating = Image.open(maimai_dir / 'UI_CMN_Shougou_Rainbow.png').resize((454, 50))
         if self.qqid :
-            icon = await get_QQlogo(int(self.qqid))
+            icon = await get_QQlogo(int(self.qqid)).resize((214, 214))
         else:
             icon = Image.open(maimai_dir / 'UI_Icon_309503.png').resize((214, 214))
         if self.plate:
@@ -202,7 +202,7 @@ async def generate_b50(qqid: Optional[int] = None, username: Optional[str] = Non
         user_info = UserInfo(**obj)
         draw_best = DrawBest(user_info = user_info, qqid = qqid)
 
-        pic = draw_best.draw_b50()
+        pic = await draw_best.draw_b50()
         msg = MessageSegment.image(image_to_base64(pic))
     except UserNotFoundError as e:
         msg = MessageSegment.text(str(e))
