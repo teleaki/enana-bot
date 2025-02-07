@@ -114,11 +114,11 @@ class DrawBest:
         MatchLevel = Image.open(maimai_dir / self._findMatchLevel()).resize((134, 55))
         # ClassLevel = Image.open(maimai_dir / 'UI_FBR_Class_00.png').resize((144, 87))
         rating = Image.open(maimai_dir / 'UI_CMN_Shougou_Rainbow.png').resize((454, 50))
-        icon = None
+        icon = Image.open(maimai_dir / 'UI_Icon_309503.png').resize((214, 214))
         if self.qqid :
-            icon = (await get_QQlogo(int(self.qqid))).resize((214, 214))
-        if not icon:
-            icon = Image.open(maimai_dir / 'UI_Icon_309503.png').resize((214, 214))
+            icon = await get_QQlogo(int(self.qqid))
+            icon = icon.convert('RGBA')
+            icon = icon.resize((214, 214))
         if self.plate:
             plate = Image.open(plate_dir / f'{self.plate}.png').resize((1420, 230))
         else:
