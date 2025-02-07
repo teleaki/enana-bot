@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Union
 
 import httpx
 
@@ -9,6 +9,7 @@ class MaiAPI:
     def __init__(self):
         self.Diving_fish = 'https://www.diving-fish.com/api/maimaidxprober'
         self.Xray_alias = 'https://download.fanyu.site/maimai/alias.json'
+        self.QQ_logo = 'http://q1.qlogo.cn/g'
 
     async def _request(self, method: str, url: str, **kwargs) -> Any:
         session = httpx.AsyncClient(timeout=30)
@@ -35,6 +36,12 @@ class MaiAPI:
                 raise UserDisabledQueryError
             else:
                 raise UnknownError
+
+        elif self.qq_logo in url:
+            if res.status_code == 200:
+                data = res.content
+            else:
+                raise
 
         await session.aclose()
         return data
@@ -71,5 +78,13 @@ class MaiAPI:
         if project == 'player':
             json['b50'] = True
         return await self._request('POST', self.Diving_fish + f'/query/{project}', json=json)
+
+    async def qq_logo(self, qqid: Union[int, str]):
+        params = {
+            'b': 'qq',
+            'nk': qqid,
+            's': 100
+        }
+        return await self._request('GET', self.QQ_logo, params=params)
 
 maiapi = MaiAPI()

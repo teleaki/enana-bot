@@ -5,6 +5,7 @@ from typing import Tuple, Union
 from PIL import Image, ImageDraw, ImageFont
 
 from .maimaidx_res import *
+from .maimaidx_api import maiapi
 
 
 class DrawText:
@@ -65,6 +66,10 @@ def changeColumnWidth(s: str, len: int) -> str:
         if res <= len:
             sList.append(ch)
     return ''.join(sList)
+
+async def get_QQlogo(qqid: Union[str, int]) -> Image.Image:
+    qqlogo = Image.open(BytesIO(await maiapi.qq_logo(qqid)))
+    return qqlogo
 
 def text_to_image(text: str) -> Image.Image:
     font = ImageFont.truetype(str(SIYUAN), 24)
