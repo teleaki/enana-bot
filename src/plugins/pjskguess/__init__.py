@@ -14,7 +14,7 @@ config = get_plugin_config(Config)
 
 from nonebot import on_command, on_regex
 from nonebot.matcher import Matcher
-from nonebot.adapters.onebot.v11 import Bot, Message, Event, MessageSegment
+from nonebot.adapters.onebot.v11 import Bot, Event
 
 from .guess import add_game, end_game, games, start_timer
 

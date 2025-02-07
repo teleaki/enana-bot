@@ -18,10 +18,10 @@ class DrawCplt:
     _diff = [basic, advanced, expert, master, remaster]
 
     def __init__(self):
-        self._im = Image.new('RGBA', (6120, 11000), color='white')
+        self._im = Image.new('RGBA', (6140, 11200), color='white')
 
     def whiledraw(self, data: List[CpltInfo], font: DrawText, y: int, page: int) -> None:
-        dy = 410
+        dy = 420
         TEXT_COLOR = [(255, 255, 255, 255), (255, 255, 255, 255), (255, 255, 255, 255), (255, 255, 255, 255),
                       (138, 0, 226, 255)]
 
@@ -29,7 +29,7 @@ class DrawCplt:
             if not num % 3:
                 x = 50; y += dy
             else:
-                x = 50 + (num % 3) * 2000 + (num % 3 - 1) * 10
+                x = 50 + (num % 3) * 2000 + (num % 3) * 20
 
             cover = get_music_cover(info.id).resize((280,280))
             ver = Image.open(maimai_dir / f'{info.type.upper()}.png').resize((210,78))
@@ -69,7 +69,7 @@ class DrawCplt:
 
         self.whiledraw(data, yh_font, 200, page)
 
-        return self._im.resize((3060,5500))
+        return self._im.resize((3070,5600))
 
 
 def get_page(data, page: int, size: int = 75):

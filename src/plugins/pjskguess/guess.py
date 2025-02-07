@@ -1,15 +1,16 @@
 import asyncio
+import base64
+import httpx
+import random
 from io import BytesIO
-from typing import Optional, Union, List, Dict
+from typing import Optional, Union, Dict
 
 from PIL import Image
 from nonebot.adapters.onebot.v11 import Message, MessageSegment
 from nonebot.matcher import Matcher
 
+from .config import oc_dict, oc_name
 from .get_img import get_img_url
-from .config import oc_dict, card_type, oc_name
-
-import random, httpx, base64
 
 
 async def start_timer(matcher: Matcher, groupid: str, timeout: int = 60):
