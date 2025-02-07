@@ -68,9 +68,9 @@ class DrawCplt:
         icon = Image.open(maimai_dir / 'UI_Icon_309503.png').resize((280,280))
         if qqid:
             icon = (await get_QQlogo(qqid)).resize((280,280))
-        self._im.alpha_composite(icon, (2400, 200))
+        self._im.alpha_composite(icon, (2350, 200))
 
-        yh_font.draw(2650, 350, 120, arg, (0, 0, 0, 255), anchor='lm')
+        yh_font.draw(2700, 350, 120, arg, (0, 0, 0, 255), anchor='lm')
 
         self.whiledraw(data, yh_font, 200, page)
 
