@@ -37,7 +37,7 @@ class MaiAPI:
             else:
                 raise UnknownError
 
-        elif self.qq_logo in url:
+        elif self.QQ_logo in url:
             if res.status_code == 200:
                 data = res.content
             else:
