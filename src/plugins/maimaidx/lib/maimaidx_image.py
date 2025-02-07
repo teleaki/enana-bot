@@ -69,7 +69,7 @@ def changeColumnWidth(s: str, len: int) -> str:
 
 async def get_QQlogo(qqid: Union[str, int]) -> Image.Image:
     qqlogo = Image.open(BytesIO(await maiapi.qq_logo(qqid)))
-    return qqlogo
+    return qqlogo.convert("RGBA")
 
 def text_to_image(text: str) -> Image.Image:
     font = ImageFont.truetype(str(SIYUAN), 24)

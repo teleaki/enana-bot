@@ -117,7 +117,6 @@ class DrawBest:
         icon = Image.open(maimai_dir / 'UI_Icon_309503.png').resize((214, 214))
         if self.qqid :
             icon = await get_QQlogo(int(self.qqid))
-            icon = icon.convert('RGBA')
             icon = icon.resize((214, 214))
         if self.plate:
             plate = Image.open(plate_dir / f'{self.plate}.png').resize((1420, 230))
