@@ -60,8 +60,9 @@ class DrawTable:
 
             music = mai.total_list.search_by_id(info.id)
             if arg == 'level':
+                diff_label = ['BAS', 'ADV', 'EXP', 'MAS', 'REM']
                 ds = music.ds[info.level_index]
-                font.draw(x + 1200, y + 250, 50, f'DS:{ds}', TEXT_COLOR[info.level_index], anchor='lm')
+                font.draw(x + 1200, y + 250, 50, f'{diff_label[info.level_index]}{ds}', TEXT_COLOR[info.level_index], anchor='lm')
             if arg == 'charter':
                 charter = music.charts[info.level_index].charter
                 font.draw(x + 450, y + 380, 30, f'charter:{charter}', TEXT_COLOR[info.level_index], anchor='lm')
