@@ -135,7 +135,7 @@ async def generate_charter_table(charter: str, page: int = 1, qqid: Optional[int
 
         charter_list = []
         for c in charters:
-            if charter in c:
+            if charter.lower() in c.lower():
                 charter_list.append(c)
 
         verlist = [CpltInfo(**item) for item in obj['verlist']]
