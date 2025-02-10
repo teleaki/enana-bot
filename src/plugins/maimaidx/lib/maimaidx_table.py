@@ -159,8 +159,7 @@ async def generate_charter_table(charter: str, page: int = 1, qqid: Optional[int
         charter_info = Message([
             MessageSegment.text('匹配到的谱师有：\n')
         ])
-        for ch in charter_list:
-            charter_info.append(MessageSegment.text(', '.join(ch)))
+        charter_info.append(MessageSegment.text(', '.join(charter_list)))
 
         draw_cplt = DrawTable()
         pic = await draw_cplt.draw_table(targets, head, page, qqid)
