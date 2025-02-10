@@ -134,7 +134,7 @@ async def generate_charter_table(charter: str, page: int = 1, qqid: Optional[int
         obj = await maiapi.query_user('plate', qqid=qqid, username=username, version=version_list)
 
         charter_list = []
-        for c in charter:
+        for c in charters:
             if charter in c:
                 charter_list.append(c)
 
