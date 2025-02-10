@@ -56,7 +56,7 @@ class DrawTable:
                 title = changeColumnWidth(title, 16) + '...'
             font.draw(x + 1580, y + 160, 50, f'No.{num + 1 + (page - 1) * 75}', TEXT_COLOR[info.level_index], anchor='rm')
             font.draw(x + 460, y + 150, 80, title, TEXT_COLOR[info.level_index], anchor='lm')
-            font.draw(x + 450, y + 290, 120, f'{info.achievements:.4f}%', TEXT_COLOR[info.level_index], anchor='lm')
+            font.draw(x + 450, y + 285, 120, f'{info.achievements:.4f}%', TEXT_COLOR[info.level_index], anchor='lm')
 
             music = mai.total_list.search_by_id(info.id)
             if arg == 'level':
@@ -65,7 +65,7 @@ class DrawTable:
                 font.draw(x + 1200, y + 250, 50, f'{diff_label[info.level_index]}{ds}', TEXT_COLOR[info.level_index], anchor='lm')
             if arg == 'charter':
                 charter = music.charts[info.level_index].charter
-                font.draw(x + 450, y + 380, 30, f'charter:{charter}', TEXT_COLOR[info.level_index], anchor='lm')
+                font.draw(x + 450, y + 375, 45, f'charter:{charter}', TEXT_COLOR[info.level_index], anchor='lm')
             if arg == 'bpm':
                 bpm = music.basic_info.bpm
                 font.draw(x + 1200, y + 250, 50, f'BPM:{bpm}', TEXT_COLOR[info.level_index], anchor='lm')
