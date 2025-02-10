@@ -93,7 +93,7 @@ async def handle_level(bot: Bot, event: Event, args: Tuple[Optional[str], Option
 
 charter_table = on_regex(
     r'^(?P<charter>.+)分数列表(?P<page>\d*)$',
-    priority=3,
+    priority=4,
     block=True
 )
 

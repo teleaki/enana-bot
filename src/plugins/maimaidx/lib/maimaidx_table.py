@@ -137,7 +137,7 @@ async def generate_charter_table(charter: str, page: int = 1, qqid: Optional[int
         data = []
         for info in verlist:
             music = mai.total_list.search_by_id(info.id)
-            if charter in music.charts[info.level_index].charter:
+            if charter.lower() in music.charts[info.level_index].charter.lower():
                 data.append(info)
 
         data = remove_duplicates(data)
