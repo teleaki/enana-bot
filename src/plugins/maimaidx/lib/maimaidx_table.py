@@ -133,9 +133,13 @@ async def generate_charter_table(charter: str, page: int = 1, qqid: Optional[int
         version_list = list(plate_to_version.values())
         obj = await maiapi.query_user('plate', qqid=qqid, username=username, version=version_list)
 
-        charter_list = []
+        cdata = []
         for c in charters:
             if charter.lower() in c.lower():
+                cdata.append(c)
+        charter_list = []
+        for c in cdata:
+            if c not in charter_list:
                 charter_list.append(c)
 
         verlist = [CpltInfo(**item) for item in obj['verlist']]
