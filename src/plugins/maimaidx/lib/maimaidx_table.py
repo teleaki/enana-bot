@@ -145,19 +145,20 @@ async def generate_charter_table(charter: str, page: int = 1, qqid: Optional[int
         version_list = list(plate_to_version.values())
         obj = await maiapi.query_user('plate', qqid=qqid, username=username, version=version_list)
 
-        charter_list = []
-        for c in charters:
-            if charter.lower() in c.lower():
-                charter_list.append(c)
+        real_charter_list = []
+        for rc in real_charters.keys():
+            if charter.lower() in rc.lower():
+                real_charter_list.append(rc)
 
-        charter_list = list(dict.fromkeys(charter_list))
+        real_charter_list = list(dict.fromkeys(real_charter_list))
 
         verlist = [CpltInfo(**item) for item in obj['verlist']]
         data = []
         for info in verlist:
             music = mai.total_list.search_by_id(info.id)
-            if charter.lower() in music.charts[info.level_index].charter.lower():
-                data.append(info)
+            for rc in real_charter_list:
+                if music.charts[info.level_index].charter in real_charters[rc]:
+                    data.append(info)
 
         data = remove_duplicates(data)
         data.sort(key=lambda x: x.achievements, reverse=True)
@@ -171,7 +172,8 @@ async def generate_charter_table(charter: str, page: int = 1, qqid: Optional[int
         charter_info = Message([
             MessageSegment.text('匹配到的谱师有：\n')
         ])
-        charter_info.append(MessageSegment.text(', '.join(charter_list)))
+        for rc in real_charter_list:
+            charter_info.append(MessageSegment.text(', '.join(real_charters[rc])))
 
         draw_cplt = DrawTable()
         pic = await draw_cplt.draw_table(targets, head, page, qqid, arg='charter')
