@@ -1,4 +1,4 @@
-from nonebot.adapters.onebot.v11 import MessageSegment
+from nonebot.adapters.onebot.v11 import MessageSegment, Message
 
 from .maimaidx_api import maiapi
 from .maimaidx_error import *
@@ -126,12 +126,17 @@ async def generate_level_table(level: str, page: int = 1, qqid: Optional[int] = 
         msg = MessageSegment.text(f'{type(e)}: {e}\n请联系Bot管理员')
     return msg
 
-async def generate_charter_table(charter: str, page: int = 1, qqid: Optional[int] = None, username: Optional[str] = None) -> MessageSegment:
+async def generate_charter_table(charter: str, page: int = 1, qqid: Optional[int] = None, username: Optional[str] = None) -> Message:
     try:
         if username:
             qqid = None
         version_list = list(plate_to_version.values())
         obj = await maiapi.query_user('plate', qqid=qqid, username=username, version=version_list)
+
+        charter_list = []
+        for c in charter:
+            if charter in c:
+                charter_list.append(c)
 
         verlist = [CpltInfo(**item) for item in obj['verlist']]
         data = []
@@ -147,12 +152,18 @@ async def generate_charter_table(charter: str, page: int = 1, qqid: Optional[int
             page = max_page
         targets = get_page(data, page, size=75)
 
-        arg = f'{charter}分数列表 ({page}/{max_page})'
+        head = f'{charter}分数列表 ({page}/{max_page})'
+
+        charter_info = Message([
+            MessageSegment.text('匹配到的谱师有：\n')
+        ])
+        for ch in charter_list:
+            charter_info.append(MessageSegment.text(', '.join(charter_list)))
 
         draw_cplt = DrawTable()
-        pic = await draw_cplt.draw_table(targets, arg, page, qqid)
+        pic = await draw_cplt.draw_table(targets, head, page, qqid)
 
-        msg = MessageSegment.image(image_to_base64(pic))
+        msg = charter_info + MessageSegment.image(image_to_base64(pic))
     except UserNotFoundError as e:
         msg = MessageSegment.text(str(e))
     except UserDisabledQueryError as e:
