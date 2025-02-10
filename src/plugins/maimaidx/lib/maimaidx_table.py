@@ -20,7 +20,7 @@ class DrawTable:
     def __init__(self):
         self._im = Image.new('RGBA', (6140, 11200), color='white')
 
-    def whiledraw(self, data: List[CpltInfo], font: DrawText, y: int, page: int) -> None:
+    def whiledraw(self, data: List[CpltInfo], font: DrawText, y: int, page: int, arg: str) -> None:
         dy = 420
         TEXT_COLOR = [(255, 255, 255, 255), (255, 255, 255, 255), (255, 255, 255, 255), (255, 255, 255, 255),
                       (138, 0, 226, 255)]
@@ -56,9 +56,20 @@ class DrawTable:
                 title = changeColumnWidth(title, 16) + '...'
             font.draw(x + 1580, y + 160, 50, f'No.{num + 1 + (page - 1) * 75}', TEXT_COLOR[info.level_index], anchor='rm')
             font.draw(x + 460, y + 150, 80, title, TEXT_COLOR[info.level_index], anchor='lm')
-            font.draw(x + 450, y + 300, 120, f'{info.achievements:.4f}%', TEXT_COLOR[info.level_index], anchor='lm')
+            font.draw(x + 450, y + 290, 120, f'{info.achievements:.4f}%', TEXT_COLOR[info.level_index], anchor='lm')
 
-    async def draw_table(self, data: List[CpltInfo], head: str, page: int, qqid: Optional[int]) -> Image.Image:
+            music = mai.total_list.search_by_id(info.id)
+            if arg == 'level':
+                ds = music.ds[info.level_index]
+                font.draw(x + 1200, y + 250, 50, f'DS:{ds}', TEXT_COLOR[info.level_index], anchor='lm')
+            if arg == 'charter':
+                charter = music.charts[info.level_index].charter
+                font.draw(x + 450, y + 380, 30, f'charter:{charter}', TEXT_COLOR[info.level_index], anchor='lm')
+            if arg == 'bpm':
+                bpm = music.basic_info.bpm
+                font.draw(x + 1200, y + 250, 50, f'BPM:{bpm}', TEXT_COLOR[info.level_index], anchor='lm')
+
+    async def draw_table(self, data: List[CpltInfo], head: str, page: int, qqid: Optional[int], arg: str) -> Image.Image:
         draw = ImageDraw.Draw(self._im)
         yh_font = DrawText(draw, YAHEI)
 
@@ -72,7 +83,7 @@ class DrawTable:
 
         yh_font.draw(2700, 350, 120, head, (0, 0, 0, 255), anchor='lm')
 
-        self.whiledraw(data, yh_font, 200, page)
+        self.whiledraw(data, yh_font, 200, page, arg=arg)
 
         return self._im.resize((3070,5600))
 
@@ -112,10 +123,10 @@ async def generate_level_table(level: str, page: int = 1, qqid: Optional[int] = 
             page = max_page
         targets = get_page(data, page, size=75)
 
-        arg = f'{level}分数列表 ({page}/{max_page})'
+        head = f'{level}分数列表 ({page}/{max_page})'
 
         draw_cplt = DrawTable()
-        pic = await draw_cplt.draw_table(targets, arg, page, qqid)
+        pic = await draw_cplt.draw_table(targets, head, page, qqid, arg='level')
 
         msg = MessageSegment.image(image_to_base64(pic))
     except UserNotFoundError as e:
@@ -162,9 +173,49 @@ async def generate_charter_table(charter: str, page: int = 1, qqid: Optional[int
         charter_info.append(MessageSegment.text(', '.join(charter_list)))
 
         draw_cplt = DrawTable()
-        pic = await draw_cplt.draw_table(targets, head, page, qqid)
+        pic = await draw_cplt.draw_table(targets, head, page, qqid, arg='charter')
 
         msg = charter_info + MessageSegment.image(image_to_base64(pic))
+    except UserNotFoundError as e:
+        msg = MessageSegment.text(str(e))
+    except UserDisabledQueryError as e:
+        msg = MessageSegment.text(str(e))
+    except Exception as e:
+        msg = MessageSegment.text(f'{type(e)}: {e}\n请联系Bot管理员')
+    return msg
+
+async def generate_bpm_table(bpm_min: int, bpm_max: int, page: int = 1, qqid: Optional[int] = None, username: Optional[str] = None) -> Message:
+    try:
+        if username:
+            qqid = None
+        version_list = list(plate_to_version.values())
+        obj = await maiapi.query_user('plate', qqid=qqid, username=username, version=version_list)
+
+        verlist = [CpltInfo(**item) for item in obj['verlist']]
+        data = []
+        for info in verlist:
+            music = mai.total_list.search_by_id(info.id)
+            if bpm_min <= music.basic_info.bpm <= bpm_max:
+                data.append(info)
+
+        data = remove_duplicates(data)
+        data.sort(key=lambda x: x.achievements, reverse=True)
+        max_page = len(data) // 75 + 1
+        if page > max_page:
+            page = max_page
+        targets = get_page(data, page, size=75)
+
+        head = f'BPM分数列表 ({page}/{max_page})'
+
+        draw_cplt = DrawTable()
+        pic = await draw_cplt.draw_table(targets, head, page, qqid, arg='bpm')
+
+        bpm_info = Message([
+            MessageSegment.text('查询的BPM范围为：\n'),
+            MessageSegment.text(f'[{bpm_min}, {bpm_max}]')
+        ])
+
+        msg = bpm_info + MessageSegment.image(image_to_base64(pic))
     except UserNotFoundError as e:
         msg = MessageSegment.text(str(e))
     except UserDisabledQueryError as e:

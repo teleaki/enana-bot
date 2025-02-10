@@ -71,8 +71,8 @@ level_table = on_regex(
 
 @level_table.handle()
 async def handle_level(bot: Bot, event: Event, args: Tuple[Optional[str], Optional[str]] = RegexStr('level', 'page')):
-    # print(f"Received message: {event.message}")  # 打印消息内容，查看是否匹配
-    # print(f"Extracted level: {args[0]}, page: {args[1]}")  # 打印捕获的 level 和 page
+    print(f"Received message: {event.message}")  # 打印消息内容，查看是否匹配
+    print(f"Extracted level: {args[0]}, page: {args[1]}")  # 打印捕获的 level 和 page
 
     level = args[0]
     page = args[1]
@@ -92,7 +92,7 @@ async def handle_level(bot: Bot, event: Event, args: Tuple[Optional[str], Option
     await level_table.finish(level_msg)
 
 charter_table = on_regex(
-    r'^谱师分数列表(?P<page>\d*) (?P<charter>.+)$',
+    r'^谱师分数列表(?P<page>\d*)\s+(?P<charter>.+)$',
     priority=3,
     block=True
 )
@@ -118,3 +118,31 @@ async def handle_charter(bot: Bot, event: Event, args: Tuple[Optional[str], Opti
     charter_msg = await generate_charter_table(charter=charter, qqid=qqid, page=page)
 
     await charter_table.finish(charter_msg)
+
+bpm_table = on_regex(
+    r'^bpm分数列表(?P<page>\d*)\s+(?P<bpm_min>\d+)-(?P<bpm_max>\d+)$',
+    priority=3,
+    block=True
+)
+
+@bpm_table.handle()
+async def handle_charter(bot: Bot, event: Event, args: Tuple[Optional[str], Optional[str], Optional[str]] = RegexStr('bpm_min', 'bpm_max', 'page')):
+    print(f"Received message: {event.message}")  # 打印消息内容，查看是否匹配
+    print(f"Extracted bpm: {args[0]}-{args[1]}, page: {args[2]}")  # 打印捕获的 bpm 和 page
+
+    bpm_min = int(args[0]); bpm_max = int(args[1])
+    page = args[2]
+    qqid = event.user_id
+
+    # 这里确保 page 的值合法，避免错误
+    if page == 0 or bpm_min > bpm_max:
+        await bpm_table.finish("蓝的盆")
+
+    if not page:
+        page = 1  # 默认第一页，如果没有传入 page 参数
+
+    page = int(page)  # 确保 page 是整数类型
+
+    bpm_msg = await generate_bpm_table(bpm_min=bpm_min, bpm_max=bpm_max, qqid=qqid, page=page)
+
+    await bpm_table.finish(bpm_msg)
