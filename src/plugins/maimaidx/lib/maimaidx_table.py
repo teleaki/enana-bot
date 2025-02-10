@@ -4,11 +4,11 @@ from .maimaidx_api import maiapi
 from .maimaidx_error import *
 from .maimaidx_image import *
 from .maimaidx_model import *
-from .maimaidx_music import get_music_cover
+from .maimaidx_music import get_music_cover, mai
 from .maimaidx_res import *
 
 
-class DrawCplt:
+class DrawTable:
 
     basic = Image.open(maimai_dir / 'cplt_basic.png')
     advanced = Image.open(maimai_dir / 'cplt_advanced.png')
@@ -58,19 +58,19 @@ class DrawCplt:
             font.draw(x + 460, y + 150, 80, title, TEXT_COLOR[info.level_index], anchor='lm')
             font.draw(x + 450, y + 300, 120, f'{info.achievements:.4f}%', TEXT_COLOR[info.level_index], anchor='lm')
 
-    async def draw_cplt(self, data: List[CpltInfo], arg: str, page: int, qqid: Optional[int]) -> Image.Image:
+    async def draw_table(self, data: List[CpltInfo], head: str, page: int, qqid: Optional[int]) -> Image.Image:
         draw = ImageDraw.Draw(self._im)
         yh_font = DrawText(draw, YAHEI)
 
-        head = Image.open(maimai_dir / 'title2.png').resize((3000,600))
-        self._im.alpha_composite(head, (1570, 50))
+        head_bg = Image.open(maimai_dir / 'title2.png').resize((3000,600))
+        self._im.alpha_composite(head_bg, (1570, 50))
 
         icon = Image.open(maimai_dir / 'UI_Icon_309503.png').resize((280,280))
         if qqid:
             icon = (await get_QQlogo(qqid)).resize((280,280))
         self._im.alpha_composite(icon, (2300, 200))
 
-        yh_font.draw(2700, 350, 120, arg, (0, 0, 0, 255), anchor='lm')
+        yh_font.draw(2700, 350, 120, head, (0, 0, 0, 255), anchor='lm')
 
         self.whiledraw(data, yh_font, 200, page)
 
@@ -92,7 +92,7 @@ def remove_duplicates(data: List[CpltInfo]) -> List[CpltInfo]:
     # 返回字典中的所有值，即去重后的元素列表
     return list(seen.values())
 
-async def generate_level_cplt(level: str, page: int = 1, qqid: Optional[int] = None, username: Optional[str] = None) -> MessageSegment:
+async def generate_level_table(level: str, page: int = 1, qqid: Optional[int] = None, username: Optional[str] = None) -> MessageSegment:
     try:
         if username:
             qqid = None
@@ -114,20 +114,49 @@ async def generate_level_cplt(level: str, page: int = 1, qqid: Optional[int] = N
 
         arg = f'{level}分数列表 ({page}/{max_page})'
 
-        draw_cplt = DrawCplt()
-        pic = await draw_cplt.draw_cplt(targets, arg, page, qqid)
+        draw_cplt = DrawTable()
+        pic = await draw_cplt.draw_table(targets, arg, page, qqid)
 
         msg = MessageSegment.image(image_to_base64(pic))
     except UserNotFoundError as e:
         msg = MessageSegment.text(str(e))
     except UserDisabledQueryError as e:
         msg = MessageSegment.text(str(e))
-    except OSError as e:
-        msg = MessageSegment.text(f"Error occurred: {e}")
-    except AttributeError as e:
-        msg = MessageSegment.text(f"Error occurred: {e}")
-    except ValueError as e:
-        msg = MessageSegment.text(f"Error occurred: {e}")
     except Exception as e:
-        msg = MessageSegment.text(f'未知错误：{type(e)}\n请联系Bot管理员')
+        msg = MessageSegment.text(f'{type(e)}: {e}\n请联系Bot管理员')
+    return msg
+
+async def generate_charter_table(charter: str, page: int = 1, qqid: Optional[int] = None, username: Optional[str] = None) -> MessageSegment:
+    try:
+        if username:
+            qqid = None
+        version_list = list(plate_to_version.values())
+        obj = await maiapi.query_user('plate', qqid=qqid, username=username, version=version_list)
+
+        verlist = [CpltInfo(**item) for item in obj['verlist']]
+        data = []
+        for info in verlist:
+            music = mai.total_list.search_by_id(info.id)
+            if charter in music.charts[info.level_index].charter:
+                data.append(info)
+
+        data = remove_duplicates(data)
+        data.sort(key=lambda x: x.achievements, reverse=True)
+        max_page = len(data) // 75 + 1
+        if page > max_page:
+            page = max_page
+        targets = get_page(data, page, size=75)
+
+        arg = f'{charter}分数列表 ({page}/{max_page})'
+
+        draw_cplt = DrawTable()
+        pic = await draw_cplt.draw_table(targets, arg, page, qqid)
+
+        msg = MessageSegment.image(image_to_base64(pic))
+    except UserNotFoundError as e:
+        msg = MessageSegment.text(str(e))
+    except UserDisabledQueryError as e:
+        msg = MessageSegment.text(str(e))
+    except Exception as e:
+        msg = MessageSegment.text(f'{type(e)}: {e}\n请联系Bot管理员')
     return msg
