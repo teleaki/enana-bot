@@ -47,12 +47,19 @@ async def gc_handle(matcher: Matcher, bot: Bot, event: Event):
 
     game = add_game(groupid)
 
-    msg = game.guess_card_start()
-    if msg:  # 检查消息是否成功生成
-        await guess_card.send(msg)
-        game.timer_task = asyncio.create_task(start_timer(matcher, groupid))
+    flag, msg = game.guess_card_start()
+    if flag:
+        if msg:  # 检查消息是否成功生成
+            await guess_card.send(msg)
+            game.timer_task = asyncio.create_task(start_timer(matcher, groupid))
+        else:
+            game.guess_card_end()
+            end_game(groupid)
+            await guess_card.finish("游戏启动失败，请稍后再试。")
     else:
-        await guess_card.finish("游戏启动失败，请稍后再试。")
+        game.guess_card_end()
+        end_game(groupid)
+        await guess_card.finish(msg)
 
 guess_card_answer = on_regex(
     r'^(猜(\w+)|不玩了)$',

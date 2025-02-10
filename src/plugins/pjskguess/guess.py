@@ -58,17 +58,17 @@ class GuessCard:
                         MessageSegment.text('开启pjsk猜卡面\n总共有60s的时间来猜出下面图片为谁的卡面，发送“猜xxx”即可，发送“不玩了”停止游戏'),
                         MessageSegment.image(image2base64(sample))
                     ])
-                    return msg
+                    return True, msg
                 else:
                     # 图片转换失败的处理
-                    return Message([MessageSegment.text('图片加载失败，请稍后再试。')])
+                    return False, Message([MessageSegment.text('图片加载失败，请稍后再试。')])
             else:
                 # 图片链接获取失败的处理
-                return Message([MessageSegment.text('未能获取到有效的卡面图片。')])
+                return False, Message([MessageSegment.text('未能获取到有效的卡面图片。')])
 
         except Exception as e:
             # 捕获其他异常
-            return Message([MessageSegment.text(f'发生错误：{str(e)}')])
+            return False, Message([MessageSegment.text(f'发生错误：{str(e)}')])
 
     def guess_card_judge(self, key: Optional[str], qqid: Union[int, str]):
         if key:
