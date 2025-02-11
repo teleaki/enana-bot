@@ -44,7 +44,7 @@ class GuessMusic:
             # 构建消息
             msg = Message([
                 MessageSegment.text(
-                    '开启mai看曲绘猜歌，你有180s的时间通过下面的曲绘切片猜出这是什么歌，发送“猜(id/title/alias)”进行游玩，发送“不玩了”结束游戏\n'),
+                    '开启mai看曲绘猜歌，你有120s的时间通过下面的曲绘切片猜出这是什么歌，发送“猜(id/title/alias)”进行游玩，发送“不玩了”结束游戏\n'),
                 MessageSegment.image(image_to_base64(sample))
             ])
             return True, msg
@@ -55,8 +55,6 @@ class GuessMusic:
 
     def guess_card_judge(self, key: Optional[str], qqid: Union[int, str]) -> Tuple[bool, Union[Message, MessageSegment]]:
         if key:
-            alias_answer_ids = mai.total_alias_list.fuzzy_alias(key)
-            alias_answer_id = alias_answer_ids[0]
             if key == self.answer.id or key == self.answer.title:
                 msg = Message([
                     MessageSegment.text('恭喜'),
@@ -65,18 +63,26 @@ class GuessMusic:
                     MessageSegment.image(image_to_base64(self.cover))
                 ])
                 return True, msg
-            elif alias_answer_id == self.answer.id:
-                msg = Message([
-                    MessageSegment.text('恭喜'),
-                    MessageSegment.at(qqid),
-                    MessageSegment.text(f'答对了！是 {self.answer.id}: {self.answer.title} 哦\n'),
-                    MessageSegment.image(image_to_base64(self.cover))
-                ])
-                return True, msg
+            alias_answer_ids = mai.total_alias_list.fuzzy_alias(key)
+            if alias_answer_ids:
+                alias_answer_id = alias_answer_ids[0]
+                if alias_answer_id == self.answer.id:
+                    msg = Message([
+                        MessageSegment.text('恭喜'),
+                        MessageSegment.at(qqid),
+                        MessageSegment.text(f'答对了！是 {self.answer.id}: {self.answer.title} 哦\n'),
+                        MessageSegment.image(image_to_base64(self.cover))
+                    ])
+                    return True, msg
+                else:
+                    wrong_answer = mai.total_list.search_by_id(alias_answer_id)
+                    msg = Message([
+                        MessageSegment.text(f'回答错误，不是 {wrong_answer.id}: {wrong_answer.title} 哦')
+                    ])
+                    return False, msg
             else:
-                wrong_answer = mai.total_list.search_by_id(alias_answer_id)
                 msg = Message([
-                    MessageSegment.text(f'回答错误，不是 {wrong_answer.id}: {wrong_answer.title} 哦')
+                    MessageSegment.text(f'无法识别该乐曲哦')
                 ])
                 return False, msg
         else:
@@ -85,7 +91,7 @@ class GuessMusic:
             ])
             return False, msg
 
-    async def start_timer(self, matcher: Matcher, groupid: str, timeout: int = 180):
+    async def start_timer(self, matcher: Matcher, groupid: str, timeout: int = 120):
         """启动一个定时器，超时后自动结束游戏"""
         try:
             await asyncio.sleep(timeout - 60)
