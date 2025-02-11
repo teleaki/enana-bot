@@ -44,7 +44,7 @@ class GuessMusic:
             # 构建消息
             msg = Message([
                 MessageSegment.text(
-                    '开启mai看曲绘猜歌，你有60s的时间通过下面的曲绘切片猜出这是什么歌，发送“猜(id/title/alias)”进行游玩，发送“不玩了”结束游戏\n'),
+                    '开启mai看曲绘猜歌，你有180s的时间通过下面的曲绘切片猜出这是什么歌，发送“猜(id/title/alias)”进行游玩，发送“不玩了”结束游戏\n'),
                 MessageSegment.image(image_to_base64(sample))
             ])
             return True, msg
