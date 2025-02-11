@@ -55,7 +55,7 @@ class GuessMusic:
 
     def guess_card_judge(self, key: Optional[str], qqid: Union[int, str]) -> Tuple[bool, Union[Message, MessageSegment]]:
         if key:
-            if key == self.answer.id or key == self.answer.title:
+            if key == self.answer.id or key.lower() == self.answer.title.lower():
                 msg = Message([
                     MessageSegment.text('恭喜'),
                     MessageSegment.at(qqid),
