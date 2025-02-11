@@ -128,7 +128,8 @@ def search_song(arg: Union[int, str]) -> Message:
     # 再找别名
     fuzzy_ids = mai.total_alias_list.fuzzy_alias(str(arg))
     if fuzzy_ids:
-        targets.append(mai.total_list.search_by_id(fuzzy_ids))
+        for fuzzy_id in fuzzy_ids:
+            targets.append(mai.total_list.search_by_id(fuzzy_id))
 
     if targets:
         msg = send_song(targets)
