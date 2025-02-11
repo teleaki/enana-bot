@@ -94,17 +94,28 @@ class GuessMusic:
     async def start_timer(self, matcher: Matcher, groupid: str, timeout: int = 120):
         """启动一个定时器，超时后自动结束游戏"""
         try:
-            await asyncio.sleep(timeout - 60)
+            await asyncio.sleep(timeout - 80)
 
             # 构造消息
             msg = Message([
-                MessageSegment.text('还剩60s，再给你点提示吧'),
+                MessageSegment.text('还剩80s，再给你点提示吧'),
                 MessageSegment.text(f'这首歌的曲师是 {self.answer.basic_info.artist}')
             ])
 
             await matcher.send(msg)
 
-            await asyncio.sleep(60)
+            await asyncio.sleep(40)
+
+            sample = get_sample(self.cover)
+            # 构造消息
+            msg = Message([
+                MessageSegment.text('还剩40s，再给你切一块吧'),
+                MessageSegment.image(image_to_base64(sample))
+            ])
+
+            await matcher.send(msg)
+
+            await asyncio.sleep(40)
 
             # 超时后结束游戏
             if groupid in games:
