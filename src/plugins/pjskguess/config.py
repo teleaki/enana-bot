@@ -13,6 +13,14 @@ oc_dict: Dict[str, str] = {
     'miku': '021', 'rin': '022', 'len': '023', 'luka': '024',
     'meiko': '025', 'kaito': '026'
 }
+oc_group: Dict[str, List[str]] = {
+    'Leo/need': ['ick', 'saki', 'hnm', 'shiho'],
+    'MORE MORE JUMP!': ['mnr', 'hrk', 'airi', 'szk'],
+    'Vivid BAD SQUAD': ['khn', 'an', 'akt', 'toya'],
+    'ワンダーランズ×ショウタイム': ['tks', 'emu', 'nene', 'rui'],
+    '25時、ナイトコードで。': ['knd', 'mfy', 'ena', 'mzk'],
+    'VIRTUAL SINGER': ['miku', 'rin', 'len', 'luka', 'meiko', 'kaito']
+}
 oc_name: Dict[str, str] = {
     'ick': '星乃一歌', 'saki': '天马咲希', 'hnm': '望月穗波', 'shiho': '日森野志步',
     'mnr': '花里实乃理', 'hrk': '桐谷遥', 'airi': '桃井爱莉', 'szk': '日森野雫',

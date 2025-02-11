@@ -72,7 +72,7 @@ class DrawBest:
             else:
                 x += 416
 
-            cover = get_music_cover(info.song_id).resize((135, 135))
+            cover = Image.open(get_music_cover(info.song_id)).resize((135, 135))
             version = Image.open(maimai_dir / f'{info.type.upper()}.png').resize((55, 19))
             if info.rate.islower():
                 rate = Image.open(maimai_dir / f'UI_TTR_Rank_{score_Rank_l[info.rate]}.png').resize((95, 44))

@@ -31,7 +31,7 @@ class DrawTable:
             else:
                 x = 50 + (num % 3) * 2000 + (num % 3) * 20
 
-            cover = get_music_cover(info.id).resize((280,280))
+            cover = Image.open(get_music_cover(info.id)).resize((280,280))
             ver = Image.open(maimai_dir / f'{info.type.upper()}.png').resize((210,78))
 
             # if info.rate.islower():

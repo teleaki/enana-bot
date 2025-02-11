@@ -13,27 +13,6 @@ from .config import oc_dict, oc_name
 from .get_img import get_img_url
 
 
-async def start_timer(matcher: Matcher, groupid: str, timeout: int = 60):
-    """启动一个定时器，超时后自动结束游戏"""
-    try:
-        await asyncio.sleep(timeout - 10)
-
-        await matcher.send('还剩10s')
-
-        await asyncio.sleep(10)
-
-        # 超时后结束游戏
-        if groupid in games:
-            game = games[groupid]
-            msg = game.guess_card_timeout()
-            game.guess_card_end()
-            end_game(groupid)
-            await matcher.finish(msg)
-    except asyncio.CancelledError:
-        # 任务被取消时的处理
-        print(f"计时器已取消")
-
-
 class GuessCard:
     def __init__(self):
         self.answer = None
@@ -42,7 +21,7 @@ class GuessCard:
 
     def guess_card_start(self):
         try:
-            # 随机选择卡片
+            # 随机选择oc
             self.answer = random.choice(list(oc_dict.keys()))
 
             # 获取图片链接
@@ -96,6 +75,33 @@ class GuessCard:
                 MessageSegment.text('请输入文字')
             ])
             return False, msg
+
+    async def start_timer(self, matcher: Matcher, groupid: str, timeout: int = 60):
+        """启动一个定时器，超时后自动结束游戏"""
+        try:
+            await asyncio.sleep(timeout - 20)
+
+            # 生成样本
+            sample = get_sample(self.image)
+            # 构造消息
+            msg = Message([
+                MessageSegment.text('还剩20s，再给你点提示吧'),
+                MessageSegment.image(image2base64(sample))
+            ])
+
+            await matcher.send(msg)
+
+            await asyncio.sleep(20)
+
+            # 超时后结束游戏
+            if groupid in games:
+                msg = self.guess_card_timeout()
+                self.guess_card_end()
+                end_game(groupid)
+                await matcher.finish(msg)
+        except asyncio.CancelledError:
+            # 任务被取消时的处理
+            print(f"计时器已取消")
 
     def guess_card_timeout(self):
         msg = Message([

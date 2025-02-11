@@ -16,7 +16,7 @@ from nonebot import on_command, on_regex
 from nonebot.matcher import Matcher
 from nonebot.adapters.onebot.v11 import Bot, Event
 
-from .guess import add_game, end_game, games, start_timer
+from .guess import add_game, end_game, games
 
 import asyncio
 
@@ -51,7 +51,7 @@ async def gc_handle(matcher: Matcher, bot: Bot, event: Event):
     if flag:
         if msg:  # 检查消息是否成功生成
             await guess_card.send(msg)
-            game.timer_task = asyncio.create_task(start_timer(matcher, groupid))
+            game.timer_task = asyncio.create_task(game.start_timer(matcher, groupid))
         else:
             game.guess_card_end()
             end_game(groupid)

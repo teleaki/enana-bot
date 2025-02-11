@@ -1,20 +1,9 @@
-from difflib import SequenceMatcher
-
 from nonebot.adapters.onebot.v11 import Message, MessageSegment
 
 from .maimaidx_image import *
 from .maimaidx_model import *
 from .maimaidx_music import mai, get_music_cover
 from .maimaidx_res import *
-
-
-# 比较相似度
-def is_similar(input_string, string_list, threshold=0.7):
-    for string in string_list:
-        similarity = SequenceMatcher(None, input_string, string).ratio()
-        if similarity > threshold:
-            return True
-    return False
 
 
 def extract_fit_diff_from_music(music: Music) -> str:
@@ -29,7 +18,7 @@ def extract_fit_diff_from_music(music: Music) -> str:
     return " / ".join(fit_diff_values)
 
 def song_info_tamp(music: Music) -> Message:
-    cover = get_music_cover(music.id)
+    cover = Image.open(get_music_cover(music.id))
     ds_info = ' / '.join(map(str, music.ds))
     fit_ds_info = extract_fit_diff_from_music(music)
     msg = Message([
@@ -66,7 +55,7 @@ def song_info_draw(music: Music) -> Image.Image:
     draw = ImageDraw.Draw(img)
     yh_font = DrawText(draw, YAHEI)
 
-    cover = get_music_cover(music.id).resize((380, 380))
+    cover = Image.open(get_music_cover(music.id)).resize((380, 380))
     tp = Image.open(maimai_dir / f'{music.type.upper()}.png')
     ver = Image.open(maimai_dir / f'{music.basic_info.version}.png')
 
@@ -137,9 +126,9 @@ def search_song(arg: Union[int, str]) -> Message:
         return msg
 
     # 再找别名
-    for music in mai.total_alias_list:
-        if is_similar(str(arg), music.aliases):
-            targets.append(mai.total_list.search_by_id(music.id))
+    fuzzy_ids = mai.total_alias_list.fuzzy_alias(str(arg))
+    if fuzzy_ids:
+        targets.append(mai.total_list.search_by_id(fuzzy_ids))
 
     if targets:
         msg = send_song(targets)
