@@ -156,7 +156,7 @@ def get_sample(img: Image.Image, sample_width: int = 50, sample_height: int = 50
 
     return sample
 
-def random_music(max_retries: int = 10) -> Optional[Music]:
+def random_music(max_retries: int = 50) -> Optional[Music]:
     attempt = 0
     while attempt < max_retries:
         answer_id = random.randint(1, 12000)
