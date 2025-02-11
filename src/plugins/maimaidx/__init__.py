@@ -34,7 +34,7 @@ async def get_data():
 # b50
 b50 = on_command(
     "b50",
-    aliases={'比50'},
+    aliases={'比50', '看看b'},
     priority=3,
     block=True
 )
@@ -155,6 +155,7 @@ async def handle_charter(bot: Bot, event: Event, args: Tuple[Optional[str], Opti
 # guess
 mai_guess = on_command(
     "mai猜歌",
+    aliases={'猜你mai'},
     priority=3,
     block=True
 )
