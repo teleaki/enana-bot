@@ -19,9 +19,11 @@ from nonebot.params import CommandArg, RegexStr
 from .lib.maimaidx_best50 import *
 from .lib.maimaidx_info import *
 from .lib.maimaidx_table import *
+from .lib.maimaidx_guess import *
 
 import re
 
+# init
 driver = get_driver()
 
 @driver.on_startup
@@ -29,6 +31,7 @@ async def get_data():
     await mai.get_music_list()
     await mai.get_music_alias()
 
+# b50
 b50 = on_command(
     "b50",
     aliases={'比50'},
@@ -47,6 +50,7 @@ async def handle_b50(bot: Bot, event: Event, args: Message = CommandArg()):
 
     await b50.finish(Message(b50_msg))
 
+# info
 minfo = on_command(
     "查歌",
     aliases={'id', 'm查歌'},
@@ -63,6 +67,7 @@ async def handle_minfo(bot: Bot, event: Event, args: Message = CommandArg()):
 
     await minfo.finish(minfo_msg)
 
+# table
 level_table = on_regex(
     r'^(?P<level>\d+[\+]*)分数列表(?P<page>\d*)$',
     priority=3,
@@ -146,3 +151,62 @@ async def handle_charter(bot: Bot, event: Event, args: Tuple[Optional[str], Opti
     bpm_msg = await generate_bpm_table(bpm_min=bpm_min, bpm_max=bpm_max, qqid=qqid, page=page)
 
     await bpm_table.finish(bpm_msg)
+
+# guess
+mai_guess = on_command(
+    "mai猜歌",
+    priority=3,
+    block=True
+)
+
+@mai_guess.handle()
+async def handle_mguess(bot: Bot, matcher: Matcher, event: Event):
+    groupid = get_group_id(event)
+    print(groupid)
+
+    if groupid in games:
+        await mai_guess.finish('已有猜歌游戏正在进行中')
+
+    game = add_game(groupid)
+
+    flag, msg = game.guess_music_start()
+    if flag:
+        if msg:  # 检查消息是否成功生成
+            await mai_guess.send(msg)
+            game.timer_task = asyncio.create_task(game.start_timer(matcher, groupid))
+        else:
+            game.guess_music_end()
+            end_game(groupid)
+            await mai_guess.finish("游戏启动失败，请稍后再试。")
+    else:
+        game.guess_music_end()
+        end_game(groupid)
+        await mai_guess.finish(msg)
+
+mai_guess_answer = on_regex(
+    r'^(猜(.*)|不玩了)$',
+    priority=3,
+    block=True
+)
+
+@mai_guess_answer.handle()
+async def gc_answer(bot: Bot, event: Event):
+    groupid = get_group_id(event)
+    if is_started(groupid):
+        game = games[groupid]
+        cmd = event.get_message().extract_plain_text().strip()
+        if cmd == '不玩了':
+            msg = game.guess_music_timeout()
+            game.guess_music_end()
+            end_game(groupid)
+            await mai_guess_answer.finish(msg)
+        elif cmd.startswith('猜'):
+            key = cmd[1:].strip().lower()
+            qqid = event.get_user_id()
+            flag, msg = game.guess_card_judge(key, qqid=qqid)
+            if flag:
+                game.guess_music_end()
+                end_game(groupid)
+                await mai_guess_answer.finish(msg)
+            else:
+                await mai_guess_answer.send(msg)
