@@ -98,7 +98,7 @@ class GuessMusic:
 
             # 构造消息
             msg = Message([
-                MessageSegment.text('还剩80s，再给你点提示吧'),
+                MessageSegment.text('还剩80s，再给你点提示吧\n'),
                 MessageSegment.text(f'这首歌的曲师是 {self.answer.basic_info.artist}')
             ])
 
