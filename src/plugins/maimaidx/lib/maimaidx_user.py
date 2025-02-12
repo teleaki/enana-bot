@@ -2,7 +2,7 @@ from .maimaidx_image import *
 from .maimaidx_tool import *
 
 
-plate_diy: Dict[str, Path] = {}
+plate_diy: Dict[str, str] = {}
 
 def show_all_plate():
     # 获取所有 PNG 文件
@@ -63,21 +63,16 @@ async def set_plate_diy(qqid: Optional[Union[str, int]] = None, plate_id: str = 
     else:
         plate_path = Path(other_plate_dir / f'UI_Plate_{plate_id}.png')
         if plate_path.exists():
-            plate_diy[qqid] = plate_path
+            plate_diy[qqid] = plate_path.name
             flag = 0
         else:
             flag = 1
 
-    plate_diy_str = {k: str(v) for k, v in plate_diy.items()}
-
     # 异步写入文件
-    await writefile(user_file, plate_diy_str)
+    await writefile(user_file, plate_diy)
     return flag
 
 async def load_plate_diy():
     global plate_diy
-    # 从文件中读取数据
-    data = await openfile(user_file)
-    # 将路径字符串转换为 Path 对象
-    plate_diy = {k: Path(v) for k, v in data.items()}
+    plate_diy = await openfile(user_file)
 

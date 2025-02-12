@@ -50,7 +50,7 @@ async def handle_b50setting(bot: Bot, event: Event, args: Message = CommandArg()
                 MessageSegment.text(f'设置成功，'),
                 MessageSegment.at(qqid),
                 MessageSegment.text(f'的姓名框已被设置为'),
-                MessageSegment.image(plate_diy[qqid])
+                MessageSegment.image(other_plate_dir / f'UI_Plate_{plate_diy[qqid]}.png')
             ])
             await user_setting.finish(msg)
         elif flag == 1:
@@ -72,6 +72,19 @@ plate_show = on_command(
 async def handle_plateshow(bot: Bot, event: Event, args: Message = CommandArg()):
     msg = MessageSegment.image(show_all_plate())
     await plate_show.finish(msg)
+
+show_diy = on_command(
+    '查看用户个性化',
+    priority=3,
+    block=True
+)
+
+@show_diy.handle()
+async def handle_showdiy(bot: Bot, event: Event, args: Message = CommandArg()):
+    msg = Message()
+    for qqid, plateid in plate_diy.items():
+        msg.append(MessageSegment.text(f'{qqid}:{plateid}'))
+    await show_diy.finish(msg)
 
 # b50
 b50 = on_command(
