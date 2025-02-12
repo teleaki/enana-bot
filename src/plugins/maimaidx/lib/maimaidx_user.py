@@ -61,7 +61,7 @@ def set_plate_diy(qqid: Optional[Union[str, int]] = None, plate_id: str = None) 
 
     try:
         # 尝试读取现有数据
-        with open('user_diy.json', 'r', encoding='utf-8') as f:
+        with open(user_file, 'r', encoding='utf-8') as f:
             data = json.load(f)
     except FileNotFoundError:
         data = {}  # 文件不存在时初始化空字典
@@ -95,7 +95,7 @@ def get_plate_diy(qqid: Optional[Union[str, int]] = None) -> Optional[Path]:
 
     try:
         # 尝试读取数据文件
-        with open('user_diy.json', 'r', encoding='utf-8') as f:
+        with open(user_file, 'r', encoding='utf-8') as f:
             data = json.load(f)
     except FileNotFoundError:
         # 文件不存在时返回 None
