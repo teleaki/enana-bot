@@ -1,4 +1,5 @@
 import math
+import random
 
 from nonebot.adapters.onebot.v11 import MessageSegment
 
@@ -120,7 +121,8 @@ class DrawBest:
         if self.plate:
             plate = Image.open(plate_dir / f'{self.plate}.png').resize((1420, 230))
         else:
-            plate = Image.open(maimai_dir / 'UI_Plate_300501.png').resize((1420, 230))
+            s = random.randint(1, 4)
+            plate = Image.open(maimai_dir / f'UI_Plate_{s}.png').resize((1420, 230))
 
         self._im.alpha_composite(plate, (390, 100))
         self._im.alpha_composite(icon, (398, 108))
