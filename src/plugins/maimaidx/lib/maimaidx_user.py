@@ -2,6 +2,8 @@ from .maimaidx_image import *
 from .maimaidx_tool import *
 
 
+plate_diy: Dict[str, Path] = {}
+
 def show_all_plate():
     # 获取所有 PNG 文件
     png_files = [file for file in other_plate_dir.iterdir() if file.is_file() and file.suffix.lower() == '.png']
@@ -51,16 +53,24 @@ def show_all_plate():
     return image_to_base64(_im.resize((total_width // 5, total_height // 5)))
 
 
-def set_plate_diy(qqid: Optional[Union[str, int]] = None, plate_id: str = None):
+async def set_plate_diy(qqid: Optional[Union[str, int]] = None, plate_id: str = None):
+    flag = -1
     if plate_id == 'default':
-        del plate_diy[qqid]
-        return 2
+        if qqid in plate_diy.keys():
+            del plate_diy[qqid]
+        flag = 2
     else:
         plate_path = Path(other_plate_dir / f'UI_Plate_{plate_id}.png')
         if plate_path.exists():
             plate_diy[qqid] = plate_path
-            return 0
+            flag = 0
         else:
-            return 1
+            flag = 1
 
-plate_diy: Dict[str, Path] = {}
+    await writefile(user_file, plate_diy)
+    return flag
+
+async def load_plate_diy():
+    global plate_diy
+    plate_diy = await openfile(user_file)
+

@@ -31,6 +31,7 @@ driver = get_driver()
 async def get_data():
     await mai.get_music_list()
     await mai.get_music_alias()
+    await load_plate_diy()
 
 # user setting
 user_setting = on_command(
