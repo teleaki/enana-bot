@@ -118,7 +118,9 @@ class DrawBest:
         plate = None
         if self.qqid:
             icon = (await get_QQlogo(int(self.qqid))).resize((214, 214))
-            plate = Image.open(get_plate_diy(self.qqid)).resize((1420, 230))
+            plate_path = get_plate_diy(self.qqid)
+            if plate_path:
+                plate = Image.open(plate_path).resize((1420, 230))
         if not plate:
             if self.plate:
                 plate = Image.open(plate_dir / f'{self.plate}.png').resize((1420, 230))

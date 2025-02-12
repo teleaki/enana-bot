@@ -83,9 +83,12 @@ async def handle_showdiy(bot: Bot, event: Event, args: Message = CommandArg()):
     msg = Message()
     with open(user_file, 'r', encoding='utf-8') as f:
         data = json.load(f)
-    for key, value in data.items():
-        msg.append(MessageSegment.text(f'{key}: {value}'))
-    await show_diy.finish(msg)
+    if data:
+        for key, value in data.items():
+            msg.append(MessageSegment.text(f'{key}: {value}'))
+        await show_diy.finish(msg)
+    else:
+        await show_diy.finish('暂无信息')
 
 # b50
 b50 = on_command(
