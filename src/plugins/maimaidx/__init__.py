@@ -60,14 +60,17 @@ b50_setting = on_command(
 async def handle_b50setting(bot: Bot, event: Event, args: Message = CommandArg()):
     if plate_id := args.extract_plain_text():
         qqid = event.get_user_id()
-        add_plate_diy(qqid=qqid, plate_id=plate_id)
-        msg = Message([
-            MessageSegment.text(f'设置成功，'),
-            MessageSegment.at(qqid),
-            MessageSegment.text(f'的姓名框已被设置为'),
-            MessageSegment.image(plate_diy[qqid])
-        ])
-        await b50_setting.finish(msg)
+        flag = add_plate_diy(qqid=qqid, plate_id=plate_id)
+        if flag:
+            msg = Message([
+                MessageSegment.text(f'设置成功，'),
+                MessageSegment.at(qqid),
+                MessageSegment.text(f'的姓名框已被设置为'),
+                MessageSegment.image(plate_diy[qqid])
+            ])
+            await b50_setting.finish(msg)
+        else:
+            await b50_setting.finish('设置失败，可能姓名框不存在')
     else:
         await b50_setting.finish('请输入文字')
 
