@@ -114,14 +114,16 @@ class DrawBest:
         # ClassLevel = Image.open(maimai_dir / 'UI_FBR_Class_00.png').resize((144, 87))
         rating = Image.open(maimai_dir / 'UI_CMN_Shougou_Rainbow.png').resize((454, 50))
         icon = Image.open(maimai_dir / 'UI_Icon_309503.png').resize((214, 214))
+        plate = None
         if self.qqid:
             icon = (await get_QQlogo(int(self.qqid))).resize((214, 214))
-        if self.qqid in plate_diy.keys():
-            plate = Image.open(plate_diy[str(self.qqid)]).resize((1420, 230))
-        elif self.plate:
-            plate = Image.open(plate_dir / f'{self.plate}.png').resize((1420, 230))
-        else:
-            plate = Image.open(get_random_file(other_plate_dir)).resize((1420, 230))
+            if str(self.qqid) in plate_diy.keys():
+                plate = Image.open(plate_diy[str(self.qqid)]).resize((1420, 230))
+        if not plate:
+            if self.plate:
+                plate = Image.open(plate_dir / f'{self.plate}.png').resize((1420, 230))
+            else:
+                plate = Image.open(get_random_file(other_plate_dir)).resize((1420, 230))
 
         self._im.alpha_composite(plate, (390, 100))
         self._im.alpha_composite(icon, (398, 108))
