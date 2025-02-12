@@ -2,8 +2,6 @@ from .maimaidx_image import *
 from .maimaidx_tool import *
 
 
-plate_diy: Dict[str, str] = {}
-
 def show_all_plate():
     # 获取所有 PNG 文件
     png_files = [file for file in other_plate_dir.iterdir() if file.is_file() and file.suffix.lower() == '.png']
@@ -53,26 +51,45 @@ def show_all_plate():
     return image_to_base64(_im.resize((total_width // 5, total_height // 5)))
 
 
-async def set_plate_diy(qqid: Optional[Union[str, int]] = None, plate_id: str = None):
-    global plate_diy
-    flag = -1
-    if plate_id == 'default':
-        if qqid in plate_diy.keys():
-            del plate_diy[qqid]
+def set_plate_diy(qqid: Optional[Union[str, int]] = None, plate_id: str = None) -> int:
+    # 参数有效性检查
+    if qqid is None or plate_id is None:
+        raise ValueError("Both qqid and plate_id must be provided")
+
+    # 统一转换为字符串类型
+    qqid_str = str(qqid)
+
+    try:
+        # 尝试读取现有数据
+        with open('user_diy.json', 'r', encoding='utf-8') as f:
+            data = json.load(f)
+    except FileNotFoundError:
+        data = {}  # 文件不存在时初始化空字典
+
+    # 根据plate_id决定操作
+    if plate_id.lower() == 'default':  # 不区分大小写处理
+        data.pop(qqid_str, None)  # 安全删除键值对
         flag = 2
     else:
-        plate_path = Path(other_plate_dir / f'UI_Plate_{plate_id}.png')
+        plate_path = other_plate_dir / f'UI_Plate_{plate_id}.png'
         if plate_path.exists():
-            plate_diy[qqid] = plate_path.name
+            data[qqid_str] = plate_id  # 更新/添加键值对
             flag = 0
         else:
             flag = 1
 
-    # 异步写入文件
-    await writefile(user_file, plate_diy)
+    # 写入文件
+    with open('user_diy.json', 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+
     return flag
 
-async def load_plate_diy():
-    global plate_diy
-    plate_diy = await openfile(user_file)
+def get_plate_diy(qqid: Optional[Union[str, int]] = None) -> Optional[Path]:
+    with open('user_diy.json', 'r', encoding='utf-8') as f:
+        data = json.load(f)
+
+    if qqid in data:
+        return other_plate_dir / f'UI_Plate_{data[qqid]}.png'
+    else:
+        return None
 

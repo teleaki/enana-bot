@@ -31,7 +31,6 @@ driver = get_driver()
 async def get_data():
     await mai.get_music_list()
     await mai.get_music_alias()
-    await load_plate_diy()
 
 # user setting
 user_setting = on_command(
@@ -44,13 +43,13 @@ user_setting = on_command(
 async def handle_b50setting(bot: Bot, event: Event, args: Message = CommandArg()):
     if plate_id := args.extract_plain_text():
         qqid = event.get_user_id()
-        flag = await set_plate_diy(qqid=qqid, plate_id=plate_id)
+        flag = set_plate_diy(qqid=qqid, plate_id=plate_id)
         if flag == 0:
             msg = Message([
                 MessageSegment.text(f'设置成功，'),
                 MessageSegment.at(qqid),
                 MessageSegment.text(f'的姓名框已被设置为'),
-                MessageSegment.image(other_plate_dir / f'UI_Plate_{plate_diy[qqid]}.png')
+                MessageSegment.image(other_plate_dir / f'UI_Plate_{plate_id}.png')
             ])
             await user_setting.finish(msg)
         elif flag == 1:
@@ -82,8 +81,10 @@ show_diy = on_command(
 @show_diy.handle()
 async def handle_showdiy(bot: Bot, event: Event, args: Message = CommandArg()):
     msg = Message()
-    for qqid, plateid in plate_diy.items():
-        msg.append(MessageSegment.text(f'{qqid}:{plateid}'))
+    with open('user_diy.json', 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    for key, value in data.items():
+        msg.append(MessageSegment.text(f'{key}: {value}'))
     await show_diy.finish(msg)
 
 # b50

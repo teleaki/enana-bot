@@ -5,7 +5,7 @@ from .maimaidx_error import *
 from .maimaidx_image import *
 from .maimaidx_model import *
 from .maimaidx_tool import *
-from .maimaidx_user import plate_diy
+from .maimaidx_user import *
 from .maimaidx_music import mai
 
 
@@ -118,8 +118,7 @@ class DrawBest:
         plate = None
         if self.qqid:
             icon = (await get_QQlogo(int(self.qqid))).resize((214, 214))
-            if str(self.qqid) in plate_diy.keys():
-                plate = Image.open(plate_diy[str(self.qqid)]).resize((1420, 230))
+            plate = Image.open(get_plate_diy(self.qqid)).resize((1420, 230))
         if not plate:
             if self.plate:
                 plate = Image.open(plate_dir / f'{self.plate}.png').resize((1420, 230))
