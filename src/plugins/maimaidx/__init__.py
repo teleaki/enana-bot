@@ -44,7 +44,7 @@ async def handle_b50setting(bot: Bot, event: Event, args: Message = CommandArg()
     if plate_id := args.extract_plain_text():
         qqid = event.get_user_id()
         flag = set_plate_diy(qqid=qqid, plate_id=plate_id)
-        if flag:
+        if flag == 0:
             msg = Message([
                 MessageSegment.text(f'设置成功，'),
                 MessageSegment.at(qqid),
@@ -52,8 +52,12 @@ async def handle_b50setting(bot: Bot, event: Event, args: Message = CommandArg()
                 MessageSegment.image(plate_diy[qqid])
             ])
             await user_setting.finish(msg)
-        else:
+        elif flag == 1:
             await user_setting.finish('设置失败，可能姓名框不存在，输入“查看姓名框”查询可用姓名框')
+        elif flag == 2:
+            await user_setting.finish('已清除设置')
+        else:
+            await user_setting.finish('设置失败，出错啦！')
     else:
         await user_setting.finish('请输入文字')
 

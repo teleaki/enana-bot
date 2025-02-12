@@ -54,12 +54,13 @@ def show_all_plate():
 def set_plate_diy(qqid: Optional[Union[str, int]] = None, plate_id: str = None):
     if plate_id == 'default':
         del plate_diy[qqid]
+        return 2
     else:
         plate_path = Path(other_plate_dir / f'UI_Plate_{plate_id}.png')
         if plate_path.exists():
             plate_diy[qqid] = plate_path
-            return True
+            return 0
         else:
-            return False
+            return 1
 
 plate_diy: Dict[str, Path] = {}
