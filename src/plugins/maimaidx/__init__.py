@@ -53,7 +53,7 @@ async def handle_b50setting(bot: Bot, event: Event, args: Message = CommandArg()
             ])
             await user_setting.finish(msg)
         else:
-            await user_setting.finish('设置失败，可能姓名框不存在')
+            await user_setting.finish('设置失败，可能姓名框不存在，输入“查看姓名框”查询可用姓名框')
     else:
         await user_setting.finish('请输入文字')
 
