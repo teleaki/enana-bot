@@ -44,7 +44,7 @@ user_setting = on_command(
 async def handle_b50setting(bot: Bot, event: Event, args: Message = CommandArg()):
     if plate_id := args.extract_plain_text():
         qqid = event.get_user_id()
-        flag = set_plate_diy(qqid=qqid, plate_id=plate_id)
+        flag = await set_plate_diy(qqid=qqid, plate_id=plate_id)
         if flag == 0:
             msg = Message([
                 MessageSegment.text(f'设置成功，'),

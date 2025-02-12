@@ -54,6 +54,7 @@ def show_all_plate():
 
 
 async def set_plate_diy(qqid: Optional[Union[str, int]] = None, plate_id: str = None):
+    global plate_diy
     flag = -1
     if plate_id == 'default':
         if qqid in plate_diy.keys():
