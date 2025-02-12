@@ -5,7 +5,7 @@ from .maimaidx_error import *
 from .maimaidx_image import *
 from .maimaidx_model import *
 from .maimaidx_tool import *
-from .maimaidx_user import *
+from .maimaidx_user import get_plate_diy
 from .maimaidx_music import mai
 
 
