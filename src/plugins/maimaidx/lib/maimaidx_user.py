@@ -79,13 +79,13 @@ def set_plate_diy(qqid: Optional[Union[str, int]] = None, plate_id: str = None) 
             flag = 1
 
     # 写入文件
-    with open('user_diy.json', 'w', encoding='utf-8') as f:
+    with open(user_file, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
     return flag
 
 def get_plate_diy(qqid: Optional[Union[str, int]] = None) -> Optional[Path]:
-    with open('user_diy.json', 'r', encoding='utf-8') as f:
+    with open(user_file, 'r', encoding='utf-8') as f:
         data = json.load(f)
 
     if qqid in data:

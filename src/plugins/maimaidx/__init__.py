@@ -81,7 +81,7 @@ show_diy = on_command(
 @show_diy.handle()
 async def handle_showdiy(bot: Bot, event: Event, args: Message = CommandArg()):
     msg = Message()
-    with open('user_diy.json', 'r', encoding='utf-8') as f:
+    with open(user_file, 'r', encoding='utf-8') as f:
         data = json.load(f)
     for key, value in data.items():
         msg.append(MessageSegment.text(f'{key}: {value}'))
