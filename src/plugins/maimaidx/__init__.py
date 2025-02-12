@@ -67,9 +67,9 @@ async def handle_b50setting(bot: Bot, event: Event, args: Message = CommandArg()
             MessageSegment.text(f'的姓名框已被设置为'),
             MessageSegment.image(plate_diy[qqid])
         ])
-        b50_setting.finish(msg)
+        await b50_setting.finish(msg)
     else:
-        b50_setting.finish('请输入文字')
+        await b50_setting.finish('请输入文字')
 
 # info
 minfo = on_command(
