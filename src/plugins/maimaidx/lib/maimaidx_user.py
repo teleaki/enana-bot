@@ -48,7 +48,7 @@ def show_all_plate():
             print(f"无法打开图片 {file.name}: {e}")
 
     # 显示或保存大图
-    return image_to_base64(_im)
+    return image_to_base64(_im.resize((total_width // 5, total_height // 5)))
 
 
 def set_plate_diy(qqid: Optional[Union[str, int]] = None, plate_id: str = None):
