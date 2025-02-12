@@ -5,6 +5,7 @@ from .maimaidx_error import *
 from .maimaidx_image import *
 from .maimaidx_model import *
 from .maimaidx_tool import *
+from .maimaidx_user import plate_diy
 from .maimaidx_music import mai
 
 
@@ -222,15 +223,3 @@ async def generate_b50(qqid: Optional[int] = None, username: Optional[str] = Non
         msg = MessageSegment.text(f'未知错误：{type(e)}\n请联系Bot管理员')
     return msg
 
-def add_plate_diy(qqid: Optional[Union[str, int]] = None, plate_id: str = None):
-    if plate_id == 'default':
-        del plate_diy[qqid]
-    else:
-        plate_path = Path(other_plate_dir / f'UI_Plate_{plate_id}.png')
-        if plate_path.exists():
-            plate_diy[qqid] = plate_path
-            return True
-        else:
-            return False
-
-plate_diy: Dict[str, Path] = {}

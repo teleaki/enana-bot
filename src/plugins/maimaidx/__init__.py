@@ -18,6 +18,7 @@ from nonebot.params import CommandArg, RegexStr
 
 from .lib.maimaidx_best50 import *
 from .lib.maimaidx_info import *
+from .lib.maimaidx_user import *
 from .lib.maimaidx_table import *
 from .lib.maimaidx_guess import *
 
@@ -30,6 +31,42 @@ driver = get_driver()
 async def get_data():
     await mai.get_music_list()
     await mai.get_music_alias()
+
+# user setting
+user_setting = on_command(
+    '用户设置',
+    priority=3,
+    block=True
+)
+
+@user_setting.handle()
+async def handle_b50setting(bot: Bot, event: Event, args: Message = CommandArg()):
+    if plate_id := args.extract_plain_text():
+        qqid = event.get_user_id()
+        flag = set_plate_diy(qqid=qqid, plate_id=plate_id)
+        if flag:
+            msg = Message([
+                MessageSegment.text(f'设置成功，'),
+                MessageSegment.at(qqid),
+                MessageSegment.text(f'的姓名框已被设置为'),
+                MessageSegment.image(plate_diy[qqid])
+            ])
+            await user_setting.finish(msg)
+        else:
+            await user_setting.finish('设置失败，可能姓名框不存在')
+    else:
+        await user_setting.finish('请输入文字')
+
+plate_show = on_command(
+    '查看姓名框',
+    priority=3,
+    block=True
+)
+
+@plate_show.handle()
+async def handle_plateshow(bot: Bot, event: Event, args: Message = CommandArg()):
+    msg = MessageSegment.image(show_all_plate())
+    await plate_show.finish(msg)
 
 # b50
 b50 = on_command(
@@ -49,30 +86,6 @@ async def handle_b50(bot: Bot, event: Event, args: Message = CommandArg()):
         print(qqid)
 
     await b50.finish(Message(b50_msg))
-
-b50_setting = on_command(
-    'b50设置',
-    priority=3,
-    block=True
-)
-
-@b50_setting.handle()
-async def handle_b50setting(bot: Bot, event: Event, args: Message = CommandArg()):
-    if plate_id := args.extract_plain_text():
-        qqid = event.get_user_id()
-        flag = add_plate_diy(qqid=qqid, plate_id=plate_id)
-        if flag:
-            msg = Message([
-                MessageSegment.text(f'设置成功，'),
-                MessageSegment.at(qqid),
-                MessageSegment.text(f'的姓名框已被设置为'),
-                MessageSegment.image(plate_diy[qqid])
-            ])
-            await b50_setting.finish(msg)
-        else:
-            await b50_setting.finish('设置失败，可能姓名框不存在')
-    else:
-        await b50_setting.finish('请输入文字')
 
 # info
 minfo = on_command(

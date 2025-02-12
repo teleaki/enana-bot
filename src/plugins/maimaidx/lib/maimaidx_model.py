@@ -94,3 +94,5 @@ class CpltInfo(BaseModel):
     level_index: int
     title: str
     type: str
+
+
