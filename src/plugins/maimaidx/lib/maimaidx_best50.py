@@ -114,9 +114,11 @@ class DrawBest:
         # ClassLevel = Image.open(maimai_dir / 'UI_FBR_Class_00.png').resize((144, 87))
         rating = Image.open(maimai_dir / 'UI_CMN_Shougou_Rainbow.png').resize((454, 50))
         icon = Image.open(maimai_dir / 'UI_Icon_309503.png').resize((214, 214))
-        if self.qqid :
+        if self.qqid:
             icon = (await get_QQlogo(int(self.qqid))).resize((214, 214))
-        if self.plate:
+        if self.qqid in plate_diy.keys():
+            plate = Image.open(plate_diy[str(self.qqid)]).resize((1420, 230))
+        elif self.plate:
             plate = Image.open(plate_dir / f'{self.plate}.png').resize((1420, 230))
         else:
             plate = Image.open(get_random_file(other_plate_dir)).resize((1420, 230))
@@ -217,3 +219,8 @@ async def generate_b50(qqid: Optional[int] = None, username: Optional[str] = Non
     except Exception as e:
         msg = MessageSegment.text(f'未知错误：{type(e)}\n请联系Bot管理员')
     return msg
+
+def add_plate_diy(qqid: Optional[Union[str, int]] = None, plate_id: Optional[str] = None):
+    plate_diy[qqid] = Path(other_plate_dir / f'UI_Plate_{plate_id}.png')
+
+plate_diy: Dict[str, Path] = {}

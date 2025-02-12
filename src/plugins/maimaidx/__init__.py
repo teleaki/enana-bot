@@ -50,6 +50,27 @@ async def handle_b50(bot: Bot, event: Event, args: Message = CommandArg()):
 
     await b50.finish(Message(b50_msg))
 
+b50_setting = on_command(
+    'b50设置',
+    priority=3,
+    block=True
+)
+
+@b50_setting.handle()
+async def handle_b50setting(bot: Bot, event: Event, args: Message = CommandArg()):
+    if plate_id := args.extract_plain_text():
+        qqid = event.get_user_id()
+        add_plate_diy(qqid=qqid, plate_id=plate_id)
+        msg = Message([
+            MessageSegment.text(f'设置成功，'),
+            MessageSegment.at(qqid),
+            MessageSegment.text(f'的姓名框已被设置为'),
+            MessageSegment.image(plate_diy[qqid])
+        ])
+        b50_setting.finish(msg)
+    else:
+        b50_setting.finish('请输入文字')
+
 # info
 minfo = on_command(
     "查歌",
