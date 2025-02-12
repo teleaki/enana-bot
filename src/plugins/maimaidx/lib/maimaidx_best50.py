@@ -1,13 +1,11 @@
 import math
-import random
-
 from nonebot.adapters.onebot.v11 import MessageSegment
 
-from .maimaidx_api import maiapi
 from .maimaidx_error import *
 from .maimaidx_image import *
 from .maimaidx_model import *
-from .maimaidx_music import mai, get_music_cover
+from .maimaidx_tool import *
+from .maimaidx_music import mai
 
 
 class DrawBest:
@@ -121,8 +119,7 @@ class DrawBest:
         if self.plate:
             plate = Image.open(plate_dir / f'{self.plate}.png').resize((1420, 230))
         else:
-            s = random.randint(1, 4)
-            plate = Image.open(maimai_dir / f'UI_Plate_{s}.png').resize((1420, 230))
+            plate = Image.open(get_random_file(other_plate_dir)).resize((1420, 230))
 
         self._im.alpha_composite(plate, (390, 100))
         self._im.alpha_composite(icon, (398, 108))

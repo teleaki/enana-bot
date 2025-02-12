@@ -1,10 +1,10 @@
 from nonebot.adapters.onebot.v11 import MessageSegment, Message
 
-from .maimaidx_api import maiapi
 from .maimaidx_error import *
 from .maimaidx_image import *
 from .maimaidx_model import *
-from .maimaidx_music import get_music_cover, mai
+from .maimaidx_tool import *
+from .maimaidx_music import mai
 from .maimaidx_res import *
 
 

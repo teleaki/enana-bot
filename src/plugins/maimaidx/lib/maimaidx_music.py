@@ -1,11 +1,8 @@
-import aiofiles
-import json
-from typing import Any
-
 from rapidfuzz import process, fuzz
 
 from .maimaidx_api import maiapi
 from .maimaidx_model import *
+from .maimaidx_tool import *
 from .maimaidx_res import *
 
 
@@ -72,34 +69,6 @@ class AliasList:
             return [best_match_id]
 
         return None  # 没有匹配项
-
-
-async def openfile(file: Path) -> Union[dict, list]:
-    async with aiofiles.open(file, 'r', encoding='utf-8') as f:
-        data = json.loads(await f.read())
-    return data
-
-
-async def writefile(file: Path, data: Any) -> bool:
-    async with aiofiles.open(file, 'w', encoding='utf-8') as f:
-        await f.write(json.dumps(data, ensure_ascii=False, indent=4))
-    return True
-
-
-def get_music_cover(music_id: Union[str, int]) -> Path:
-    cover_path = cover_dir / f'{int(music_id)}.png'
-    cover_path_sd = cover_dir / f'{int(music_id) - 10000}.png'
-    cover_path_dx = cover_dir / f'{int(music_id) + 10000}.png'
-    # 检查文件是否存在，若不存在则使用默认的 0.png
-    if cover_path.exists():
-        cover = cover_path
-    elif cover_path_sd.exists():
-        cover = cover_path_sd
-    elif cover_path_dx.exists():
-        cover = cover_path_dx
-    else:
-        cover = cover_dir / '0.png' # 使用默认的 0.png
-    return cover
 
 
 class MaiMusic:

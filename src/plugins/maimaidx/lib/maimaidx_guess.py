@@ -1,13 +1,12 @@
 import asyncio
-import random
-from PIL import Image
+
 from nonebot.adapters.onebot.v11 import Message, MessageSegment, Event
 from nonebot.matcher import Matcher
 
-from .maimaidx_res import *
-from .maimaidx_model import *
 from .maimaidx_image import *
-from .maimaidx_music import mai, get_music_cover
+from .maimaidx_model import *
+from .maimaidx_tool import *
+from .maimaidx_music import mai
 
 
 class GuessMusic:

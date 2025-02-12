@@ -1,11 +1,9 @@
-import base64
 from io import BytesIO
 from typing import Tuple, Union
 
 from PIL import Image, ImageDraw, ImageFont
 
 from .maimaidx_res import *
-from .maimaidx_api import maiapi
 
 
 class DrawText:
@@ -67,10 +65,6 @@ def changeColumnWidth(s: str, len: int) -> str:
             sList.append(ch)
     return ''.join(sList)
 
-async def get_QQlogo(qqid: Union[str, int]) -> Image.Image:
-    qqlogo = Image.open(BytesIO(await maiapi.qq_logo(qqid)))
-    return qqlogo.convert("RGBA")
-
 def text_to_image(text: str) -> Image.Image:
     font = ImageFont.truetype(str(SIYUAN), 24)
     padding = 10
@@ -89,17 +83,8 @@ def text_to_image(text: str) -> Image.Image:
         draw.text((padding, padding + index * (margin + b)), line, font=font, fill=(0, 0, 0))
     return im
 
-
 def to_bytes_io(text: str) -> BytesIO:
     bio = BytesIO()
     text_to_image(text).save(bio, format='PNG')
     bio.seek(0)
     return bio
-
-
-def image_to_base64(img: Image.Image, format='PNG') -> str:
-    output_buffer = BytesIO()
-    img.save(output_buffer, format)
-    byte_data = output_buffer.getvalue()
-    base64_str = base64.b64encode(byte_data).decode()
-    return 'base64://' + base64_str

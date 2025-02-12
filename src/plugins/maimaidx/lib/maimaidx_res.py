@@ -14,6 +14,7 @@ maimai_dir: Path = _resource_dir / 'mai' / 'pic'
 cover_dir: Path = _resource_dir / 'mai' / 'cover'
 rating_dir: Path = _resource_dir / 'mai' / 'rating'
 plate_dir: Path = _resource_dir / 'mai' / 'plate'
+other_plate_dir: Path = _resource_dir / 'mai' / 'other_plate'
 
 # 字体路径
 YAHEI: Path = _resource_dir / 'msyh_b.ttf'

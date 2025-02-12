@@ -2,7 +2,8 @@ from nonebot.adapters.onebot.v11 import Message, MessageSegment
 
 from .maimaidx_image import *
 from .maimaidx_model import *
-from .maimaidx_music import mai, get_music_cover
+from .maimaidx_tool import *
+from .maimaidx_music import mai
 from .maimaidx_res import *
 
 
