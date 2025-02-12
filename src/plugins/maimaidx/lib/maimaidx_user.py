@@ -84,12 +84,25 @@ def set_plate_diy(qqid: Optional[Union[str, int]] = None, plate_id: str = None) 
 
     return flag
 
-def get_plate_diy(qqid: Optional[Union[str, int]] = None) -> Optional[Path]:
-    with open(user_file, 'r', encoding='utf-8') as f:
-        data = json.load(f)
 
-    if qqid in data:
-        return other_plate_dir / f'UI_Plate_{data[qqid]}.png'
-    else:
+def get_plate_diy(qqid: Optional[Union[str, int]] = None) -> Optional[Path]:
+    # 参数有效性检查
+    if qqid is None:
         return None
+
+    # 统一转换为字符串类型（与存储格式一致）
+    qqid_str = str(qqid)
+
+    try:
+        # 尝试读取数据文件
+        with open('user_diy.json', 'r', encoding='utf-8') as f:
+            data = json.load(f)
+    except FileNotFoundError:
+        # 文件不存在时返回 None
+        return None
+
+    # 查找并构造路径
+    if plate_id := data.get(qqid_str):
+        return other_plate_dir / f"UI_Plate_{plate_id}.png"
+    return None
 
