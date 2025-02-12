@@ -68,10 +68,16 @@ async def set_plate_diy(qqid: Optional[Union[str, int]] = None, plate_id: str = 
         else:
             flag = 1
 
-    await writefile(user_file, plate_diy)
+    plate_diy_str = {k: str(v) for k, v in plate_diy.items()}
+
+    # 异步写入文件
+    await writefile(user_file, plate_diy_str)
     return flag
 
 async def load_plate_diy():
     global plate_diy
-    plate_diy = await openfile(user_file)
+    # 从文件中读取数据
+    data = await openfile(user_file)
+    # 将路径字符串转换为 Path 对象
+    plate_diy = {k: Path(v) for k, v in data.items()}
 
