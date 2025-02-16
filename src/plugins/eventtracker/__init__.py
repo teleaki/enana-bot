@@ -1,6 +1,6 @@
 from nonebot import get_plugin_config, get_bot
 from nonebot.plugin import PluginMetadata
-from nonebot import require, get_driver
+from nonebot import require
 
 require("nonebot_plugin_apscheduler")
 
@@ -23,8 +23,6 @@ from nonebot_plugin_apscheduler import scheduler
 
 from .event_tracker import get_event_info, event_end_notice
 from .config import white_group
-
-driver = get_driver()
 
 @scheduler.scheduled_job("cron", hour="*", minute=0, second=0, id="hourly_task")
 async def hourly_task():
@@ -52,10 +50,6 @@ async def hourly_task():
 
         logger.info(notice)
 
-@driver.on_startup
-async def startup():
-    await hourly_task()  # 启动时立即执行一次
-
 event_info = on_command(
     '查询当前活动',
     priority=5,
@@ -65,3 +59,14 @@ event_info = on_command(
 @event_info.handle()
 async def handle_eventinfo():
     await event_info.finish(get_event_info())
+
+event_notice = on_command(
+    '结活提醒',
+    priority=8,
+    block=True
+)
+
+@event_notice.handle()
+async def handle_eventnotice():
+    await hourly_task()
+    await event_notice.finish()
