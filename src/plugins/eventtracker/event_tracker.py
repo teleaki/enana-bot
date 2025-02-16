@@ -2,6 +2,7 @@ import httpx
 from typing import Optional, Dict, Any, Union
 import datetime
 from zoneinfo import ZoneInfo
+from nonebot.adapters.onebot.v11 import Message, MessageSegment
 
 
 def get_current_event() -> Optional[Dict[str, Any]]:
@@ -88,7 +89,7 @@ def time_transform(
         raise RuntimeError(f"时间转换失败: {str(e)}") from e
 
 
-def get_event_info() -> Optional[str]:
+def get_event_info() -> Optional[Message]:
     """
     获取当前活动信息并生成格式化消息
 
@@ -119,7 +120,7 @@ def get_event_info() -> Optional[str]:
     time_format = "%Y/%m/%d %H:%M:%S"
     time_fields = {
         "startAt": current_event.get("startAt"),
-        "closedAt": current_event.get("closedAt")
+        "aggregateAt": current_event.get("aggregateAt")
     }
 
     # 转换时间并处理异常
@@ -133,13 +134,17 @@ def get_event_info() -> Optional[str]:
             print(f"时间转换错误 ({field}): {str(e)}")
             formatted_times[field] = "时间数据异常"
 
+    # 获取活动logo
+    logo_url = f"https://storage.sekai.best/sekai-jp-assets/event/{current_event['assetbundleName']}/logo_rip/logo.webp"
+
     # 构建消息
-    msg = (
-        "当前活动信息：\n"
-        f"├ ID: {event_id}\n"
-        f"├ 名称: {event_name}\n"
-        f"├ 开始时间: {formatted_times['startAt']}\n"
-        f"└ 结束时间: {formatted_times['closedAt']}"
-    )
+    msg = Message([
+        MessageSegment.text("当前活动信息：\n"),
+        MessageSegment.text(f"ID: {event_id}\n"),
+        MessageSegment.text(f"名称: {event_name}\n"),
+        MessageSegment.image(logo_url),
+        MessageSegment.text(f"开始时间: {formatted_times['startAt']}\n"),
+        MessageSegment.text(f"结束时间: {formatted_times['aggregateAt']}"),
+    ])
 
     return msg
