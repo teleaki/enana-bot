@@ -23,5 +23,5 @@ event_info = on_command(
 )
 
 @event_info.handle()
-async def event_info():
+async def handle_eventinfo():
     await event_info.finish(get_event_info())
