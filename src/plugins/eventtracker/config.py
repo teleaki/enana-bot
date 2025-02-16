@@ -7,5 +7,6 @@ class Config(BaseModel):
     """Plugin Config Here"""
 
 white_group: List[int] = [
-    798428258
+    798428258,
+    437452886
 ]
