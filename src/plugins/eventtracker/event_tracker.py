@@ -1,5 +1,5 @@
 import httpx
-from typing import Optional, Dict, Any, Union
+from typing import Optional, Dict, Any, Union, Tuple
 import datetime
 from zoneinfo import ZoneInfo
 from nonebot.adapters.onebot.v11 import Message, MessageSegment
@@ -148,3 +148,35 @@ def get_event_info() -> Optional[Message]:
     ])
 
     return msg
+
+
+def event_end_notice() -> Tuple[int, Optional[str]]:
+    """检查当前事件是否在1小时内结束（或已过期）"""
+    ONE_HOUR_MS = 3600 * 1000  # 定义常量
+
+    # 安全获取事件数据
+    try:
+        current_event = get_current_event().get("eventJson", {})
+    except AttributeError:
+        return -1, None
+
+    # 获取aggregateAt
+    aggregate_at_ms = current_event.get("aggregateAt")
+    if not isinstance(aggregate_at_ms, (int, float)):
+        return -1, None  # 无效时间戳
+
+    # 计算当前时间戳（毫秒）
+    now_shanghai = datetime.datetime.now(ZoneInfo("Asia/Shanghai"))
+    current_time_ms = int(now_shanghai.timestamp() * 1000)
+
+    # 计算剩余时间（毫秒）
+    time_remaining_ms = aggregate_at_ms - current_time_ms
+
+    msg1 = f'活动 {current_event.get('name')} 还有1h就结束了哦，记得看live'
+    msg2 = f'活动还有 {int(time_remaining_ms / 1000 / 60)} min 才结束呢'
+
+    # 判断：1小时内结束且未过期（时间戳未过期）
+    if 0 <= time_remaining_ms <= ONE_HOUR_MS:
+        return 0, msg1
+    else:
+        return 1, msg2
