@@ -45,8 +45,7 @@ async def hourly_task():
         except Exception as e:
             logger.error(f"消息发送失败：{str(e)}")
     else:
-        for group in white_group:
-            await bot.send_group_msg(group_id=group, message=notice)
+        await bot.send_group_msg(group_id=white_group[0], message=notice)
 
         logger.info(notice)
 
