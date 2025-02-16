@@ -31,12 +31,12 @@ async def hourly_task():
     # 获取事件状态
     flag, notice = event_end_notice()
 
+    # 获取机器人实例
+    bot = get_bot()
+
     # 仅当状态码为 0（1小时内结束）时发送消息
     if flag == 0:
         try:
-            # 获取机器人实例
-            bot = get_bot()
-
             # 发送群消息
             for group in white_group:
                 await bot.send_group_msg(group_id=group, message=notice)
@@ -47,7 +47,8 @@ async def hourly_task():
         except Exception as e:
             logger.error(f"消息发送失败：{str(e)}")
     else:
-        print(notice)
+        for group in white_group:
+            await bot.send_group_msg(group_id=group, message=notice)
 
 @driver.on_startup
 async def startup():
