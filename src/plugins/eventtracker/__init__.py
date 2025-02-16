@@ -50,6 +50,8 @@ async def hourly_task():
         for group in white_group:
             await bot.send_group_msg(group_id=group, message=notice)
 
+        logger.info(notice)
+
 @driver.on_startup
 async def startup():
     await hourly_task()  # 启动时立即执行一次
