@@ -39,14 +39,13 @@ async def hourly_task():
             for group in white_group:
                 await bot.send_group_msg(group_id=group, message=notice)
 
-            # 可选：发送日志
+            # 发送日志
             logger.success(f"已发送提醒")
 
         except Exception as e:
             logger.error(f"消息发送失败：{str(e)}")
     else:
-        await bot.send_group_msg(group_id=white_group[0], message=notice)
-
+        # await bot.send_group_msg(group_id=white_group[0], message=notice)
         logger.info(notice)
 
 event_info = on_command(
