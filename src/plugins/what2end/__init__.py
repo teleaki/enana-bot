@@ -52,13 +52,13 @@ async def send_forward_msg(
         await bot.send_group_forward_msg(group_id=event.group_id, messages=messages)
 
 what2eat = on_regex(
-    r"^(早上|中午|晚上|夜宵|)吃什么$",
+    r"^(.*)吃什么$",
     priority=5,
     block=True
 )
 
 what2drink = on_regex(
-    r"^(早上|中午|晚上|半夜|)喝什么$",
+    r"^(.*)喝什么$",
     priority=5,
     block=True
 )
