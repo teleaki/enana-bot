@@ -85,7 +85,7 @@ class DrawTable:
 
         yh_font.draw(2700, 350, 120, head, (0, 0, 0, 255), anchor='lm')
 
-        self.whiledraw(data, yh_font, 230, page, arg=arg)
+        self.whiledraw(data, yh_font, 280, page, arg=arg)
 
         return self._im.resize((1535,2800))
 
