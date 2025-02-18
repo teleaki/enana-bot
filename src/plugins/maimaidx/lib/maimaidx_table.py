@@ -18,74 +18,74 @@ class DrawTable:
     _diff = [basic, advanced, expert, master, remaster]
 
     def __init__(self):
-        self._im = Image.new('RGBA', (6140, 11200), color='white')
+        self._im = Image.new('RGBA', (3070, 5600), color='white')
 
     def whiledraw(self, data: List[CpltInfo], font: DrawText, y: int, page: int, arg: str = None) -> None:
-        dy = 260
+        dy = 130
         TEXT_COLOR = [(255, 255, 255, 255), (255, 255, 255, 255), (255, 255, 255, 255), (255, 255, 255, 255),
                       (255, 255, 255, 255)]
 
         for num, info in enumerate(data):
             if not num % 3:
-                x = 50; y += dy
+                x = 25; y += dy
             else:
-                x = 50 + (num % 3) * 2000 + (num % 3) * 20
+                x = 25 + (num % 3) * 1000 + (num % 3) * 10
 
             cover = Image.open(get_music_cover(info.id))
-            cover = process_image(cover)
-            ver = Image.open(maimai_dir / f'{info.type.upper()}.png').resize((210,78))
+            cover = process_image(cover).resize((300,120))
+            ver = Image.open(maimai_dir / f'{info.type.upper()}.png').resize((105,36))
 
             # if info.rate.islower():
             #     rate = Image.open(maimai_dir / f'UI_TTR_Rank_{score_Rank_l[info.rate]}.png').resize((368,174))
             # else:
             #     rate = Image.open(maimai_dir / f'UI_TTR_Rank_{info.rate}.png').resize((368,174))
 
-            self._im.alpha_composite(self._diff[info.level_index], (x, y))
-            self._im.alpha_composite(cover, (x + 200, y + 0))
-            self._im.alpha_composite(ver, (x + 1500, y + 150))
+            self._im.alpha_composite((self._diff[info.level_index]).resize((1000,120)), (x, y))
+            self._im.alpha_composite(cover, (x + 100, y + 0))
+            self._im.alpha_composite(ver, (x + 750, y + 75))
             # self._im.alpha_composite(rate, (x + 1850, y + 240))
 
             if info.fc:
-                fc = Image.open(maimai_dir / f'UI_MSS_MBase_Icon_{fcl[info.fc]}.png').resize((120,120))
-                self._im.alpha_composite(fc, (x + 1720, y + 125))
+                fc = Image.open(maimai_dir / f'UI_MSS_MBase_Icon_{fcl[info.fc]}.png').resize((60,60))
+                self._im.alpha_composite(fc, (x + 860, y + 62))
             if info.fs:
-                fs = Image.open(maimai_dir / f'UI_MSS_MBase_Icon_{fsl[info.fs]}.png').resize((120,120))
-                self._im.alpha_composite(fs, (x + 1850, y + 125))
+                fs = Image.open(maimai_dir / f'UI_MSS_MBase_Icon_{fsl[info.fs]}.png').resize((60,60))
+                self._im.alpha_composite(fs, (x + 925, y + 62))
 
             title = f'{info.id}: {info.title}'
             if coloumWidth(title) > 17:
                 title = changeColumnWidth(title, 16) + '...'
 
-            font.draw(x + 25, y + 120, 120, f'#{(page - 1) * 120 + num + 1}', TEXT_COLOR[info.level_index], anchor='lm')
-            font.draw(x + 820, y + 45, 50, title, TEXT_COLOR[info.level_index], anchor='lm')
-            font.draw(x + 1950, y + 65, 80, f'{info.achievements:.4f}%', TEXT_COLOR[info.level_index], anchor='rm')
+            font.draw(x + 12, y + 60, 60, f'#{(page - 1) * 120 + num + 1}', TEXT_COLOR[info.level_index], anchor='lm')
+            font.draw(x + 410, y + 22, 25, title, TEXT_COLOR[info.level_index], anchor='lm')
+            font.draw(x + 975, y + 32, 40, f'{info.achievements:.4f}%', TEXT_COLOR[info.level_index], anchor='rm')
 
             music = mai.total_list.search_by_id(info.id)
 
             ds = music.ds[info.level_index]
-            font.draw(x + 820, y + 190, 50, f'定数：{ds}', TEXT_COLOR[info.level_index], anchor='lm')
+            font.draw(x + 410, y + 95, 25, f'定数：{ds}', TEXT_COLOR[info.level_index], anchor='lm')
 
             charter = music.charts[info.level_index].charter
-            font.draw(x + 820, y + 120, 35, f'charter:{charter}', TEXT_COLOR[info.level_index], anchor='lm')
+            font.draw(x + 410, y + 60, 18, f'charter:{charter}', TEXT_COLOR[info.level_index], anchor='lm')
 
             bpm = music.basic_info.bpm
-            font.draw(x + 1150, y + 190, 50, f'BPM:{bpm}', TEXT_COLOR[info.level_index], anchor='lm')
+            font.draw(x + 575, y + 95, 25, f'BPM:{bpm}', TEXT_COLOR[info.level_index], anchor='lm')
 
     async def draw_table(self, data: List[CpltInfo], head: str, page: int, qqid: Optional[int], arg: str) -> Image.Image:
         draw = ImageDraw.Draw(self._im)
         yh_font = DrawText(draw, YAHEI)
 
-        head_bg = Image.open(maimai_dir / 'title2.png').resize((3000,600))
-        self._im.alpha_composite(head_bg, (1570, 50))
+        head_bg = Image.open(maimai_dir / 'title2.png').resize((1500,300))
+        self._im.alpha_composite(head_bg, (785, 25))
 
-        icon = Image.open(maimai_dir / 'UI_Icon_309503.png').resize((280,280))
+        icon = Image.open(maimai_dir / 'UI_Icon_309503.png').resize((140,140))
         if qqid:
-            icon = (await get_QQlogo(qqid)).resize((280,280))
-        self._im.alpha_composite(icon, (2300, 200))
+            icon = (await get_QQlogo(qqid)).resize((140,140))
+        self._im.alpha_composite(icon, (1650, 100))
 
-        yh_font.draw(2700, 350, 120, head, (0, 0, 0, 255), anchor='lm')
+        yh_font.draw(1350, 175, 60, head, (0, 0, 0, 255), anchor='lm')
 
-        self.whiledraw(data, yh_font, 280, page, arg=arg)
+        self.whiledraw(data, yh_font, 160, page, arg=arg)
 
         return self._im.resize((1535,2800))
 
@@ -118,7 +118,7 @@ def process_image(cover: Image.Image) -> Image.Image:
     cropped = img.crop(crop_area)
 
     # 创建水平渐变透明度遮罩
-    protect = 100
+    protect = 150
     width, height = 600, 240
     gradient = Image.new("L", (width, height))
     center_x = width // 2
