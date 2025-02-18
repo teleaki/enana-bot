@@ -18,7 +18,7 @@ class DrawTable:
     _diff = [basic, advanced, expert, master, remaster]
 
     def __init__(self):
-        self._im = Image.new('RGBA', (3070, 5600), color='white')
+        self._im = Image.new('RGBA', (3070, 4200), color='white')
 
     def whiledraw(self, data: List[CpltInfo], font: DrawText, y: int, page: int, arg: str = None) -> None:
         dy = 130
@@ -81,16 +81,16 @@ class DrawTable:
         icon = Image.open(maimai_dir / 'UI_Icon_309503.png').resize((140,140))
         if qqid:
             icon = (await get_QQlogo(qqid)).resize((140,140))
-        self._im.alpha_composite(icon, (1650, 100))
+        self._im.alpha_composite(icon, (825, 50))
 
         yh_font.draw(1350, 175, 60, head, (0, 0, 0, 255), anchor='lm')
 
-        self.whiledraw(data, yh_font, 160, page, arg=arg)
+        self.whiledraw(data, yh_font, 200, page, arg=arg)
 
-        return self._im.resize((1535,2800))
+        return self._im
 
 
-def get_page(data, page: int, size: int = 75):
+def get_page(data, page: int, size: int = 90):
     start_index = (page - 1) * size
     end_index = page * size
     return data[start_index:end_index]
@@ -170,10 +170,10 @@ async def generate_level_table(level: str, page: int = 1, qqid: Optional[int] = 
 
         data = remove_duplicates(data)
         data.sort(key=lambda x: x.achievements, reverse=True)
-        max_page = len(data) // 120 + 1
+        max_page = len(data) // 90 + 1
         if page > max_page:
             page = max_page
-        targets = get_page(data, page, size=120)
+        targets = get_page(data, page, size=90)
 
         head = f'{level}分数列表 ({page}/{max_page})'
 
@@ -213,10 +213,10 @@ async def generate_charter_table(charter: str, page: int = 1, qqid: Optional[int
 
         data = remove_duplicates(data)
         data.sort(key=lambda x: x.achievements, reverse=True)
-        max_page = len(data) // 120 + 1
+        max_page = len(data) // 90 + 1
         if page > max_page:
             page = max_page
-        targets = get_page(data, page, size=120)
+        targets = get_page(data, page, size=90)
 
         head = f'{charter}分数列表 ({page}/{max_page})'
 
@@ -254,10 +254,10 @@ async def generate_bpm_table(bpm_min: int, bpm_max: int, page: int = 1, qqid: Op
 
         data = remove_duplicates(data)
         data.sort(key=lambda x: x.achievements, reverse=True)
-        max_page = len(data) // 120 + 1
+        max_page = len(data) // 90 + 1
         if page > max_page:
             page = max_page
-        targets = get_page(data, page, size=120)
+        targets = get_page(data, page, size=90)
 
         head = f'BPM分数列表 ({page}/{max_page})'
 
