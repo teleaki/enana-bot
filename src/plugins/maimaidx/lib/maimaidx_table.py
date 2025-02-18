@@ -164,12 +164,14 @@ def vectorized_processing(data):
     # 生成结果列表
     info_list = [
         f'总共有 {total_num} 个成绩，其中：',
-        f' '
+        f' ',
         f'AP的成绩共 {ap_total} 个（AP+：{counters["app"]}）',
-        f'SSS+：{counters["sssp"]}     |   SSS：{sss_total}',
-        f'99%+：{breakdown[0]}         |   98%+：{breakdown[1]}',
-        f'97%+：{breakdown[2]}         |   未满97%：{counters["cl"]}',
-        f'SSS+寸：{counters["ssspc"]}  |   SSS寸：{counters["sssc"]}'
+        f'SSS+以上：{counters["sssp"]}   |   SSS以上：{sss_total}',
+        f'99%以上：{breakdown[0]}   |   98%以上：{breakdown[1]}',
+        f'97%以上：{breakdown[2]}',
+        f'未满97%：{counters["cl"]}',
+        f' ',
+        f'SSS+寸：{counters["ssspc"]}   |   SSS寸：{counters["sssc"]}'
     ]
 
     return info_list
