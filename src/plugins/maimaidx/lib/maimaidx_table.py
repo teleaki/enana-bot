@@ -18,18 +18,18 @@ class DrawTable:
     _diff = [basic, advanced, expert, master, remaster]
 
     def __init__(self):
-        self._im = Image.new('RGBA', (3070, 4200), color='white')
+        self._im = Image.new('RGBA', (2080, 5280), color=(4,33,67,255))
 
-    def whiledraw(self, data: List[CpltInfo], font: DrawText, y: int, page: int, arg: str = None) -> None:
+    def whiledraw(self, data: List[CpltInfo], font: DrawText, page: int, arg: str = None) -> None:
         dy = 130
         TEXT_COLOR = [(255, 255, 255, 255), (255, 255, 255, 255), (255, 255, 255, 255), (255, 255, 255, 255),
                       (255, 255, 255, 255)]
 
         for num, info in enumerate(data):
-            if not num % 3:
-                x = 25; y += dy
+            if num < 30:
+                x = 30; y = 30 + dy * (num + 10)
             else:
-                x = 25 + (num % 3) * 1000 + (num % 3) * 10
+                x = 1060; y = 30 + dy * (num - 30)
 
             cover = Image.open(get_music_cover(info.id))
             cover = process_image(cover).resize((300,120))
@@ -71,21 +71,37 @@ class DrawTable:
             bpm = music.basic_info.bpm
             font.draw(x + 575, y + 95, 25, f'BPM:{bpm}', TEXT_COLOR[info.level_index], anchor='lm')
 
-    async def draw_table(self, data: List[CpltInfo], head: str, page: int, qqid: Optional[int], arg: str) -> Image.Image:
+    async def draw_table(self, data: List[CpltInfo], page: int = 1, qqid: Optional[int] = None, arg: str = None) -> Image.Image:
         draw = ImageDraw.Draw(self._im)
         yh_font = DrawText(draw, YAHEI)
 
-        head_bg = Image.open(maimai_dir / 'title2.png').resize((1500,300))
-        self._im.alpha_composite(head_bg, (785, 25))
+        max_page = len(data) // 75 + 1
+        if page > max_page:
+            page = max_page
+        targets = get_page(data, page, size=75)
+
+        head = f'{arg}分数列表 ({page}/{max_page})'
+
+        bg1 = create_rounded_rectangle((1020, 3910), 30)
+        bg2 = create_rounded_rectangle((1020, 5210), 30)
+        bg_info = create_rounded_rectangle((1020, 1030), 30)
+        bg_head = create_rounded_rectangle((520, 100), 30)
+
+        self._im.alpha_composite(bg1, (20, 1320))
+        self._im.alpha_composite(bg2, (1050, 20))
+        self._im.alpha_composite(bg_info, (20, 280))
+        self._im.alpha_composite(bg_head, (320, 100))
 
         icon = Image.open(maimai_dir / 'UI_Icon_309503.png').resize((140,140))
         if qqid:
             icon = (await get_QQlogo(qqid)).resize((140,140))
-        self._im.alpha_composite(icon, (825, 50))
+        self._im.alpha_composite(icon, (150, 50))
 
-        yh_font.draw(1350, 175, 60, head, (0, 0, 0, 255), anchor='lm')
+        yh_font.draw(580, 150, 40, head, (0, 0, 0, 255), anchor='mm')
 
-        self.whiledraw(data, yh_font, 200, page, arg=arg)
+        yh_font.draw(580, 150, 40, head, (0, 0, 0, 255), anchor='mm')
+
+        self.whiledraw(targets, yh_font, page, arg=arg)
 
         return self._im
 
@@ -155,6 +171,38 @@ def process_image(cover: Image.Image) -> Image.Image:
     # 保存结果
     return cropped
 
+def create_rounded_rectangle(
+        size: tuple[int, int],
+        radius: int,
+        border_width: int = 3
+) -> Image.Image:
+    """
+    生成带黑边框的白底圆角矩形
+
+    参数：
+    size: (宽度, 高度) 单位像素
+    radius: 圆角半径 (建议值：10-40)
+    border_width: 边框宽度 (默认3像素)
+
+    返回：
+    PIL.Image对象 (RGB模式)
+    """
+    # 创建白色画布
+    width, height = size
+    image = Image.new("RGBA", size, color=(255, 255, 255, 0))
+    draw = ImageDraw.Draw(image)
+
+    # 绘制黑边框圆角矩形
+    draw.rounded_rectangle(
+        [(0, 0), (width - 1, height - 1)],  # 覆盖整个画布
+        radius=radius,
+        fill="white",  # 内部填充色
+        outline="black",  # 边框颜色
+        width=border_width  # 边框粗细
+    )
+
+    return image
+
 async def generate_level_table(level: str, page: int = 1, qqid: Optional[int] = None, username: Optional[str] = None) -> MessageSegment:
     try:
         if username:
@@ -170,15 +218,9 @@ async def generate_level_table(level: str, page: int = 1, qqid: Optional[int] = 
 
         data = remove_duplicates(data)
         data.sort(key=lambda x: x.achievements, reverse=True)
-        max_page = len(data) // 90 + 1
-        if page > max_page:
-            page = max_page
-        targets = get_page(data, page, size=90)
-
-        head = f'{level}分数列表 ({page}/{max_page})'
 
         draw_cplt = DrawTable()
-        pic = await draw_cplt.draw_table(targets, head, page, qqid, arg='level')
+        pic = await draw_cplt.draw_table(data, page, qqid, arg=level)
 
         msg = MessageSegment.image(image_to_base64(pic))
     except UserNotFoundError as e:
@@ -213,12 +255,6 @@ async def generate_charter_table(charter: str, page: int = 1, qqid: Optional[int
 
         data = remove_duplicates(data)
         data.sort(key=lambda x: x.achievements, reverse=True)
-        max_page = len(data) // 90 + 1
-        if page > max_page:
-            page = max_page
-        targets = get_page(data, page, size=90)
-
-        head = f'{charter}分数列表 ({page}/{max_page})'
 
         charter_info = Message([
             MessageSegment.text('匹配到的谱师有：\n')
@@ -227,7 +263,7 @@ async def generate_charter_table(charter: str, page: int = 1, qqid: Optional[int
             charter_info.append(MessageSegment.text(', '.join(real_charters[rc])))
 
         draw_cplt = DrawTable()
-        pic = await draw_cplt.draw_table(targets, head, page, qqid, arg='charter')
+        pic = await draw_cplt.draw_table(data, page, qqid, arg=charter)
 
         msg = charter_info + MessageSegment.image(image_to_base64(pic))
     except UserNotFoundError as e:
@@ -254,15 +290,9 @@ async def generate_bpm_table(bpm_min: int, bpm_max: int, page: int = 1, qqid: Op
 
         data = remove_duplicates(data)
         data.sort(key=lambda x: x.achievements, reverse=True)
-        max_page = len(data) // 90 + 1
-        if page > max_page:
-            page = max_page
-        targets = get_page(data, page, size=90)
-
-        head = f'BPM分数列表 ({page}/{max_page})'
 
         draw_cplt = DrawTable()
-        pic = await draw_cplt.draw_table(targets, head, page, qqid, arg='bpm')
+        pic = await draw_cplt.draw_table(data, page, qqid, arg=f'{bpm_min}-{bpm_max}')
 
         bpm_info = Message([
             MessageSegment.text('查询的BPM范围为：\n'),
