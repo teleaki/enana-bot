@@ -1,5 +1,5 @@
 from .config import oc_dict, card_type
-import requests
+import httpx
 import random
 
 base_url = "https://storage.sekai.best/sekai-jp-assets/character/member/res{oc_id}_no{oc_num}_rip/{card_type}.png"
@@ -17,13 +17,17 @@ base_url = "https://storage.sekai.best/sekai-jp-assets/character/member/res{oc_i
 
 
 def is_url_valid(url):
-    """检查 URL 是否有效"""
     try:
-        # 发送请求验证 URL 是否有效
-        response = requests.head(url, timeout=5)  # 使用 head 请求更快速
-        return response.status_code == 200
-    except requests.RequestException:
+        with httpx.Client(http2=True, timeout=2) as client:
+            response = client.head(url, follow_redirects=True)
+            if response.status_code == 200:
+                return True
+            # 回退到 GET 请求（仅验证 header）
+            response = client.get(url, follow_redirects=True)
+            return response.status_code == 200
+    except httpx.RequestError:
         return False
+
 
 
 def get_img_url(oc_name, max_retries=5):
