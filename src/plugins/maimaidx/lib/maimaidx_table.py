@@ -18,7 +18,7 @@ class DrawTable:
     _diff = [basic, advanced, expert, master, remaster]
 
     def __init__(self):
-        self._im = Image.new('RGBA', (6140, 11000), color='white')
+        self._im = Image.new('RGBA', (6140, 11200), color='white')
 
     def whiledraw(self, data: List[CpltInfo], font: DrawText, y: int, page: int, arg: str = None) -> None:
         dy = 260
@@ -66,7 +66,7 @@ class DrawTable:
             font.draw(x + 820, y + 190, 50, f'定数：{ds}', TEXT_COLOR[info.level_index], anchor='lm')
 
             charter = music.charts[info.level_index].charter
-            font.draw(x + 820, y + 120, 32, f'charter:{charter}', TEXT_COLOR[info.level_index], anchor='lm')
+            font.draw(x + 820, y + 120, 35, f'charter:{charter}', TEXT_COLOR[info.level_index], anchor='lm')
 
             bpm = music.basic_info.bpm
             font.draw(x + 1150, y + 190, 50, f'BPM:{bpm}', TEXT_COLOR[info.level_index], anchor='lm')
@@ -85,9 +85,9 @@ class DrawTable:
 
         yh_font.draw(2700, 350, 120, head, (0, 0, 0, 255), anchor='lm')
 
-        self.whiledraw(data, yh_font, 220, page, arg=arg)
+        self.whiledraw(data, yh_font, 230, page, arg=arg)
 
-        return self._im.resize((3070,5500))
+        return self._im.resize((1535,2800))
 
 
 def get_page(data, page: int, size: int = 75):
