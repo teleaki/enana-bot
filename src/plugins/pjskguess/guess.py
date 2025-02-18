@@ -43,7 +43,7 @@ class GuessCard:
                     return False, Message([MessageSegment.text('图片加载失败，请稍后再试。')])
             else:
                 # 图片链接获取失败的处理
-                return False, Message([MessageSegment.text('未能获取到有效的卡面图片。')])
+                return False, Message([MessageSegment.text(f'未能获取到有效的卡面图片。\n{url}')])
 
         except Exception as e:
             # 捕获其他异常
