@@ -23,8 +23,8 @@ def is_url_valid(url):
             if response.status_code == 200:
                 return True
             # 回退到 GET 请求（仅验证 header）
-            response = client.get(url, follow_redirects=True)
-            return response.status_code == 200
+            # response = client.get(url, follow_redirects=True)
+            # return response.status_code == 200
     except httpx.RequestError:
         return False
 
