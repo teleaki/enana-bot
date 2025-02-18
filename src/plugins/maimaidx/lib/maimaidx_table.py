@@ -1,4 +1,5 @@
 from nonebot.adapters.onebot.v11 import MessageSegment, Message
+import numpy as np
 
 from .maimaidx_error import *
 from .maimaidx_image import *
@@ -78,7 +79,7 @@ class DrawTable:
         max_page = len(data) // 75 + 1
         if page > max_page:
             page = max_page
-        targets = get_page(data, page, size=75)
+        targets = get_page(data, page, size=70)
 
         head = f'{arg}分数列表 ({page}/{max_page})'
 
@@ -99,11 +100,13 @@ class DrawTable:
 
         yh_font.draw(580, 150, 40, head, (0, 0, 0, 255), anchor='mm')
 
-        yh_font.draw(580, 150, 40, head, (0, 0, 0, 255), anchor='mm')
+        info_list = vectorized_processing(data)
+        for no, info in enumerate(info_list):
+            yh_font.draw(40, (350 + no * 80), 40, info, (0, 0, 0, 255), anchor='lm')
 
         self.whiledraw(targets, yh_font, page, arg=arg)
 
-        return self._im
+        return self._im.resize((1040,2640))
 
 
 def get_page(data, page: int, size: int = 90):
@@ -121,54 +124,96 @@ def remove_duplicates(data: List[CpltInfo]) -> List[CpltInfo]:
     # 返回字典中的所有值，即去重后的元素列表
     return list(seen.values())
 
+
+def vectorized_processing(data):
+    # 将数据转换为NumPy数组
+    achievements = np.array([x.achievements for x in data])
+    fc_types = np.array([x.fc for x in data])
+
+    # 使用向量化操作计算所有指标
+    counters = {
+        # FC类型统计
+        'app': np.sum(fc_types == 'app'),
+        'ap': np.sum(fc_types == 'ap'),
+
+        # 主成就区间
+        'sssp': np.sum(achievements >= 100.5),
+        'sss': np.sum((achievements >= 100.0) & (achievements < 100.5)),
+        'ssp': np.sum((achievements >= 99.0) & (achievements < 100.0)),
+        'ss': np.sum((achievements >= 98.0) & (achievements < 99.0)),
+        's': np.sum((achievements >= 97.0) & (achievements < 98.0)),
+        'cl': np.sum(achievements < 97.0),
+
+        # 特殊子区间
+        'ssspc': np.sum((achievements >= 100.4) & (achievements < 100.5)),
+        'sssc': np.sum((achievements >= 99.9) & (achievements < 100.0))
+    }
+
+    # 计算聚合值
+    total_num = len(data)
+    ap_total = counters['ap'] + counters['app']
+    sss_total = counters['sssp'] + counters['sss']
+
+    # 构建分段统计
+    breakdown = [
+        counters['sssp'] + counters['sss'] + counters['ssp'],  # 99%+
+        counters['sssp'] + counters['sss'] + counters['ssp'] + counters['ss'],  # 98%+
+        counters['sssp'] + counters['sss'] + counters['ssp'] + counters['ss'] + counters['s']  # 97%+
+    ]
+
+    # 生成结果列表
+    info_list = [
+        f'总共有 {total_num} 个成绩，其中：',
+        f' '
+        f'AP的成绩共 {ap_total} 个（AP+：{counters["app"]}）',
+        f'SSS+：{counters["sssp"]}     |   SSS：{sss_total}',
+        f'99%+：{breakdown[0]}         |   98%+：{breakdown[1]}',
+        f'97%+：{breakdown[2]}         |   未满97%：{counters["cl"]}',
+        f'SSS+寸：{counters["ssspc"]}  |   SSS寸：{counters["sssc"]}'
+    ]
+
+    return info_list
+
 def process_image(cover: Image.Image) -> Image.Image:
-    # 打开图片并确保RGBA模式
+    # 转换为RGBA模式
     img = cover.convert("RGBA")
 
-    # 放大到600x600（使用高质量缩放）
+    # 高质量缩放至600x600
     img = img.resize((600, 600), Image.Resampling.LANCZOS)
 
-    # 计算裁剪区域（垂直居中600x240）
-    y_center = 300  # 原图高度600的中间点
-    crop_area = (0, y_center - 120, 600, y_center + 120)  # 600x240区域
+    # 垂直居中裁剪600x240区域
+    y_center = 300
+    crop_area = (0, y_center - 120, 600, y_center + 120)
     cropped = img.crop(crop_area)
 
-    # 创建水平渐变透明度遮罩
+    # 使用NumPy创建渐变遮罩
     protect = 150
     width, height = 600, 240
-    gradient = Image.new("L", (width, height))
     center_x = width // 2
-    side_l = center_x - protect // 2
-    side_r = center_x + protect // 2
-    max_distance = (width - protect) / 2
+    side_l = center_x - protect // 2  # 225
+    side_r = center_x + protect // 2  # 375
+    max_distance = (width - protect) / 2  # 225.0
 
-    # 逐像素设置透明度
-    for x in range(side_l):
-        # 计算当前x坐标到中心的距离比例（0.0~1.0）
-        distance = abs(x - side_l) / max_distance
-        # 透明度从两边0%到中心100%（alpha值255~0）
-        alpha = int(255 * (1 - distance))
-        # 为整列设置相同透明度
-        for y in range(height):
-            gradient.putpixel((x, y), alpha)
+    # 创建一维alpha数组
+    alpha = np.zeros(width, dtype=np.uint8)
 
-    for x in range(side_l, side_r):
-        for y in range(height):
-            gradient.putpixel((x, y), 255)
+    # 左侧渐变区域 (0到224)
+    x_left = np.arange(side_l)
+    alpha[x_left] = (255 * (1 - (side_l - x_left) / max_distance)).astype(np.uint8)
 
-    for x in range(side_r, width):
-        # 计算当前x坐标到中心的距离比例（0.0~1.0）
-        distance = abs(x - side_r) / max_distance
-        # 透明度从两边0%到中心100%（alpha值255~0）
-        alpha = int(255 * (1 - distance))
-        # 为整列设置相同透明度
-        for y in range(height):
-            gradient.putpixel((x, y), alpha)
+    # 中央不透明区域 (225到374)
+    alpha[side_l:side_r] = 255
 
-    # 应用透明度到裁剪后的图片
+    # 右侧渐变区域 (375到599)
+    x_right = np.arange(side_r, width)
+    alpha[x_right] = (255 * (1 - (x_right - side_r) / max_distance)).astype(np.uint8)
+
+    # 扩展为二维遮罩并转换为图像
+    gradient = Image.fromarray(np.tile(alpha, (height, 1)), mode='L')
+
+    # 应用透明度
     cropped.putalpha(gradient)
 
-    # 保存结果
     return cropped
 
 def create_rounded_rectangle(
