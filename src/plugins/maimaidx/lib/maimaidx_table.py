@@ -56,7 +56,7 @@ class DrawTable:
             if coloumWidth(title) > 17:
                 title = changeColumnWidth(title, 16) + '...'
 
-            font.draw(x + 25, y + 120, 120, f'#{page * 120 + num + 1}', TEXT_COLOR[info.level_index], anchor='lm')
+            font.draw(x + 25, y + 120, 120, f'#{(page - 1) * 120 + num + 1}', TEXT_COLOR[info.level_index], anchor='lm')
             font.draw(x + 820, y + 45, 50, title, TEXT_COLOR[info.level_index], anchor='lm')
             font.draw(x + 1950, y + 65, 80, f'{info.achievements:.4f}%', TEXT_COLOR[info.level_index], anchor='rm')
 
@@ -85,7 +85,7 @@ class DrawTable:
 
         yh_font.draw(2700, 350, 120, head, (0, 0, 0, 255), anchor='lm')
 
-        self.whiledraw(data, yh_font, 200, page, arg=arg)
+        self.whiledraw(data, yh_font, 220, page, arg=arg)
 
         return self._im.resize((3070,5500))
 
