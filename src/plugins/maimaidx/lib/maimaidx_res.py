@@ -23,6 +23,7 @@ MEIRYO: Path =  _resource_dir / 'meiryo.ttc'
 SIYUAN: Path = _resource_dir / 'SourceHanSansSC-Bold.otf'
 HANYI: Path = _resource_dir / 'HanYi.ttf'
 TBFONT: Path = _resource_dir / 'Torus SemiBold.otf'
+SATISFY: Path = _resource_dir / 'Satisfy.ttf'
 
 
 # 常用变量
