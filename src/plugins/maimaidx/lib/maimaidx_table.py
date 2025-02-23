@@ -76,7 +76,7 @@ class DrawTable:
         draw = ImageDraw.Draw(self._im)
         yh_font = DrawText(draw, YAHEI)
 
-        max_page = len(data) // 75 + 1
+        max_page = len(data) // 70 + 1
         if page > max_page:
             page = max_page
         targets = get_page(data, page, size=70)
