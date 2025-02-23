@@ -62,7 +62,7 @@ class GuessMusic:
                     MessageSegment.image(image_to_base64(self.cover))
                 ])
                 return True, msg
-            alias_answer_ids = mai.total_alias_list.fuzzy_alias(key)
+            alias_answer_ids = mai.total_alias_list.fuzzy_alias(key, threshold=40)
             if alias_answer_ids:
                 alias_answer_id = alias_answer_ids[0]
                 if alias_answer_id == self.answer.id:

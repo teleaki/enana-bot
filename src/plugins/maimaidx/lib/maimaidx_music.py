@@ -39,7 +39,7 @@ class AliasList:
         """通过 ID 获取别名列表"""
         return self.alias_dict.get(music_id)
 
-    def fuzzy_alias(self, input_str: str) -> Optional[List[str]]:
+    def fuzzy_alias(self, input_str: str, threshold: int = 70) -> Optional[List[str]]:
         """使用 rapidfuzz 进行模糊匹配，返回所有相似度大于 90 的匹配项，
         如果没有，则返回相似度大于 70 且最接近的匹配项"""
         if not isinstance(input_str, str) or not self.alias_strings:
@@ -56,7 +56,7 @@ class AliasList:
         for best_match, score, _ in matches:
             if score > 90:
                 result_ids.append(self.alias_map[best_match])  # 获取符合条件的 ID
-            elif score > max_score and score > 70:
+            elif score > max_score and score > threshold:
                 max_score = score
                 best_match_id = self.alias_map[best_match]  # 获取最接近的 ID
 
