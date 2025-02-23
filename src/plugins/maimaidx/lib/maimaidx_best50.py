@@ -109,6 +109,8 @@ class DrawBest:
         draw = ImageDraw.Draw(self._im)
         yh_font = DrawText(draw, YAHEI)
 
+        bg = Image.open(maimai_dir / 'b50_bg.jpg').convert('RGBA').resize((2200, 2828))
+        bg.putalpha(153)
         dx_rating = Image.open(maimai_dir / self._findRaPic()).resize((300, 59))
         Name = Image.open(maimai_dir / 'Name.png')
         MatchLevel = Image.open(maimai_dir / self._findMatchLevel()).resize((134, 55))
@@ -127,6 +129,7 @@ class DrawBest:
             else:
                 plate = Image.open(get_random_file(other_plate_dir)).resize((1420, 230))
 
+        self._im.alpha_composite(bg, (0, 0))
         self._im.alpha_composite(plate, (390, 100))
         self._im.alpha_composite(icon, (398, 108))
         self._im.alpha_composite(dx_rating, (620, 122))
