@@ -248,6 +248,8 @@ real_charters: Dict[str, List[str]] = {
     "玉子豆腐": ["玉子豆腐", "safaTAmago"],
     "ロシェ@ペンギン": ["ロシェ@ペンギン", "ものくロシェ"],
     "シチミヘルツ": ["シチミヘルツ", "7.3Hz＋Jack", "シチミッピー", "Safata.Hz", "7.3GHz vs Phoenix", "7.3GHz", "七味星人", "しちみりこりす", "7.3連発華火", "SHICHIMI☆CAT", "超七味星人", "7.3GHz -Før The Legends-", "Hz-R.Arrow", "あまくちヘルツ", "チャン@DP皆伝 vs シチミヘルツ", "Safata.GHz"],
+    # 7.3GHz更常用遂加
+    "7.3GHz": ["シチミヘルツ", "7.3Hz＋Jack", "シチミッピー", "Safata.Hz", "7.3GHz vs Phoenix", "7.3GHz", "七味星人", "しちみりこりす", "7.3連発華火", "SHICHIMI☆CAT", "超七味星人", "7.3GHz -Før The Legends-", "Hz-R.Arrow", "あまくちヘルツ", "チャン@DP皆伝 vs シチミヘルツ", "Safata.GHz"],
     "Revo@LC": ["Revo@LC"],
     "サファ太": ["サファ太", "safaTAmago", "-ZONE- SaFaRi", "ボコ太", "Safata.Hz", "ﾚよ†ょ／∪ヽ”┠  (十,3､了ﾅﾆ", "サファ太 vs -ZONE- SaFaRi", "さふぁた", "-ZONE-Phoenix", "サファ太 vs じゃこレモン", "サファ太 vs 翠楼屋", "jacK on Phoenix & -ZONE- SaFaRi", "DANCE TIME(サファ太)", "はっぴー & サファ太", "Safata.GHz", "鳩サファzhel"],
     "隅田川星人": ["隅田川星人", "七味星人", "The ALiEN", "隅田川華火大会", "The ALiEN vs. Phoenix", "超七味星人", "はっぴー星人"],
