@@ -245,7 +245,7 @@ async def handle_mguess(bot: Bot, matcher: Matcher, event: Event):
 
 mai_guess_answer = on_regex(
     r'^(猜(.*)|不玩了)$',
-    priority=3,
+    priority=4,
     block=True
 )
 
