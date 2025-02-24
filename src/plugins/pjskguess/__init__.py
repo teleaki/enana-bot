@@ -63,7 +63,7 @@ async def gc_handle(matcher: Matcher, bot: Bot, event: Event):
 
 guess_card_answer = on_regex(
     r'^(猜(\w+)|不玩了)$',
-    priority=3,
+    priority=4,
     block=True
 )
 
