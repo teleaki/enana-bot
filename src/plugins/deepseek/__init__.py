@@ -52,7 +52,7 @@ async def handle_deepseek(
         # 带超时的请求
         reply = await asyncio.wait_for(
             safe_async_chat(client, user_id, question),
-            timeout=120.0
+            timeout=300.0
         )
 
         # 发送最终回复
