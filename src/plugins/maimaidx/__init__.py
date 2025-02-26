@@ -6,7 +6,7 @@ from .config import Config
 __plugin_meta__ = PluginMetadata(
     name="maimaidx",
     description="舞萌dx相关工具",
-    usage="b50",
+    usage="蓝的写",
     config=Config,
 )
 
