@@ -21,7 +21,7 @@ class DrawTable:
     def __init__(self):
         self._im = Image.new('RGBA', (2080, 5280), color=(4,33,67,255))
 
-    def whiledraw(self, data: List[CpltInfo], font: DrawText, page: int, arg: str = None) -> None:
+    def whiledraw(self, data: List[PlayInfo], font: DrawText, page: int, arg: str = None) -> None:
         dy = 130
         TEXT_COLOR = [(255, 255, 255, 255), (255, 255, 255, 255), (255, 255, 255, 255), (255, 255, 255, 255),
                       (255, 255, 255, 255)]
@@ -72,7 +72,7 @@ class DrawTable:
             bpm = music.basic_info.bpm
             font.draw(x + 575, y + 95, 25, f'BPM:{bpm}', TEXT_COLOR[info.level_index], anchor='lm')
 
-    async def draw_table(self, data: List[CpltInfo], page: int = 1, qqid: Optional[int] = None, arg: str = None) -> Image.Image:
+    async def draw_table(self, data: List[PlayInfo], page: int = 1, qqid: Optional[int] = None, arg: str = None) -> Image.Image:
         draw = ImageDraw.Draw(self._im)
         yh_font = DrawText(draw, YAHEI)
         sf_font = DrawText(draw, SATISFY)
@@ -117,7 +117,7 @@ def get_page(data, page: int, size: int = 90):
     end_index = page * size
     return data[start_index:end_index]
 
-def remove_duplicates(data: List[CpltInfo]) -> List[CpltInfo]:
+def remove_duplicates_plate(data: List[PlayInfo]) -> List[PlayInfo]:
     # 使用字典以 (id, level_index) 为键去重
     seen = {}  # 用来存储去重后的元素
     for info in data:
@@ -260,13 +260,13 @@ async def generate_level_table(level: str, page: int = 1, qqid: Optional[int] = 
         version_list = list(plate_to_version.values())
         obj = await maiapi.query_user('plate', qqid=qqid, username=username, version=version_list)
 
-        verlist = [CpltInfo(**item) for item in obj['verlist']]
+        verlist = [PlayInfo(**item) for item in obj['verlist']]
         data = []
         for info in verlist:
             if info.level == level:
                 data.append(info)
 
-        data = remove_duplicates(data)
+        data = remove_duplicates_plate(data)
         data.sort(key=lambda x: x.achievements, reverse=True)
 
         draw_cplt = DrawTable()
@@ -295,7 +295,7 @@ async def generate_charter_table(charter: str, page: int = 1, qqid: Optional[int
 
         real_charter_list = list(dict.fromkeys(real_charter_list))
 
-        verlist = [CpltInfo(**item) for item in obj['verlist']]
+        verlist = [PlayInfo(**item) for item in obj['verlist']]
         data = []
         for info in verlist:
             music = mai.total_list.search_by_id(info.id)
@@ -303,7 +303,7 @@ async def generate_charter_table(charter: str, page: int = 1, qqid: Optional[int
                 if music.charts[info.level_index].charter in real_charters[rc]:
                     data.append(info)
 
-        data = remove_duplicates(data)
+        data = remove_duplicates_plate(data)
         data.sort(key=lambda x: x.achievements, reverse=True)
 
         charter_info = Message([
@@ -331,14 +331,14 @@ async def generate_bpm_table(bpm_min: int, bpm_max: int, page: int = 1, qqid: Op
         version_list = list(plate_to_version.values())
         obj = await maiapi.query_user('plate', qqid=qqid, username=username, version=version_list)
 
-        verlist = [CpltInfo(**item) for item in obj['verlist']]
+        verlist = [PlayInfo(**item) for item in obj['verlist']]
         data = []
         for info in verlist:
             music = mai.total_list.search_by_id(info.id)
             if bpm_min <= music.basic_info.bpm <= bpm_max:
                 data.append(info)
 
-        data = remove_duplicates(data)
+        data = remove_duplicates_plate(data)
         data.sort(key=lambda x: x.achievements, reverse=True)
 
         draw_cplt = DrawTable()

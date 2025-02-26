@@ -109,6 +109,30 @@ async def handle_b50(bot: Bot, event: Event, args: Message = CommandArg()):
 
     await b50.finish(Message(b50_msg))
 
+plate_b50 = on_regex(
+    r'^(.+)代b50$',
+    priority=3,
+    block=True
+)
+
+@plate_b50.handle()
+async def handle_pb50(bot: Bot, event: Event, args: Optional[str] = RegexStr(1)):
+    if args in plate_to_version_cn.keys():
+        qqid = event.get_user_id()
+        if args in plate_to_version_cn.keys()[:17]:
+            version = [plate_to_version_cn.get(args)]
+            plate_b50_msg = await generate_plate_b50(qqid=int(qqid), version=version)
+            await plate_b50.finish(Message(plate_b50_msg))
+        else:
+            version = [plate_to_version_cn.get(args)]
+            plate_b50_msg = await generate_plate_b50(qqid=int(qqid), version=version)
+            await plate_b50.finish(Message([
+                MessageSegment.text('国服默认两代合在一起'),
+                plate_b50_msg
+            ]))
+    else:
+        await plate_b50.finish()
+
 # info
 minfo = on_command(
     "查歌",

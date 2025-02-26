@@ -72,6 +72,35 @@ plate_to_version: Dict[str, str] = {
     '祝': 'maimai でらっくす FESTiVAL PLUS',
     '双': 'maimai でらっくす BUDDiES'
 }
+plate_to_version_cn: Dict[str, str] = {
+    '初': 'maimai',
+    '真': 'maimai PLUS',
+    '超': 'maimai GreeN',
+    '檄': 'maimai GreeN PLUS',
+    '橙': 'maimai ORANGE',
+    '暁': 'maimai ORANGE PLUS',
+    '晓': 'maimai ORANGE PLUS',
+    '桃': 'maimai PiNK',
+    '櫻': 'maimai PiNK PLUS',
+    '樱': 'maimai PiNK PLUS',
+    '紫': 'maimai MURASAKi',
+    '菫': 'maimai MURASAKi PLUS',
+    '堇': 'maimai MURASAKi PLUS',
+    '白': 'maimai MiLK',
+    '雪': 'MiLK PLUS',
+    '輝': 'maimai FiNALE',
+    '辉': 'maimai FiNALE',
+    '熊': 'maimai でらっくす',
+    '華': 'maimai でらっくす',
+    '华': 'maimai でらっくす',
+    '爽': 'maimai でらっくす Splash',
+    '煌': 'maimai でらっくす Splash',
+    '宙': 'maimai でらっくす UNiVERSE',
+    '星': 'maimai でらっくす UNiVERSE',
+    '祭': 'maimai でらっくす FESTiVAL',
+    '祝': 'maimai でらっくす FESTiVAL',
+    '双': 'maimai でらっくす BUDDiES'
+}
 platecn = {
     '晓': '暁',
     '樱': '櫻',

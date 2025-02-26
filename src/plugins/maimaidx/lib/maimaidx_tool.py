@@ -1,6 +1,7 @@
 import base64
 import json
 import random
+import math
 from io import BytesIO
 from typing import Union, Any, Optional
 
@@ -49,7 +50,6 @@ def image_to_base64(img: Image.Image, format='PNG') -> str:
     base64_str = base64.b64encode(byte_data).decode()
     return 'base64://' + base64_str
 
-
 def get_random_file(folder: Path) -> Optional[Path]:
     # 获取文件夹中的所有文件（排除子文件夹）
     files = [f for f in folder.iterdir() if f.is_file()]
@@ -62,3 +62,53 @@ def get_random_file(folder: Path) -> Optional[Path]:
     random_file = random.choice(files)
 
     return random_file  # 直接返回随机文件的 Path 对象
+
+def compute_ra(ds: float, achievement: float) -> int:
+    base_ra = 22.4
+    if achievement < 50:
+        base_ra = 7.0
+    elif achievement < 60:
+        base_ra = 8.0
+    elif achievement < 70:
+        base_ra = 9.6
+    elif achievement < 75:
+        base_ra = 11.2
+    elif achievement < 80:
+        base_ra = 12.0
+    elif achievement < 90:
+        base_ra = 13.6
+    elif achievement < 94:
+        base_ra = 15.2
+    elif achievement < 97:
+        base_ra = 16.8
+    elif achievement < 98:
+        base_ra = 20.0
+    elif achievement < 99:
+        base_ra = 20.3
+    elif achievement < 99.5:
+        base_ra = 20.8
+    elif achievement < 100:
+        base_ra = 21.1
+    elif achievement < 100.5:
+        base_ra = 21.6
+
+    return math.floor(ds * (min(100.5, achievement) / 100) * base_ra)
+
+def dxScore(dx: int) -> int:
+    """
+    返回值为 `Tuple`： `(星星种类，数量)`
+    """
+    if dx <= 85:
+        result = 0
+    elif dx <= 90:
+        result = 1
+    elif dx <= 93:
+        result = 2
+    elif dx <= 95:
+        result = 3
+    elif dx <= 97:
+        result = 4
+    else:
+        result = 5
+    return result
+

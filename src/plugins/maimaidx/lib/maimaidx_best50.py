@@ -1,4 +1,5 @@
-import math
+import bisect
+
 from nonebot.adapters.onebot.v11 import MessageSegment
 
 from .maimaidx_error import *
@@ -155,54 +156,6 @@ class DrawBest:
 
         return self._im.resize((1760, 2000))
 
-def dxScore(dx: int) -> int:
-    """
-    返回值为 `Tuple`： `(星星种类，数量)`
-    """
-    if dx <= 85:
-        result = 0
-    elif dx <= 90:
-        result = 1
-    elif dx <= 93:
-        result = 2
-    elif dx <= 95:
-        result = 3
-    elif dx <= 97:
-        result = 4
-    else:
-        result = 5
-    return result
-
-def compute_ra(ds: float, achievement: float) -> int:
-    base_ra = 22.4
-    if achievement < 50:
-        base_ra = 7.0
-    elif achievement < 60:
-        base_ra = 8.0
-    elif achievement < 70:
-        base_ra = 9.6
-    elif achievement < 75:
-        base_ra = 11.2
-    elif achievement < 80:
-        base_ra = 12.0
-    elif achievement < 90:
-        base_ra = 13.6
-    elif achievement < 94:
-        base_ra = 15.2
-    elif achievement < 97:
-        base_ra = 16.8
-    elif achievement < 98:
-        base_ra = 20.0
-    elif achievement < 99:
-        base_ra = 20.3
-    elif achievement < 99.5:
-        base_ra = 20.8
-    elif achievement < 100:
-        base_ra = 21.1
-    elif achievement < 100.5:
-        base_ra = 21.6
-
-    return math.floor(ds * (min(100.5, achievement) / 100) * base_ra)
 
 async def generate_b50(qqid: Optional[int] = None, username: Optional[str] = None) -> MessageSegment:
     try:
@@ -219,15 +172,96 @@ async def generate_b50(qqid: Optional[int] = None, username: Optional[str] = Non
         msg = MessageSegment.text(str(e))
     except UserDisabledQueryError as e:
         msg = MessageSegment.text(str(e))
-    except OSError as e:
-        msg = MessageSegment.text(f"Error occurred: {e}")
-    except AttributeError as e:
-        msg = MessageSegment.text(f"Error occurred: {e}")
-    except ValueError as e:
-        msg = MessageSegment.text(f"Error occurred: {e}")
-    except TypeError as e:
-        msg = MessageSegment.text(f"Error occurred: {e}")
     except Exception as e:
-        msg = MessageSegment.text(f'未知错误：{type(e)}\n请联系Bot管理员')
+        msg = MessageSegment.text(f"{type(e)}: {e}\n请联系Bot管理员")
     return msg
 
+
+def remove_duplicates_b50(data: List[ChartInfo]) -> List[ChartInfo]:
+    # 使用字典以 (id, level_index) 为键去重
+    seen = {}  # 用来存储去重后的元素
+    for info in data:
+        key = (info.song_id, info.level_index)  # 根据 id 和 level_index 去重
+        if key not in seen:
+            seen[key] = info  # 如果 (id, level_index) 组合没有出现过，添加到字典中
+    # 返回字典中的所有值，即去重后的元素列表
+    return list(seen.values())
+
+def play2chart(play_infos: List[PlayInfo]) -> List[ChartInfo]:
+    chart_infos: List[ChartInfo] = []
+
+    for play_info in play_infos:
+        music = mai.total_list.search_by_id(play_info.id)
+        ds = music.ds[play_info.level_index]
+        ra = compute_ra(ds, play_info.achievements)
+        rate_index = bisect.bisect_right(achievementList, play_info.achievements)
+        # 创建新对象，并填充所有必填字段
+        chart_info = ChartInfo(
+            achievements=play_info.achievements,
+            ds=ds,
+            dxScore=0,  # 示例值（需实际数据）
+            level_label=diffs[play_info.level_index],  # 示例值（需实际数据）
+            ra=ra,  # 示例值（需实际数据）
+            rate=score_Rank[rate_index],  # 示例值（需实际数据）
+            song_id=play_info.id,
+            title=play_info.title,
+            level=play_info.level,
+            level_index=play_info.level_index,
+            fc=play_info.fc,
+            fs=play_info.fs,
+            type=play_info.type
+        )
+        chart_infos.append(chart_info)
+
+    return chart_infos
+
+def plate2best(plate_data: List[PlayInfo], user_data: UserInfo) -> UserInfo:
+    processed_plate_data = play2chart(plate_data)
+    processed_plate_data.sort(key=lambda x: x.ra, reverse=True)
+    processed_plate_data = remove_duplicates_b50(processed_plate_data)
+
+    sd_data = processed_plate_data[:35]
+    dx_data = processed_plate_data[35:50]
+
+    user_rating = 0
+    for info in sd_data:
+        user_rating += info.ra
+    for info in dx_data:
+        user_rating += info.ra
+
+    b50_data = UserInfo(
+        additional_rating=user_data.additional_rating,
+        charts=Data(
+            sd=sd_data,
+            dx=dx_data
+        ),
+        nickname=user_data.nickname,
+        plate=user_data.plate,
+        rating=user_rating,
+        username=user_data.username
+    )
+
+    return b50_data
+
+async def generate_plate_b50(version: List[str], qqid: Optional[int] = None, username: Optional[str] = None) -> MessageSegment:
+    try:
+        if username:
+            qqid = None
+
+        obj_plate = await maiapi.query_user('plate', qqid=qqid, username=username, version=version)
+        verlist = [PlayInfo(**item) for item in obj_plate['verlist']]
+
+        obj_user = await maiapi.query_user('player', qqid=qqid, username=username)
+        user_info = UserInfo(**obj_user)
+
+        draw_best = DrawBest(user_info=plate2best(plate_data=verlist, user_data=user_info), qqid=qqid)
+
+        pic = await draw_best.draw_b50()
+        msg = MessageSegment.image(image_to_base64(pic))
+    except UserNotFoundError as e:
+        msg = MessageSegment.text(str(e))
+    except UserDisabledQueryError as e:
+        msg = MessageSegment.text(str(e))
+    except Exception as e:
+        msg = MessageSegment.text(f"{type(e)}: {e}\n请联系Bot管理员")
+    return msg

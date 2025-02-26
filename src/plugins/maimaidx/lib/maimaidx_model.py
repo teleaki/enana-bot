@@ -84,8 +84,8 @@ class UserInfo(BaseModel):
     username: Optional[str]
 
 
-# Cplt
-class CpltInfo(BaseModel):
+# 游玩记录
+class PlayInfo(BaseModel):
     achievements: float
     fc: Optional[str] = ''
     fs: Optional[str] = ''
