@@ -117,21 +117,26 @@ plate_b50 = on_regex(
 
 @plate_b50.handle()
 async def handle_pb50(bot: Bot, event: Event, args: Optional[str] = RegexStr(1)):
-    if args in plate_to_version_cn.keys():
-        qqid = event.get_user_id()
-        if args in plate_to_version_cn.keys()[:17]:
-            version = [plate_to_version_cn.get(args)]
-            plate_b50_msg = await generate_plate_b50(qqid=int(qqid), version=version)
-            await plate_b50.finish(Message(plate_b50_msg))
-        else:
-            version = [plate_to_version_cn.get(args)]
-            plate_b50_msg = await generate_plate_b50(qqid=int(qqid), version=version)
-            await plate_b50.finish(Message([
-                MessageSegment.text('国服默认两代合在一起'),
-                plate_b50_msg
-            ]))
-    else:
-        await plate_b50.finish()
+    qqid = event.get_user_id()
+    plate_keys = list(plate_to_version_cn.keys())  # 转换为列表保证可切片
+
+    if args not in plate_keys:
+        await plate_b50.finish("无效的版本参数，请重新输入")
+
+    # 判断是否前17个版本（假设字典是有序的）
+    is_old_version = args in plate_keys[:17]
+    version = [plate_to_version_cn[args]]
+
+    # 统一生成消息内容
+    plate_b50_msg = await generate_plate_b50(qqid=int(qqid), version=version)
+
+    # 构造返回消息
+    message_segments = []
+    if not is_old_version:
+        message_segments.append(MessageSegment.text('国服默认两代合在一起'))
+    message_segments.append(plate_b50_msg)
+
+    await plate_b50.finish(Message(message_segments))
 
 # info
 minfo = on_command(
