@@ -56,7 +56,7 @@ async def handle_deepseek(
         )
 
         # 发送最终回复
-        await deepseek.finish(reply)
+        await deepseek.send(reply)
 
     except asyncio.TimeoutError:
         await deepseek.finish("思考超时，请尝试简化您的问题")
