@@ -110,29 +110,32 @@ async def handle_b50(bot: Bot, event: Event, args: Message = CommandArg()):
     await b50.finish(Message(b50_msg))
 
 plate_b50 = on_regex(
-    r'^(.+)代b50$',
+    r'^(.+)代b50\s+(.*)$',
     priority=3,
     block=True
 )
 
 @plate_b50.handle()
-async def handle_pb50(bot: Bot, event: Event, args: Optional[str] = RegexStr(1)):
+async def handle_pb50(bot: Bot, event: Event, args: Tuple[Optional[str], Optional[str]] = RegexStr(1, 2)):
+    version = args[0]
+    username = args[1]
+
     qqid = event.get_user_id()
     plate_keys = list(plate_to_version_cn.keys())  # 转换为列表保证可切片
 
-    if args not in plate_keys:
+    if version not in plate_keys:
         await plate_b50.finish("无效的版本参数，请重新输入")
 
     # 判断是否前17个版本（假设字典是有序的）
-    is_old_version = args in plate_keys[:17]
+    is_old_version = version in plate_keys[:17]
 
-    if args == '真':
-        version = [plate_to_version_cn['初'], plate_to_version_cn['真']]
+    if version == '真':
+        version_list = [plate_to_version_cn['初'], plate_to_version_cn['真']]
     else:
-        version = [plate_to_version_cn[args]]
+        version_list = [plate_to_version_cn[version]]
 
     # 统一生成消息内容
-    plate_b50_msg = await generate_plate_b50(qqid=int(qqid), version=version)
+    plate_b50_msg = await generate_plate_b50(qqid=int(qqid), username=username, version=version_list)
 
     # 构造返回消息
     message_segments = []
