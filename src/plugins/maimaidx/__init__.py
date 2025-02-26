@@ -125,7 +125,11 @@ async def handle_pb50(bot: Bot, event: Event, args: Optional[str] = RegexStr(1))
 
     # 判断是否前17个版本（假设字典是有序的）
     is_old_version = args in plate_keys[:17]
-    version = [plate_to_version_cn[args]]
+
+    if args == '真':
+        version = [plate_to_version_cn['初'], plate_to_version_cn['真']]
+    else:
+        version = [plate_to_version_cn[args]]
 
     # 统一生成消息内容
     plate_b50_msg = await generate_plate_b50(qqid=int(qqid), version=version)
