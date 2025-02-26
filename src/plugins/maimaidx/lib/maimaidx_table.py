@@ -94,7 +94,7 @@ class DrawTable:
         self._im.alpha_composite(bg_info, (20, 280))
         self._im.alpha_composite(bg_head, (320, 100))
 
-        icon = Image.open(maimai_dir / 'UI_Icon_long.png').resize((140,140))
+        icon = Image.open(maimai_dir / 'UI_Icon_long.png').convert('RGBA').resize((140,140))
         if qqid:
             icon = (await get_QQlogo(qqid)).resize((140,140))
         self._im.alpha_composite(icon, (150, 50))
