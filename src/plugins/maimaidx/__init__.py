@@ -170,7 +170,7 @@ level_table = on_regex(
 )
 
 @level_table.handle()
-async def handle_level(bot: Bot, event: Event, args: Tuple[Optional[str], Optional[str]] = RegexStr('level', 'page', 3)):
+async def handle_level(bot: Bot, event: Event, args: Tuple[Optional[str], Optional[str], Optional[str]] = RegexStr('level', 'page', 3)):
     print(f"Received message: {event.message}")  # 打印消息内容，查看是否匹配
     print(f"Extracted level: {args[0]}, page: {args[1]}")  # 打印捕获的 level 和 page
 
@@ -199,7 +199,7 @@ charter_table = on_regex(
 )
 
 @charter_table.handle()
-async def handle_charter(bot: Bot, event: Event, args: Tuple[Optional[str], Optional[str]] = RegexStr('charter', 'page', 3)):
+async def handle_charter(bot: Bot, event: Event, args: Tuple[Optional[str], Optional[str], Optional[str]] = RegexStr('charter', 'page', 3)):
     print(f"Received message: {event.message}")  # 打印消息内容，查看是否匹配
     print(f"Extracted charter: {args[0]}, page: {args[1]}")  # 打印捕获的 charter 和 page
 
