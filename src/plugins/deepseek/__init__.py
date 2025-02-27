@@ -84,13 +84,13 @@ async def clear(bot: Bot, event: Event, state: T_State):
     user_id = event.get_user_id()
     flag = clear_history(user_id)
     if flag:
-        await deepseek.finish(Message([
+        await clear.finish(Message([
             MessageSegment.text('已清除用户'),
             MessageSegment.at(user_id),
             MessageSegment.text('的历史记录')
         ]))
     else:
-        await deepseek.finish(Message([
+        await clear.finish(Message([
             MessageSegment.text('用户'),
             MessageSegment.at(user_id),
             MessageSegment.text('目前没有历史记录')
