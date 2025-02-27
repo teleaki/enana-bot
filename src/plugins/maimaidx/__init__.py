@@ -110,7 +110,7 @@ async def handle_b50(bot: Bot, event: Event, args: Message = CommandArg()):
     await b50.finish(Message(b50_msg))
 
 plate_b50 = on_regex(
-    r'^(.+)代b50\s+(.*)$',
+    r'^(.+)代b50\s*(.*)$',
     priority=3,
     block=True
 )

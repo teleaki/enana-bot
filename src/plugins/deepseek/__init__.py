@@ -5,9 +5,9 @@ from nonebot.typing import T_State
 from .config import Config
 
 __plugin_meta__ = PluginMetadata(
-    name="deepseek",
-    description="",
-    usage="",
+    name="ds大模型",
+    description="deepseek大模型聊天",
+    usage="ena",
     config=Config,
 )
 
@@ -56,10 +56,19 @@ async def handle_deepseek(
         )
 
         # 发送最终回复
-        await deepseek.send(reply)
+        await deepseek.send(Message([
+            MessageSegment.reply(id_=event.message_id),
+            reply
+        ]))
 
     except asyncio.TimeoutError:
-        await deepseek.finish("思考超时，请尝试简化您的问题")
+        await deepseek.finish(Message([
+            MessageSegment.reply(id_=event.message_id),
+            "思考超时，请尝试简化您的问题"
+        ]))
 
     except Exception as e:
-        await deepseek.finish(f"服务暂时不可用，错误信息：{str(e)[:50]}")
+        await deepseek.finish(Message([
+            MessageSegment.reply(id_=event.message_id),
+            f"服务暂时不可用，错误信息：{str(e)[:50]}"
+        ]))
