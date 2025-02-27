@@ -145,6 +145,23 @@ async def handle_pb50(bot: Bot, event: Event, args: Tuple[Optional[str], Optiona
 
     await plate_b50.finish(Message(message_segments))
 
+charter_b50 = on_regex(
+    r'^谱师b50\s+(.+)\s*(.*)$',
+    priority=3,
+    block=True
+)
+
+@charter_b50.handle()
+async def handle_cb50(bot:Bot, event: Event, args: Tuple[Optional[str], Optional[str]] = RegexStr(1, 2)):
+    charter = args[0]
+    username = args[1]
+
+    qqid = event.get_user_id()
+
+    charter_b50_msg = await generate_charter_b50(charter=charter, qqid=int(qqid), username=username)
+
+    await charter_b50.finish(charter_b50_msg)
+
 # info
 minfo = on_command(
     "查歌",
