@@ -72,3 +72,26 @@ async def handle_deepseek(
             MessageSegment.reply(id_=event.message_id),
             f"服务暂时不可用，错误信息：{str(e)[:50]}"
         ]))
+
+clear = on_command(
+    ('ena', '清除历史记录'),
+    priority=7,
+    block=True
+)
+
+@clear.handle()
+async def clear(bot: Bot, event: Event, state: T_State):
+    user_id = event.get_user_id()
+    flag = clear_history(user_id)
+    if flag:
+        await deepseek.finish(Message([
+            MessageSegment.text('已清除用户'),
+            MessageSegment.at(user_id),
+            MessageSegment.text('的历史记录')
+        ]))
+    else:
+        await deepseek.finish(Message([
+            MessageSegment.text('用户'),
+            MessageSegment.at(user_id),
+            MessageSegment.text('目前没有历史记录')
+        ]))

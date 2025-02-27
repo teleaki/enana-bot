@@ -47,3 +47,9 @@ async def safe_async_chat(
     except Exception as e:
         message_histories.pop(user_id, None)  # 清除错误会话
         return f"请求失败，请稍后再试（错误代码：{str(e)[:30]}）"
+
+def clear_history(user_id: str) -> bool:
+    if user_id in message_histories:
+        del message_histories[user_id]
+        return True
+    return False

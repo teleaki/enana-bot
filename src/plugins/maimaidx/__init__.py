@@ -164,7 +164,7 @@ async def handle_minfo(bot: Bot, event: Event, args: Message = CommandArg()):
 
 # table
 level_table = on_regex(
-    r'^(?P<level>\d+[\+]*)分数列表(?P<page>\d*)\s+(.*)$',
+    r'^(?P<level>\d+[\+]*)分数列表(?P<page>\d*)\s*(.*)$',
     priority=3,
     block=True
 )
@@ -193,7 +193,7 @@ async def handle_level(bot: Bot, event: Event, args: Tuple[Optional[str], Option
     await level_table.finish(level_msg)
 
 charter_table = on_regex(
-    r'^谱师分数列表(?P<page>\d*)\s+(?P<charter>.+)\s+(.*)$',
+    r'^谱师分数列表(?P<page>\d*)\s+(?P<charter>.+)\s*(.*)$',
     priority=3,
     block=True
 )
@@ -222,7 +222,7 @@ async def handle_charter(bot: Bot, event: Event, args: Tuple[Optional[str], Opti
     await charter_table.finish(charter_msg)
 
 bpm_table = on_regex(
-    r'^bpm分数列表(?P<page>\d*)\s+(?P<bpm_min>\d+)-(?P<bpm_max>\d+)\s+(.*)$',
+    r'^bpm分数列表(?P<page>\d*)\s+(?P<bpm_min>\d+)-(?P<bpm_max>\d+)\s*(.*)$',
     priority=3,
     block=True
 )
