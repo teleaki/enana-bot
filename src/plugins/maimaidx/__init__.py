@@ -153,6 +153,8 @@ charter_b50 = on_regex(
 
 @charter_b50.handle()
 async def handle_cb50(bot:Bot, event: Event, args: Tuple[Optional[str], Optional[str]] = RegexStr(1, 2)):
+    print(f"Extracted charter: {args[0]}, page: {args[1]}")
+
     charter = args[0]
     username = args[1]
 
