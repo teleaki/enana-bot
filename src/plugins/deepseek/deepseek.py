@@ -54,8 +54,8 @@ def split_reply(text: str) -> Tuple[str, str]:
     think_end = text.find("</think>")
     think_content = text[think_start:think_end]
 
-    # 分割出回答内容
-    answer_content = text[think_end + len("</think>"):]
+    # 分割出回答内容，+1是多出一个\n
+    answer_content = text[think_end + len("</think>") + 1:]
 
     return think_content, answer_content
 
