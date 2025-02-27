@@ -91,10 +91,7 @@ async def handle_deepseek(
         # 发送最终回复
         think, answer = split_reply(reply)
         msg = [
-            Message([
-                MessageSegment.reply(id_=event.message_id),
-                MessageSegment.at(user_id=user_id)
-            ]),
+            MessageSegment.text(f'---用户问题---\n{question}'),
             MessageSegment.text(f'---已深度思考---\n{think}'),
             MessageSegment.text(f'---正式回复---\n{answer}')
         ]
