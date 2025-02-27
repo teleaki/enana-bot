@@ -80,7 +80,7 @@ clear = on_command(
 )
 
 @clear.handle()
-async def clear(bot: Bot, event: Event, state: T_State):
+async def clear_handle(bot: Bot, event: Event, state: T_State):
     user_id = event.get_user_id()
     flag = clear_history(user_id)
     if flag:
