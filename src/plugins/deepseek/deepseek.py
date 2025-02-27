@@ -48,6 +48,17 @@ async def safe_async_chat(
         message_histories.pop(user_id, None)  # 清除错误会话
         return f"请求失败，请稍后再试（错误代码：{str(e)[:30]}）"
 
+def split_reply(text: str) -> Tuple[str, str]:
+    # 分割出思考内容
+    think_start = text.find("<think>") + len("<think>")
+    think_end = text.find("</think>")
+    think_content = text[think_start:think_end]
+
+    # 分割出回答内容
+    answer_content = text[think_end + len("</think>"):]
+
+    return think_content, answer_content
+
 def clear_history(user_id: str) -> bool:
     if user_id in message_histories:
         del message_histories[user_id]

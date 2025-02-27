@@ -14,11 +14,43 @@ __plugin_meta__ = PluginMetadata(
 config = get_plugin_config(Config)
 
 from nonebot import on_command
-from nonebot.adapters.onebot.v11 import Bot, Message, MessageSegment, Event
+from nonebot.adapters.onebot.v11 import Bot, Message, MessageSegment, Event, MessageEvent, PrivateMessageEvent
 from nonebot.params import CommandArg
 
 from .deepseek import *
 
+
+async def send_forward_msg(
+        bot: Bot,
+        event: MessageEvent,
+        name: str,
+        uin: str,
+        msgs: list[Message]
+):
+    """
+    发送合并转发消息。
+    * `bot`: Bot 实例
+    * `event`: 消息事件
+    * `name`: 呢称
+    * `uin`: QQ UID
+    * `msgs`: 消息列表
+    """
+
+    def to_node(msg: Message):
+        return {"type": "node", "data": {"name": name, "uin": uin, "content": msg}}
+
+    messages = [to_node(msg) for msg in msgs]
+    is_private = isinstance(event, PrivateMessageEvent)
+    if is_private:
+        # await bot.call_api(
+        #     "send_private_forward_msg", user_id=event.user_id, messages=messages
+        # )
+        await bot.send_private_forward_msg(user_id=event.user_id, messages=messages)
+    else:
+        # await bot.call_api(
+        #     "send_group_forward_msg", group_id=event.group_id, messages=messages
+        # )
+        await bot.send_group_forward_msg(group_id=event.group_id, messages=messages)
 
 # 命令处理器
 deepseek = on_command(
@@ -32,7 +64,7 @@ deepseek = on_command(
 @deepseek.handle()
 async def handle_deepseek(
         bot: Bot,
-        event: Event,
+        event: MessageEvent,
         state: T_State,
         args: Message = CommandArg()
 ):
@@ -47,6 +79,7 @@ async def handle_deepseek(
 
     # 获取客户端实例
     client = await init_async_client()
+    bot_identity = await bot.get_login_info()
 
     try:
         # 带超时的请求
@@ -56,10 +89,28 @@ async def handle_deepseek(
         )
 
         # 发送最终回复
-        await deepseek.send(Message([
-            MessageSegment.reply(id_=event.message_id),
-            reply
-        ]))
+        think, answer = split_reply(reply)
+        msg = [
+            Message([
+                MessageSegment.reply(id_=event.message_id),
+                MessageSegment.at(user_id=user_id)
+            ]),
+            MessageSegment.text(f'---已深度思考---\n{think}'),
+            MessageSegment.text(f'---正式回复---\n{answer}')
+        ]
+
+        await send_forward_msg(
+            bot=bot,
+            event=event,
+            name=bot_identity.get('nickname'),
+            uin=bot_identity.get('user_id'),
+            msgs=msg
+        )
+
+        # await deepseek.send(Message([
+        #     MessageSegment.reply(id_=event.message_id),
+        #     reply
+        # ]))
 
     except asyncio.TimeoutError:
         await deepseek.finish(Message([
