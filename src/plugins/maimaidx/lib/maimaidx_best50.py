@@ -1,6 +1,6 @@
 import bisect
 
-from nonebot.adapters.onebot.v11 import MessageSegment
+from nonebot.adapters.onebot.v11 import MessageSegment, Message
 
 from .maimaidx_error import *
 from .maimaidx_image import *
@@ -258,6 +258,51 @@ async def generate_plate_b50(version: List[str], qqid: Optional[int] = None, use
 
         pic = await draw_best.draw_b50()
         msg = MessageSegment.image(image_to_base64(pic))
+    except UserNotFoundError as e:
+        msg = MessageSegment.text(str(e))
+    except UserDisabledQueryError as e:
+        msg = MessageSegment.text(str(e))
+    except Exception as e:
+        msg = MessageSegment.text(f"{type(e)}: {e}\n请联系Bot管理员")
+    return msg
+
+async def generate_charter_b50(charter: str, qqid: Optional[int] = None, username: Optional[str] = None) -> MessageSegment:
+    try:
+        if username:
+            qqid = None
+
+        version_list = list(plate_to_version.values())
+        obj_plate = await maiapi.query_user('plate', qqid=qqid, username=username, version=version_list)
+        verlist = [PlayInfo(**item) for item in obj_plate['verlist']]
+
+        real_charter_list = []
+        for rc in real_charters.keys():
+            if charter.lower() in rc.lower():
+                real_charter_list.append(rc)
+
+        real_charter_list = list(dict.fromkeys(real_charter_list))
+
+        data = []
+        for info in verlist:
+            music = mai.total_list.search_by_id(info.id)
+            for rc in real_charter_list:
+                if music.charts[info.level_index].charter in real_charters[rc]:
+                    data.append(info)
+
+        obj_user = await maiapi.query_user('player', qqid=qqid, username=username)
+        user_info = UserInfo(**obj_user)
+
+        draw_best = DrawBest(user_info=plate2best(plate_data=data, user_data=user_info), qqid=qqid)
+
+        pic = await draw_best.draw_b50()
+
+        charter_info = Message([
+            MessageSegment.text('匹配到的谱师有：\n')
+        ])
+        for rc in real_charter_list:
+            charter_info.append(MessageSegment.text(', '.join(real_charters[rc])))
+
+        msg = charter_info + MessageSegment.image(image_to_base64(pic))
     except UserNotFoundError as e:
         msg = MessageSegment.text(str(e))
     except UserDisabledQueryError as e:
