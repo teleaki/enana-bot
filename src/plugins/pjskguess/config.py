@@ -1,8 +1,14 @@
 from pydantic import BaseModel
 from typing import Optional, Dict, List
 
+
+class ScopedConfig(BaseModel):
+    white_list: List[str]
+    black_list: List[str]
+
 class Config(BaseModel):
     """Plugin Config Here"""
+    pjskguess: ScopedConfig
 
 oc_dict: Dict[str, str] = {
     'ick': '001', 'saki': '002', 'hnm': '003', 'shiho': '004',

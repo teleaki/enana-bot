@@ -22,7 +22,6 @@ from nonebot import logger
 from nonebot_plugin_apscheduler import scheduler
 
 from .event_tracker import get_event_info, event_end_notice
-from .config import white_group
 
 @scheduler.scheduled_job("cron", hour="*", minute=0, second=0, id="hourly_task")
 async def hourly_task():
@@ -36,7 +35,7 @@ async def hourly_task():
     if flag == 0:
         try:
             # 发送群消息
-            for group in white_group:
+            for group in config.eventtracker.white_list:
                 await bot.send_group_msg(group_id=group, message=notice)
 
             # 发送日志
