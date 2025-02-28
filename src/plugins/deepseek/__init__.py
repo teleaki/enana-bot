@@ -25,11 +25,6 @@ def get_group_id(event: Event) -> str:
     groupid = sessionid.split('_')[1]
     return groupid
 
-def is_whited(groupid: str) -> bool:
-    if int(groupid) in config.deepseek.black_list:
-        return False
-    return True
-
 async def send_forward_msg(
         bot: Bot,
         event: MessageEvent,
@@ -78,7 +73,7 @@ async def handle_deepseek(
         state: T_State,
         args: Message = CommandArg()
 ):
-    if is_whited(get_group_id(event)):
+    if config.deepseek.is_whitelisted(int(get_group_id(event))):
         user_id = event.get_user_id()
         question = args.extract_plain_text().strip()
 
@@ -144,7 +139,7 @@ clear = on_command(
 
 @clear.handle()
 async def clear_handle(bot: Bot, event: Event, state: T_State):
-    if is_whited(get_group_id(event)):
+    if config.deepseek.is_whitelisted(int(get_group_id(event))):
         user_id = event.get_user_id()
         flag = clear_history(user_id)
         if flag:

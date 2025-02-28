@@ -4,8 +4,14 @@ from pydantic import BaseModel
 
 
 class ScopedConfig(BaseModel):
-    white_list: List[str]
-    black_list: List[str]
+    whitelist: List[str]
+    blacklist: List[str]
+
+    def is_blacklisted(self, user: int) -> bool:
+        return user in self.blacklist
+
+    def is_whitelisted(self, user: int) -> bool:
+        return user in self.whitelist
 
 class Config(BaseModel):
     """Plugin Config Here"""
