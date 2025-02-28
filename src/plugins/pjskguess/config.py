@@ -3,8 +3,8 @@ from typing import Optional, Dict, List
 
 
 class ScopedConfig(BaseModel):
-    white_list: List[str]
-    black_list: List[str]
+    white_list: List[int]
+    black_list: List[int]
 
     def is_blacklisted(self, user: int) -> bool:
         return user in self.black_list
