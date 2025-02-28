@@ -73,63 +73,65 @@ async def handle_deepseek(
         state: T_State,
         args: Message = CommandArg()
 ):
-    if config.deepseek.is_whitelisted(int(get_group_id(event))):
-        user_id = event.get_user_id()
-        question = args.extract_plain_text().strip()
+    if int(get_group_id(event)) in config.deepseek.black_list:
+        return
 
-        if not question:
-            await deepseek.finish("请输入您的问题")
+    user_id = event.get_user_id()
+    question = args.extract_plain_text().strip()
 
-        # 显示等待提示
-        await bot.send(event, "正在思考中...")
+    if not question:
+        await deepseek.finish("请输入您的问题")
 
-        # 获取客户端实例
-        client = await init_async_client()
-        bot_identity = await bot.get_login_info()
+    # 显示等待提示
+    await bot.send(event, "正在思考中...")
 
-        try:
-            # 带超时的请求
-            reply = await asyncio.wait_for(
-                safe_async_chat(client, user_id, question),
-                timeout=300.0
-            )
+    # 获取客户端实例
+    client = await init_async_client()
+    bot_identity = await bot.get_login_info()
 
-            # 发送最终回复
-            think, answer = split_reply(reply)
-            msg = [
-                Message([
-                    MessageSegment.text(f'---用户问题---\n来自'),
-                    MessageSegment.at(user_id),
-                    MessageSegment.text(f'的问题\n\n{question}'),
-                ]),
-                MessageSegment.text(f'---已深度思考---\n{think}'),
-                MessageSegment.text(f'---正式回复---\n{answer}')
-            ]
+    try:
+        # 带超时的请求
+        reply = await asyncio.wait_for(
+            safe_async_chat(client, user_id, question),
+            timeout=300.0
+        )
 
-            await send_forward_msg(
-                bot=bot,
-                event=event,
-                name=bot_identity.get('nickname'),
-                uin=bot_identity.get('user_id'),
-                msgs=msg
-            )
+        # 发送最终回复
+        think, answer = split_reply(reply)
+        msg = [
+            Message([
+                MessageSegment.text(f'---用户问题---\n来自'),
+                MessageSegment.at(user_id),
+                MessageSegment.text(f'的问题\n\n{question}'),
+            ]),
+            MessageSegment.text(f'---已深度思考---\n{think}'),
+            MessageSegment.text(f'---正式回复---\n{answer}')
+        ]
 
-            # await deepseek.send(Message([
-            #     MessageSegment.reply(id_=event.message_id),
-            #     reply
-            # ]))
+        await send_forward_msg(
+            bot=bot,
+            event=event,
+            name=bot_identity.get('nickname'),
+            uin=bot_identity.get('user_id'),
+            msgs=msg
+        )
 
-        except asyncio.TimeoutError:
-            await deepseek.finish(Message([
-                MessageSegment.reply(id_=event.message_id),
-                "思考超时，请尝试简化您的问题"
-            ]))
+        # await deepseek.send(Message([
+        #     MessageSegment.reply(id_=event.message_id),
+        #     reply
+        # ]))
 
-        except Exception as e:
-            await deepseek.finish(Message([
-                MessageSegment.reply(id_=event.message_id),
-                f"服务暂时不可用，错误信息：{str(e)[:50]}"
-            ]))
+    except asyncio.TimeoutError:
+        await deepseek.finish(Message([
+            MessageSegment.reply(id_=event.message_id),
+            "思考超时，请尝试简化您的问题"
+        ]))
+
+    except Exception as e:
+        await deepseek.finish(Message([
+            MessageSegment.reply(id_=event.message_id),
+            f"服务暂时不可用，错误信息：{str(e)[:50]}"
+        ]))
 
 clear = on_command(
     ('ena', '清除历史记录'),
@@ -139,18 +141,19 @@ clear = on_command(
 
 @clear.handle()
 async def clear_handle(bot: Bot, event: Event, state: T_State):
-    if config.deepseek.is_whitelisted(int(get_group_id(event))):
-        user_id = event.get_user_id()
-        flag = clear_history(user_id)
-        if flag:
-            await clear.finish(Message([
-                MessageSegment.text('已清除用户'),
-                MessageSegment.at(user_id),
-                MessageSegment.text('的历史记录')
-            ]))
-        else:
-            await clear.finish(Message([
-                MessageSegment.text('用户'),
-                MessageSegment.at(user_id),
-                MessageSegment.text('目前没有历史记录')
-            ]))
+    if int(get_group_id(event)) in config.deepseek.black_list:
+        return
+    user_id = event.get_user_id()
+    flag = clear_history(user_id)
+    if flag:
+        await clear.finish(Message([
+            MessageSegment.text('已清除用户'),
+            MessageSegment.at(user_id),
+            MessageSegment.text('的历史记录')
+        ]))
+    else:
+        await clear.finish(Message([
+            MessageSegment.text('用户'),
+            MessageSegment.at(user_id),
+            MessageSegment.text('目前没有历史记录')
+        ]))
