@@ -7,14 +7,14 @@ from typing import List
 
 
 class ScopedConfig(BaseModel):
-    whitelist: List[str]
-    blacklist: List[str]
+    white_list: List[str]
+    black_list: List[str]
 
     def is_blacklisted(self, user: int) -> bool:
-        return user in self.blacklist
+        return user in self.black_list
 
     def is_whitelisted(self, user: int) -> bool:
-        return user in self.whitelist
+        return user in self.white_list
 
 
 class Config(BaseModel):
