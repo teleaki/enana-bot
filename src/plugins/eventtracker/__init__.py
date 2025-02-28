@@ -65,5 +65,7 @@ event_notice = on_command(
 
 @event_notice.handle()
 async def handle_eventnotice():
-    await hourly_task()
-    await event_notice.finish()
+    flag, notice = event_end_notice()
+
+    for group in config.eventtracker.white_list:
+        await event_notice.finish(notice)
