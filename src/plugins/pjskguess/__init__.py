@@ -42,7 +42,7 @@ async def gc_handle(matcher: Matcher, bot: Bot, event: Event):
     groupid = get_group_id(event)
     print(groupid)
 
-    if groupid not in config.pjsk_guess_white_list:
+    if int(groupid) not in config.pjsk_guess_white_list:
         return
 
     if groupid in games:
@@ -73,7 +73,7 @@ guess_card_answer = on_regex(
 @guess_card_answer.handle()
 async def gc_answer(bot: Bot, event: Event):
     groupid = get_group_id(event)
-    if groupid not in config.pjsk_guess_white_list:
+    if int(groupid) not in config.pjsk_guess_white_list:
         return
 
     if is_started(groupid):

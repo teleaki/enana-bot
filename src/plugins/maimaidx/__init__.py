@@ -44,7 +44,7 @@ user_setting = on_command(
 
 @user_setting.handle()
 async def handle_b50setting(bot: Bot, event: Event, args: Message = CommandArg()):
-    if get_group_id(event) in config.mai_query_black_list:
+    if int(get_group_id(event)) in config.mai_query_black_list:
         return
 
     if plate_id := args.extract_plain_text():
@@ -75,7 +75,7 @@ plate_show = on_command(
 
 @plate_show.handle()
 async def handle_plateshow(bot: Bot, event: Event, args: Message = CommandArg()):
-    if get_group_id(event) in config.mai_query_black_list:
+    if int(get_group_id(event)) in config.mai_query_black_list:
         return
 
     msg = MessageSegment.image(show_all_plate())
@@ -89,7 +89,7 @@ show_diy = on_command(
 
 @show_diy.handle()
 async def handle_showdiy(bot: Bot, event: Event, args: Message = CommandArg()):
-    if get_group_id(event) in config.mai_query_black_list:
+    if int(get_group_id(event)) in config.mai_query_black_list:
         return
 
     msg = Message()
@@ -112,7 +112,7 @@ b50 = on_command(
 
 @b50.handle()
 async def handle_b50(bot: Bot, event: Event, args: Message = CommandArg()):
-    if get_group_id(event) in config.mai_query_black_list:
+    if int(get_group_id(event)) in config.mai_query_black_list:
         return
 
     if username := args.extract_plain_text():
@@ -132,7 +132,7 @@ plate_b50 = on_regex(
 
 @plate_b50.handle()
 async def handle_pb50(bot: Bot, event: Event, args: Tuple[Optional[str], Optional[str]] = RegexStr(1, 2)):
-    if get_group_id(event) in config.mai_query_black_list:
+    if int(get_group_id(event)) in config.mai_query_black_list:
         return
 
     version = args[0]
@@ -171,7 +171,7 @@ charter_b50 = on_regex(
 
 @charter_b50.handle()
 async def handle_cb50(bot:Bot, event: Event, args: Tuple[Optional[str], Optional[str]] = RegexStr(1, 2)):
-    if get_group_id(event) in config.mai_query_black_list:
+    if int(get_group_id(event)) in config.mai_query_black_list:
         return
 
     print(f"Extracted charter: {args[0]}")
@@ -195,7 +195,7 @@ minfo = on_command(
 
 @minfo.handle()
 async def handle_minfo(bot: Bot, event: Event, args: Message = CommandArg()):
-    if get_group_id(event) in config.mai_query_black_list:
+    if int(get_group_id(event)) in config.mai_query_black_list:
         return
 
     if tar := args.extract_plain_text():
@@ -214,7 +214,7 @@ level_table = on_regex(
 
 @level_table.handle()
 async def handle_level(bot: Bot, event: Event, args: Tuple[Optional[str], Optional[str], Optional[str]] = RegexStr('level', 'page', 3)):
-    if get_group_id(event) in config.mai_query_black_list:
+    if int(get_group_id(event)) in config.mai_query_black_list:
         return
 
     print(f"Received message: {event.message}")  # 打印消息内容，查看是否匹配
@@ -246,7 +246,7 @@ charter_table = on_regex(
 
 @charter_table.handle()
 async def handle_charter(bot: Bot, event: Event, args: Tuple[Optional[str], Optional[str], Optional[str]] = RegexStr('charter', 'page', 3)):
-    if get_group_id(event) in config.mai_query_black_list:
+    if int(get_group_id(event)) in config.mai_query_black_list:
         return
 
     print(f"Received message: {event.message}")  # 打印消息内容，查看是否匹配
@@ -278,7 +278,7 @@ bpm_table = on_regex(
 
 @bpm_table.handle()
 async def handle_charter(bot: Bot, event: Event, args: Tuple[Optional[str], Optional[str], Optional[str]] = RegexStr('bpm_min', 'bpm_max', 'page', 4)):
-    if get_group_id(event) in config.mai_query_black_list:
+    if int(get_group_id(event)) in config.mai_query_black_list:
         return
 
     print(f"Received message: {event.message}")  # 打印消息内容，查看是否匹配
@@ -312,7 +312,7 @@ mai_guess = on_command(
 
 @mai_guess.handle()
 async def handle_mguess(bot: Bot, matcher: Matcher, event: Event):
-    if get_group_id(event) not in config.mai_guess_white_list:
+    if int(get_group_id(event)) not in config.mai_guess_white_list:
         return
 
     groupid = get_group_id(event)
@@ -345,7 +345,7 @@ mai_guess_answer = on_regex(
 
 @mai_guess_answer.handle()
 async def gc_answer(bot: Bot, event: Event):
-    if get_group_id(event) not in config.mai_guess_white_list:
+    if int(get_group_id(event)) not in config.mai_guess_white_list:
         return
 
     groupid = get_group_id(event)

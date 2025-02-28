@@ -28,7 +28,7 @@ welcome = on_notice(
 
 @welcome.handle()
 async def welcome_handle(bot: Bot, event: GroupIncreaseNoticeEvent):
-    if get_group_id(event) in config.welcome_black_list:
+    if int(get_group_id(event)) in config.welcome_black_list:
         return
 
     user = event.get_user_id()

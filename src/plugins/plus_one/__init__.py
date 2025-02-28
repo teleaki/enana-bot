@@ -46,7 +46,7 @@ async def plush_handler(bot: Bot, event: Event):
 
     group_id = get_group_id(event)
 
-    if group_id in config.plus_one_black_list:
+    if int(group_id) in config.plus_one_black_list:
         return
 
     # 获取群聊记录
