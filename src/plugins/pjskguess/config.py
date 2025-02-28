@@ -2,19 +2,9 @@ from pydantic import BaseModel
 from typing import Optional, Dict, List
 
 
-class ScopedConfig(BaseModel):
-    white_list: List[int]
-    black_list: List[int]
-
-    def is_blacklisted(self, user: int) -> bool:
-        return user in self.black_list
-
-    def is_whitelisted(self, user: int) -> bool:
-        return user in self.white_list
-
 class Config(BaseModel):
     """Plugin Config Here"""
-    pjskguess: ScopedConfig
+    pjsk_guess_white_list: List[int]
 
 oc_dict: Dict[str, str] = {
     'ick': '001', 'saki': '002', 'hnm': '003', 'shiho': '004',

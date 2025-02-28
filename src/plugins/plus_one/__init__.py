@@ -20,11 +20,11 @@ from nonebot.plugin import on_message
 from nonebot.adapters import Event, Message, Bot
 from nonebot_plugin_session import extract_session, SessionIdType
 
-plus = on_message(
-    priority=10,
-    block=False)
-msg_dict = {}
 
+def get_group_id(event: Event) -> str:
+    sessionid = event.get_session_id()
+    groupid = sessionid.split('_')[1]
+    return groupid
 
 def is_equal(msg1: Message, msg2: Message):
     """判断是否相等"""
@@ -34,13 +34,20 @@ def is_equal(msg1: Message, msg2: Message):
     if msg1 == msg2:
         return True
 
+plus = on_message(
+    priority=10,
+    block=False
+)
+msg_dict = {}
 
 @plus.handle()
 async def plush_handler(bot: Bot, event: Event):
     global msg_dict
 
-    session = extract_session(bot, event)
-    group_id = session.get_id(SessionIdType.GROUP).split("_")[-1]
+    group_id = get_group_id(event)
+
+    if group_id in config.plus_one_black_list:
+        return
 
     # 获取群聊记录
     text_list = msg_dict.get(group_id, None)

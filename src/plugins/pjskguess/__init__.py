@@ -42,6 +42,9 @@ async def gc_handle(matcher: Matcher, bot: Bot, event: Event):
     groupid = get_group_id(event)
     print(groupid)
 
+    if groupid not in config.pjsk_guess_white_list:
+        return
+
     if groupid in games:
         await guess_card.finish('已有猜卡面游戏正在进行中')
 
@@ -70,6 +73,9 @@ guess_card_answer = on_regex(
 @guess_card_answer.handle()
 async def gc_answer(bot: Bot, event: Event):
     groupid = get_group_id(event)
+    if groupid not in config.pjsk_guess_white_list:
+        return
+
     if is_started(groupid):
         game = games[groupid]
         cmd = event.get_message().extract_plain_text().strip()

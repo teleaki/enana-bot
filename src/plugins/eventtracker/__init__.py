@@ -35,7 +35,7 @@ async def hourly_task():
     if flag == 0:
         try:
             # 发送群消息
-            for group in config.eventtracker.white_list:
+            for group in config.eventtracker_white_list:
                 await bot.send_group_msg(group_id=group, message=notice)
 
             # 发送日志
@@ -64,8 +64,8 @@ event_notice = on_command(
 )
 
 @event_notice.handle()
-async def handle_eventnotice():
+async def handle_eventnotice(bot: Bot):
     flag, notice = event_end_notice()
 
-    for group in config.eventtracker.white_list:
-        await event_notice.finish(notice)
+    for group in config.eventtracker_white_list:
+        await bot.send_group_msg(group_id=group, message=notice)

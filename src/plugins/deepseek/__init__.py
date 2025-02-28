@@ -73,7 +73,7 @@ async def handle_deepseek(
         state: T_State,
         args: Message = CommandArg()
 ):
-    if int(get_group_id(event)) in config.deepseek.black_list:
+    if int(get_group_id(event)) not in config.deepseek_white_list:
         return
 
     user_id = event.get_user_id()
@@ -141,7 +141,7 @@ clear = on_command(
 
 @clear.handle()
 async def clear_handle(bot: Bot, event: Event, state: T_State):
-    if int(get_group_id(event)) in config.deepseek.black_list:
+    if int(get_group_id(event)) not in config.deepseek_white_list:
         return
     user_id = event.get_user_id()
     flag = clear_history(user_id)
