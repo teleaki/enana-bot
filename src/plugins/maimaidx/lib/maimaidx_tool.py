@@ -7,6 +7,7 @@ from typing import Union, Any, Optional
 
 import aiofiles
 from PIL import Image
+from nonebot.adapters.onebot.v11 import Event
 
 from .maimaidx_api import maiapi
 from .maimaidx_res import *
@@ -38,6 +39,11 @@ def get_music_cover(music_id: Union[str, int]) -> Path:
     else:
         cover = cover_dir / '0.png' # 使用默认的 0.png
     return cover
+
+def get_group_id(event: Event) -> str:
+    sessionid = event.get_session_id()
+    groupid = sessionid.split('_')[1]
+    return groupid
 
 async def get_QQlogo(qqid: Union[str, int]) -> Image.Image:
     qqlogo = Image.open(BytesIO(await maiapi.qq_logo(qqid)))

@@ -9,6 +9,7 @@ local_alias_file: Path = _resource_dir / 'local_music_alias.json'      # 本地�
 music_file: Path = _resource_dir / 'music_data.json'                   # 曲目暂存文件
 chart_file: Path = _resource_dir / 'music_chart.json'                  # 谱面数据暂存文件
 user_file: Path = _resource_dir / 'user_diy.json'
+guess_rank_file: Path = _resource_dir / 'guess_rank.json'
 
 # 静态资源路径
 maimai_dir: Path = _resource_dir / 'mai' / 'pic'

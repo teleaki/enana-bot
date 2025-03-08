@@ -1,6 +1,8 @@
 import asyncio
+import threading
+from datetime import datetime
 
-from nonebot.adapters.onebot.v11 import Message, MessageSegment, Event
+from nonebot.adapters.onebot.v11 import Message, MessageSegment
 from nonebot.matcher import Matcher
 
 from .maimaidx_image import *
@@ -156,6 +158,57 @@ def end_game(groupid: str):
     if groupid in games:
         del games[groupid]
 
+class GuessRank:
+    def __init__(self):
+        self.save_path = guess_rank_file
+        self.lock = threading.Lock()
+        self.data = self._load_data()
+
+    def _load_data(self) -> Dict[str, Any]:
+        try:
+            with open(self.save_path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            return {}
+
+    def _save_data(self):
+        with open(self.save_path, 'w', encoding='utf-8') as f:
+            json.dump(self.data, f, ensure_ascii=False, indent=2)
+
+    def record_winner(self, group_id: str, user_id: str):
+        current_date = datetime.now().strftime("%Y-%m-%d")
+
+        with self.lock:
+            # 初始化数据结构
+            group_data = self.data.setdefault(group_id, {})
+            date_data = group_data.setdefault(current_date, {})
+
+            # 更新计数
+            date_data[user_id] = date_data.get(user_id, 0) + 1
+
+            # 立即保存
+            self._save_data()
+
+    def get_ranking(self, group_id: str, date: str = None) -> Dict[str, int]:
+        date = date or datetime.now().strftime("%Y-%m-%d")
+        group_data = self.data.get(group_id, {})
+        date_data = group_data.get(date, {})
+
+        # 按发言次数排序
+        sorted_data = dict(sorted(
+            date_data.items(),
+            key=lambda item: item[1],
+            reverse=True
+        ))
+        return sorted_data
+
+    def get_history_dates(self, group_id: str) -> list:
+        group_data = self.data.get(group_id, {})
+        return sorted(group_data.keys(), reverse=True)
+
+guess_rank = GuessRank()
+
+
 def get_sample(img: Image.Image, sample_width: int = 50, sample_height: int = 50) -> Image.Image:
     # 获取图片的宽度和高度
     width, height = img.size
@@ -182,11 +235,6 @@ def random_music(max_retries: int = 50) -> Optional[Music]:
         else:
             attempt += 1
     return None
-
-def get_group_id(event: Event) -> str:
-    sessionid = event.get_session_id()
-    groupid = sessionid.split('_')[1]
-    return groupid
 
 def is_started(groupid: str) -> bool:
     if groupid in games:

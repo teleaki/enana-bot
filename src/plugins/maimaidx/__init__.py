@@ -22,11 +22,6 @@ from .lib.maimaidx_user import *
 from .lib.maimaidx_table import *
 from .lib.maimaidx_guess import *
 
-def get_group_id(event: Event) -> str:
-    sessionid = event.get_session_id()
-    groupid = sessionid.split('_')[1]
-    return groupid
-
 # init
 driver = get_driver()
 
@@ -349,6 +344,7 @@ async def gc_answer(bot: Bot, event: Event):
         return
 
     groupid = get_group_id(event)
+
     if is_started(groupid):
         game = games[groupid]
         cmd = event.get_message().extract_plain_text().strip()
@@ -364,6 +360,43 @@ async def gc_answer(bot: Bot, event: Event):
             if flag:
                 game.guess_music_end()
                 end_game(groupid)
+                guess_rank.record_winner(groupid, qqid)
                 await mai_guess_answer.finish(msg)
             else:
                 await mai_guess_answer.send(msg)
+
+mai_guess_rank = on_command(
+    'mai猜歌排行榜',
+    priority=2,
+    block=True
+)
+
+@mai_guess_rank.handle()
+async def handle_mai_guess_rank(bot: Bot, event: Event):
+    if int(get_group_id(event)) not in config.mai_guess_white_list:
+        return
+
+    groupid = get_group_id(event)
+    ranking = guess_rank.get_ranking(groupid)
+
+    if not ranking:
+        await mai_guess_rank.finish('今天本群还没人猜歌哦')
+
+    msg = Message([
+        MessageSegment.text("🎉 今日猜歌排行榜：\n")
+    ])
+
+    for i, (user_id, count) in enumerate(ranking.items(), 1):
+        # 每条记录包含：@用户 + 文本
+        msg.extend([
+            MessageSegment.text(f"{i}. "),
+            MessageSegment.at(user_id),  # 直接使用字符串类型的user_id
+            MessageSegment.text(f" ➜ 共{count}次\n")
+        ])
+
+    # 添加结尾装饰
+    msg.append(MessageSegment.text("🏆 再接再厉！"))
+
+    await mai_guess_rank.finish(msg)
+
+
