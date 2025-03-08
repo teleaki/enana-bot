@@ -383,7 +383,7 @@ async def handle_mai_guess_rank(bot: Bot, event: Event):
         await mai_guess_rank.finish('今天本群还没人猜歌哦')
 
     msg = Message([
-        MessageSegment.text("🎉 今日猜歌排行榜：\n")
+        MessageSegment.text("🎉 今日猜歌排行榜：\n\n")
     ])
 
     for i, (user_id, count) in enumerate(ranking.items(), 1):
@@ -395,7 +395,7 @@ async def handle_mai_guess_rank(bot: Bot, event: Event):
         ])
 
     # 添加结尾装饰
-    msg.append(MessageSegment.text("🏆 再接再厉！"))
+    msg.append(MessageSegment.text("\n🏆 再接再厉！"))
 
     await mai_guess_rank.finish(msg)
 

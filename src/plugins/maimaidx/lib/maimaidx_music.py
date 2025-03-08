@@ -127,11 +127,18 @@ class MaiMusic:
             # 未找到文件，请自行使用浏览器访问 "https://download.fanyu.site/maimai/alias.json" 将内容保存为 "alias_data.json" 存放在 "static" 目录下并重启bot
             raise
 
+        try:
+            local_alias_data = await openfile(local_alias_file)
+        except FileNotFoundError:
+            local_alias_data = {}
+
+        all_alias_data = merge_dicts(alias_data, local_alias_data)
+
         # # 将字典重构为Alias
         # alias_rebuild: List[Alias] = []
         # for key, values in alias_data.items():
         #     alias_rebuild.append(Alias(id=key, aliases=values))
 
-        self.total_alias_list = AliasList(alias_data=alias_data)
+        self.total_alias_list = AliasList(alias_data=all_alias_data)
 
 mai = MaiMusic()

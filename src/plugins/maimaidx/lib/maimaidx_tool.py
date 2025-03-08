@@ -69,6 +69,21 @@ def get_random_file(folder: Path) -> Optional[Path]:
 
     return random_file  # 直接返回随机文件的 Path 对象
 
+
+def merge_dicts(dict1: Dict[str, List[str]], dict2: Dict[str, List[str]]) -> Dict[str, List[str]]:
+    """使用集合运算合并键，保留所有元素"""
+    merged = {}
+    # 获取所有唯一键
+    all_keys = set(dict1.keys()) | set(dict2.keys())
+
+    for key in all_keys:
+        merged[key] = []
+        if key in dict1:
+            merged[key].extend(dict1[key])
+        if key in dict2:
+            merged[key].extend(dict2[key])
+    return merged
+
 def compute_ra(ds: float, achievement: float) -> int:
     base_ra = 22.4
     if achievement < 50:
