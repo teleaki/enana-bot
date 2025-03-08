@@ -39,7 +39,10 @@ def draw_level_info(font, dy, music, level_idx):
     font.draw(280, dy + 60, 20, f'{music.charts[level_idx].charter}', (255, 255, 255, 255), 'mm')
 
 def draw_stats_info(font, music, dy, level_idx):
-    font.draw(480, 835 + dy, 40, f'{music.stats[level_idx].fit_diff:.4f}', (0, 0, 0, 255), 'mm')
+    if music.stats[level_idx].fit_diff:
+        font.draw(480, 835 + dy, 40, f'{music.stats[level_idx].fit_diff:.4f}', (0, 0, 0, 255), 'mm')
+    else:
+        font.draw(480, 835 + dy, 40, f'\\', (0, 0, 0, 255), 'mm')
     font.draw(665, 835 + dy, 40, f'{sum(music.charts[level_idx].notes)}', (0, 0, 0, 255), 'mm')
     font.draw(835, 835 + dy, 40, f'{music.charts[level_idx].notes[0]}', (0, 0, 0, 255), 'mm')
     font.draw(1015, 835 + dy, 40, f'{music.charts[level_idx].notes[1]}', (0, 0, 0, 255), 'mm')
