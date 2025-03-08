@@ -16,6 +16,8 @@ from nonebot import on_command, on_regex
 from nonebot.adapters.onebot.v11 import Bot, Message, Event
 from nonebot.params import CommandArg, RegexStr
 
+from .lib.maimaidx_music import add_local_alias, del_local_alias
+
 from .lib.maimaidx_best50 import *
 from .lib.maimaidx_info import *
 from .lib.maimaidx_user import *
@@ -179,6 +181,41 @@ async def handle_cb50(bot:Bot, event: Event, args: Tuple[Optional[str], Optional
     charter_b50_msg = await generate_charter_b50(charter=charter, qqid=int(qqid), username=username)
 
     await charter_b50.finish(charter_b50_msg)
+
+# alias
+process_local_alias = on_regex(
+    r'^别名\s+(增|删)\s+(\d+)\s+(.+)$',
+    priority=3,
+    block=True
+)
+
+@process_local_alias.handle()
+async def handle_local_alias(event: Event, args: Tuple[Optional[str], Optional[str], Optional[str]] = RegexStr(1, 2, 3)):
+    if int(get_group_id(event)) in config.mai_query_black_list:
+        return
+
+    cmd = args[0]; id = args[1]; alias = args[2]
+    print(f'cmd: {cmd}\tid: {id}\talias: {alias}')
+
+    if cmd == '增':
+        flag = await add_local_alias(id=id, alias=alias)
+        if flag == 1:
+            await process_local_alias.finish('该别名已存在哦')
+        elif flag == 0:
+            await process_local_alias.finish(f'已为 id{id} 添加别名: {alias}')
+        else:
+            await process_local_alias.finish(f'添加失败 ErrorCode: {flag}')
+
+    if cmd == '删':
+        flag = await del_local_alias(id=id, alias=alias)
+        if flag == 1:
+            await process_local_alias.finish('该别名不存在哦')
+        elif flag == 0:
+            await process_local_alias.finish(f'删除成功')
+        else:
+            await process_local_alias.finish(f'删除失败 ErrorCode: {flag}')
+
+
 
 # info
 minfo = on_command(

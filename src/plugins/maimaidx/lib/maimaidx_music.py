@@ -1,3 +1,6 @@
+import os
+import threading
+
 from rapidfuzz import process, fuzz
 
 from .maimaidx_api import maiapi
@@ -71,6 +74,162 @@ class AliasList:
         return None  # 没有匹配项
 
 
+async def add_local_alias(id: str, alias: str) -> int:
+    """添加本地别名到指定ID
+
+    Args:
+        id: 目标ID
+        alias: 要添加的别名
+
+    Returns:
+        AliasStatus状态码
+    """
+
+    class AliasStatus:
+        SUCCESS = 0
+        ALIAS_EXISTS = 1
+        INVALID_DATA = 2
+        WRITE_ERROR = 3
+
+    file_lock = threading.Lock()
+
+    if not isinstance(alias, str):
+        return AliasStatus.INVALID_DATA
+
+    with file_lock:
+        try:
+            # 原子化读取操作
+            if local_alias_file.exists():
+                with open(local_alias_file, 'r', encoding='utf-8') as f:
+                    try:
+                        data: Dict[str, List[str]] = json.load(f)
+                    except json.JSONDecodeError:
+                        data = {}
+            else:
+                data = {}
+
+            # 初始化数据结构
+            if not isinstance(data, dict):
+                data = {}
+
+            # 确保该ID对应的值是列表
+            alias_list = data.setdefault(id, [])
+
+            # 类型安全检查
+            if not isinstance(alias_list, list):
+                data[id] = [str(alias_list)]  # 转换现有值为列表
+                alias_list = data[id]
+
+            # 检查别名是否存在
+            if alias in alias_list:
+                return AliasStatus.ALIAS_EXISTS
+
+            # 添加新别名
+            alias_list.append(alias)
+
+            # 原子化写入操作
+            temp_file = local_alias_file.with_suffix('.tmp')
+            with open(temp_file, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
+
+            # 替换原文件
+            temp_file.replace(local_alias_file)
+
+            await mai.get_music_alias(arg=1)
+
+            return AliasStatus.SUCCESS
+
+        except (IOError, PermissionError) as e:
+            print(f"文件操作失败: {str(e)}")
+            return AliasStatus.WRITE_ERROR
+        except Exception as e:
+            print(f"未知错误: {str(e)}")
+            return AliasStatus.INVALID_DATA
+
+
+async def del_local_alias(id: str, alias: str) -> int:
+    """删除指定ID的别名
+
+    Args:
+        id: 目标用户ID
+        alias: 要删除的别名
+
+    Returns:
+        AliasStatus状态码
+    """
+    class AliasStatus:
+        SUCCESS = 0
+        ALIAS_NOT_FOUND = 1
+        ID_NOT_EXIST = 2
+        INVALID_DATA = 3
+        WRITE_ERROR = 4
+
+    file_lock = threading.Lock()
+
+    if not isinstance(alias, str) or not alias:
+        return AliasStatus.INVALID_DATA
+
+    with file_lock:
+        try:
+            # 原子化读取操作
+            if local_alias_file.exists():
+                with open(local_alias_file, 'r', encoding='utf-8') as f:
+                    try:
+                        data: Dict[str, List[str]] = json.load(f)
+                    except json.JSONDecodeError:
+                        data = {}
+            else:
+                return AliasStatus.ID_NOT_EXIST
+
+            # 数据结构校验
+            if not isinstance(data, dict):
+                data = {}
+
+            # 检查ID是否存在
+            if id not in data:
+                return AliasStatus.ID_NOT_EXIST
+
+            # 获取别名列表并进行类型检查
+            alias_list = data[id]
+            if not isinstance(alias_list, list):
+                data[id] = [str(alias_list)]  # 尝试修复数据
+                alias_list = data[id]
+
+            # 执行删除操作
+            try:
+                alias_list.remove(alias)
+            except ValueError:
+                return AliasStatus.ALIAS_NOT_FOUND
+
+            # 清理空列表
+            if len(alias_list) == 0:
+                del data[id]
+
+            # 原子化写入操作
+            temp_file = local_alias_file.with_suffix('.tmp')
+            with open(temp_file, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
+
+            # 替换原文件
+            if data:  # 仅当有数据时保留文件
+                temp_file.replace(local_alias_file)
+            else:  # 无数据时删除文件
+                os.remove(temp_file)
+                if local_alias_file.exists():
+                    os.remove(local_alias_file)
+
+            await mai.get_music_alias(arg=1)
+
+            return AliasStatus.SUCCESS
+
+        except (IOError, PermissionError) as e:
+            print(f"文件操作失败: {str(e)}")
+            return AliasStatus.WRITE_ERROR
+        except Exception as e:
+            print(f"未知错误: {str(e)}")
+            return AliasStatus.INVALID_DATA
+
+
 class MaiMusic:
 
     total_list: MusicList
@@ -114,18 +273,26 @@ class MaiMusic:
                 _stats = None
             self.total_list.append(Music(stats=_stats, **music))
 
-    async def get_music_alias(self) -> None:
+    async def get_music_alias(self, arg: int = 0) -> None:
         """获取所有曲目别名"""
-        try:
+        if arg == 0:
             try:
-                alias_data = await maiapi.music_alias()
-                await writefile(alias_file, alias_data)
-            except Exception:
-                # 从diving-fish获取maimaiDX曲目数据失败,切换至本地暂存文件
+                try:
+                    alias_data = await maiapi.music_alias()
+                    await writefile(alias_file, alias_data)
+                except Exception:
+                    # 从diving-fish获取maimaiDX曲目数据失败,切换至本地暂存文件
+                    alias_data = await openfile(alias_file)
+            except FileNotFoundError:
+                # 未找到文件，请自行使用浏览器访问 "https://download.fanyu.site/maimai/alias.json" 将内容保存为 "alias_data.json" 存放在 "static" 目录下并重启bot
+                raise
+        elif arg == 1:
+            try:
                 alias_data = await openfile(alias_file)
-        except FileNotFoundError:
-            # 未找到文件，请自行使用浏览器访问 "https://download.fanyu.site/maimai/alias.json" 将内容保存为 "alias_data.json" 存放在 "static" 目录下并重启bot
-            raise
+            except FileNotFoundError:
+                alias_data = {}
+        else:
+            return
 
         try:
             local_alias_data = await openfile(local_alias_file)
