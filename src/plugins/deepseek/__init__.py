@@ -59,8 +59,8 @@ async def send_forward_msg(
 
 # 命令处理器
 deepseek = on_command(
-    'ena',
-    aliases={'enai'},
+    'ena ',
+    aliases={'enai '},
     priority=8,
     block=True
 )
