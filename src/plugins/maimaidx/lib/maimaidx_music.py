@@ -301,7 +301,7 @@ async def generate_alias_image(all_aliases: List[str]) -> Image:
         返回生成的PIL Image对象
     """
     # 设置图片宽度和背景颜色
-    width = 300
+    width = 500
     background_color = (255, 255, 255)  # 白色背景
     text_color = (0, 0, 0)  # 黑色文字
 
@@ -310,7 +310,7 @@ async def generate_alias_image(all_aliases: List[str]) -> Image:
 
     # 设置字体和字号
     try:
-        font = ImageFont.truetype(YAHEI, 80)  # 如果没有arial.ttf，可以换成默认字体
+        font = ImageFont.truetype(YAHEI, 40)  # 如果没有arial.ttf，可以换成默认字体
     except IOError:
         font = ImageFont.load_default()  # 如果找不到ttf文件，使用默认字体
 
