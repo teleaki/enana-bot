@@ -317,7 +317,7 @@ async def generate_alias_image(all_aliases: List[str]) -> Image:
     # 设置行间距
     line_height = 10  # 默认行间距
 
-    total_height = 10  # 初始y坐标，加上顶部间距
+    total_height = 20  # 初始y坐标，加上顶部间距
 
     # 计算所有别名的高度
     for alias in all_aliases:
