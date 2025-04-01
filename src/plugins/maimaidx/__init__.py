@@ -205,7 +205,7 @@ async def handle_ab50(bot:Bot, event: Event, args: Message = CommandArg()):
 
 # alias
 process_local_alias = on_regex(
-    r'^别名\s+(增|删|查看)\s+(\d+)\s+(.+)$',
+    r'^别名\s+(增|删|查看)\s+(\d+)\s+(.*)$',
     priority=3,
     block=True
 )
