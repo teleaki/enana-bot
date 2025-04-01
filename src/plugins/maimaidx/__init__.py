@@ -205,7 +205,7 @@ async def handle_ab50(bot:Bot, event: Event, args: Message = CommandArg()):
 
 # alias
 process_local_alias = on_regex(
-    r'^别名\s+(增|删|查看)\s+(\d+)\s+(.*)$',
+    r'^别名\s+(增|删)\s+(\d+)\s+(.+)$',
     priority=3,
     block=True
 )
@@ -246,7 +246,26 @@ async def handle_local_alias(event: Event, args: Tuple[Optional[str], Optional[s
         else:
             await process_local_alias.finish('没有找到对应的乐曲哦')
 
+show_alias = on_command(
+    '别名',
+    priority=3,
+    block=True
+)
 
+@show_alias.handle()
+async def handle_show_alias(event: Event, args: Message = CommandArg()):
+    if int(get_group_id(event)) in config.mai_query_black_list:
+        return
+
+    if song_id := args.extract_plain_text():
+        flag, img = await show_all_alias(id=song_id)
+        if flag:
+            await show_alias.finish(Message([
+                MessageSegment.reply(event.message_id),
+                MessageSegment.image(image_to_base64(img))
+            ]))
+        else:
+            await show_alias.finish('没有找到对应的乐曲哦')
 
 # info
 minfo = on_command(
