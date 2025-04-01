@@ -6,7 +6,7 @@ from .config import Config
 __plugin_meta__ = PluginMetadata(
     name="maimaidx",
     description="舞萌dx相关工具",
-    usage="蓝的写",
+    usage="发送“mai帮助”查看具体用法",
     config=Config,
 )
 
@@ -181,6 +181,27 @@ async def handle_cb50(bot:Bot, event: Event, args: Tuple[Optional[str], Optional
     charter_b50_msg = await generate_charter_b50(charter=charter, qqid=int(qqid), username=username)
 
     await charter_b50.finish(charter_b50_msg)
+
+all_b50 = on_command(
+    'allb50',
+    aliases={'ab50'},
+    priority=3,
+    block=True
+)
+
+@all_b50.handle()
+async def handle_ab50(bot:Bot, event: Event, args: Message = CommandArg()):
+    if int(get_group_id(event)) in config.mai_query_black_list:
+        return
+
+    if username := args.extract_plain_text():
+        b50_msg = await generate_all_b50(username=username)
+    else:
+        qqid = event.get_user_id()
+        b50_msg = await generate_all_b50(qqid=int(qqid))
+        print(qqid)
+
+    await b50.finish(Message(b50_msg))
 
 # alias
 process_local_alias = on_regex(

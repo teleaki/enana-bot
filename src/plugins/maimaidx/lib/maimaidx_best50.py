@@ -310,3 +310,27 @@ async def generate_charter_b50(charter: str, qqid: Optional[int] = None, usernam
     except Exception as e:
         msg = MessageSegment.text(f"{type(e)}: {e}\n请联系Bot管理员")
     return msg
+
+async def generate_all_b50(qqid: Optional[int] = None, username: Optional[str] = None) -> MessageSegment:
+    try:
+        if username:
+            qqid = None
+
+        version_list = list(plate_to_version.values())
+        obj_plate = await maiapi.query_user('plate', qqid=qqid, username=username, version=version_list)
+        verlist = [PlayInfo(**item) for item in obj_plate['verlist']]
+
+        obj_user = await maiapi.query_user('player', qqid=qqid, username=username)
+        user_info = UserInfo(**obj_user)
+
+        draw_best = DrawBest(user_info=plate2best(plate_data=verlist, user_data=user_info), qqid=qqid)
+
+        pic = await draw_best.draw_b50()
+        msg = MessageSegment.image(image_to_base64(pic))
+    except UserNotFoundError as e:
+        msg = MessageSegment.text(str(e))
+    except UserDisabledQueryError as e:
+        msg = MessageSegment.text(str(e))
+    except Exception as e:
+        msg = MessageSegment.text(f"{type(e)}: {e}\n请联系Bot管理员")
+    return msg
