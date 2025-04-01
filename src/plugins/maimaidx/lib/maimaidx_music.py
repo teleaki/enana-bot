@@ -310,12 +310,12 @@ async def generate_alias_image(all_aliases: List[str]) -> Image:
 
     # 设置字体和字号
     try:
-        font = ImageFont.truetype("YAHEI", 50)  # 如果没有arial.ttf，可以换成默认字体
+        font = ImageFont.truetype(YAHEI, 80)  # 如果没有arial.ttf，可以换成默认字体
     except IOError:
         font = ImageFont.load_default()  # 如果找不到ttf文件，使用默认字体
 
     # 设置行间距
-    line_height = 25  # 默认行间距
+    line_height = 10  # 默认行间距
 
     total_height = 10  # 初始y坐标，加上顶部间距
 
