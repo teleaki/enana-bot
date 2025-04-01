@@ -16,7 +16,7 @@ from nonebot import on_command, on_regex
 from nonebot.adapters.onebot.v11 import Bot, Message, Event
 from nonebot.params import CommandArg, RegexStr
 
-from .lib.maimaidx_music import add_local_alias, del_local_alias
+from .lib.maimaidx_music import add_local_alias, del_local_alias, show_all_alias
 
 from .lib.maimaidx_best50 import *
 from .lib.maimaidx_info import *
@@ -205,7 +205,7 @@ async def handle_ab50(bot:Bot, event: Event, args: Message = CommandArg()):
 
 # alias
 process_local_alias = on_regex(
-    r'^别名\s+(增|删)\s+(\d+)\s+(.+)$',
+    r'^别名\s+(增|删|查看)\s+(\d+)\s+(.+)$',
     priority=3,
     block=True
 )
@@ -235,6 +235,16 @@ async def handle_local_alias(event: Event, args: Tuple[Optional[str], Optional[s
             await process_local_alias.finish(f'删除成功')
         else:
             await process_local_alias.finish(f'删除失败 ErrorCode: {flag}')
+
+    if cmd == '查看':
+        flag, img = await show_all_alias(id=id)
+        if flag:
+            await process_local_alias.finish(Message([
+                MessageSegment.reply(event.message_id),
+                MessageSegment.image(image_to_base64(img))
+            ]))
+        else:
+            await process_local_alias.finish('没有找到对应的乐曲哦')
 
 
 

@@ -1,6 +1,10 @@
 import os
 import threading
 
+from PIL import Image, ImageDraw, ImageFont
+from typing import List
+import io
+
 from rapidfuzz import process, fuzz
 
 from .maimaidx_api import maiapi
@@ -228,6 +232,120 @@ async def del_local_alias(id: str, alias: str) -> int:
         except Exception as e:
             print(f"未知错误: {str(e)}")
             return AliasStatus.INVALID_DATA
+
+async def show_all_alias(id: str) -> (bool, Optional[Image]):
+    """显示指定ID在local_alias_file和alias_file中的所有别名
+
+    Args:
+        id: 目标ID
+
+    Returns:
+        包含所有别名的列表
+    """
+
+    all_aliases = set()  # 使用集合以确保别名不重复
+
+    # 读取local_alias_file
+    try:
+        if local_alias_file.exists():
+            with open(local_alias_file, 'r', encoding='utf-8') as f:
+                try:
+                    data: Dict[str, List[str]] = json.load(f)
+                except json.JSONDecodeError:
+                    data = {}
+        else:
+            data = {}
+
+        # 如果id存在，添加到all_aliases
+        if id in data:
+            all_aliases.update(data[id])
+    except (IOError, PermissionError) as e:
+        print(f"读取local_alias_file失败: {str(e)}")
+        return Image.new('RGB', (800, 600), (255, 255, 255))  # 返回空白图片
+
+    # 读取alias_file
+    try:
+        if alias_file.exists():
+            with open(alias_file, 'r', encoding='utf-8') as f:
+                try:
+                    data: Dict[str, List[str]] = json.load(f)
+                except json.JSONDecodeError:
+                    data = {}
+        else:
+            data = {}
+
+        # 如果id存在，添加到all_aliases
+        if id in data:
+            all_aliases.update(data[id])
+    except (IOError, PermissionError) as e:
+        print(f"读取alias_file失败: {str(e)}")
+        return False, None
+
+    # 如果没有找到任何别名，返回空白图片
+    if not all_aliases:
+        return False, None
+
+    # 调用generate_alias_image函数生成图片
+    image = await generate_alias_image(list(all_aliases))
+
+    return True, image
+
+
+async def generate_alias_image(all_aliases: List[str]) -> Image:
+    """将别名列表渲染为文字图片
+
+    Args:
+        all_aliases: 包含所有别名的列表
+
+    Returns:
+        返回生成的PIL Image对象
+    """
+    # 设置图片宽度和背景颜色
+    width = 800
+    background_color = (255, 255, 255)  # 白色背景
+    text_color = (0, 0, 0)  # 黑色文字
+
+    # 创建一个 ImageDraw 对象来绘制文本
+    draw = ImageDraw.Draw(Image.new('RGB', (width, 1), background_color))  # 先创建一个临时图片来计算文本高度
+
+    # 设置字体和字号
+    try:
+        font = ImageFont.truetype("arial.ttf", 20)  # 如果没有arial.ttf，可以换成默认字体
+    except IOError:
+        font = ImageFont.load_default()  # 如果找不到ttf文件，使用默认字体
+
+    # 设置行间距
+    line_height = 25  # 默认行间距
+
+    total_height = 10  # 初始y坐标，加上顶部间距
+
+    # 计算所有别名的高度
+    for alias in all_aliases:
+        # 使用getbbox()来计算文本边界框
+        bbox = draw.textbbox((0, 0), alias, font=font)
+        text_height = bbox[3] - bbox[1]  # 获取文本高度
+
+        total_height += text_height + line_height  # 累加每行文本的高度和行间距
+
+    # 创建最终的图片，使用计算得到的动态高度
+    img = Image.new('RGB', (width, total_height), background_color)
+    draw = ImageDraw.Draw(img)
+
+    y_position = 10  # 初始y坐标
+
+    # 将所有别名写入图片
+    for alias in all_aliases:
+        # 使用getbbox()来计算文本边界框
+        bbox = draw.textbbox((0, 0), alias, font=font)
+        text_height = bbox[3] - bbox[1]  # 获取文本高度
+
+        # 绘制文本
+        draw.text((10, y_position), alias, fill=text_color, font=font)
+
+        # 更新y坐标
+        y_position += text_height + line_height  # 行间距
+
+    return img
 
 
 class MaiMusic:
