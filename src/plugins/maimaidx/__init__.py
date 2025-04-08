@@ -160,25 +160,23 @@ async def handle_pb50(bot: Bot, event: Event, args: Tuple[Optional[str], Optiona
 
     await plate_b50.finish(Message(message_segments))
 
-charter_b50 = on_regex(
-    r'^谱师b50\s+(.+)\s*(.*)$',
+charter_b50 = on_command(
+    '谱师b50',
     priority=3,
     block=True
 )
 
 @charter_b50.handle()
-async def handle_cb50(bot:Bot, event: Event, args: Tuple[Optional[str], Optional[str]] = RegexStr(1, 2)):
+async def handle_cb50(bot:Bot, event: Event, args: Message = CommandArg()):
     if int(get_group_id(event)) in config.mai_query_black_list:
         return
 
-    print(f"Extracted charter: {args[0]}")
-
-    charter = args[0]
-    username = args[1]
+    if charters_txt := args.extract_plain_text():
+        charters = charters_txt.split()
 
     qqid = event.get_user_id()
 
-    charter_b50_msg = await generate_charter_b50(charter=charter, qqid=int(qqid), username=username)
+    charter_b50_msg = await generate_charter_b50(charters=charters, qqid=int(qqid))
 
     await charter_b50.finish(charter_b50_msg)
 

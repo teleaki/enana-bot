@@ -266,7 +266,7 @@ async def generate_plate_b50(version: List[str], qqid: Optional[int] = None, use
         msg = MessageSegment.text(f"{type(e)}: {e}\n请联系Bot管理员")
     return msg
 
-async def generate_charter_b50(charter: str, qqid: Optional[int] = None, username: Optional[str] = None) -> MessageSegment:
+async def generate_charter_b50(charters: List[str], qqid: Optional[int] = None, username: Optional[str] = None) -> MessageSegment:
     try:
         if username:
             qqid = None
@@ -276,9 +276,10 @@ async def generate_charter_b50(charter: str, qqid: Optional[int] = None, usernam
         verlist = [PlayInfo(**item) for item in obj_plate['verlist']]
 
         real_charter_list = []
-        for rc in real_charters.keys():
-            if charter.lower() in rc.lower():
-                real_charter_list.append(rc)
+        for charter in charters:
+            for rc in real_charters.keys():
+                if charter.lower() in rc.lower():
+                    real_charter_list.append(rc)
 
         real_charter_list = list(dict.fromkeys(real_charter_list))
 
