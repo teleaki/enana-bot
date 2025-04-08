@@ -173,6 +173,8 @@ async def handle_cb50(bot:Bot, event: Event, args: Message = CommandArg()):
 
     if charters_txt := args.extract_plain_text():
         charters = charters_txt.split()
+    else:
+        await charter_b50.finish('请输入文字')
 
     qqid = event.get_user_id()
 
